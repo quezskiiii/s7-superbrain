@@ -174,7 +174,7 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
 </head>
 <body>
 <header class="ptop"><nav class="pnav">
-  <a class="mark" href="#" data-navtab="order"><span class="seven">7</span>s7Go</a>
+  <a class="mark" href="#" data-navtab="order"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="s7Go logo"><rect width="64" height="64" rx="14" fill="#0D1626" stroke="#00E5FF" stroke-width="2"/><path d="M14 22H28L25 28H19L18 31H27L24 42H11L13 36H20L21 33H12L14 22Z" fill="#00E5FF"/><path d="M31 22H46L39 42H32L37 28H29L31 22Z" fill="#00E5FF"/><circle cx="51" cy="36" r="5" fill="#84CC16"/><path d="M51 27C47.7 27 45 29.7 45 33C45 37.5 51 44 51 44C51 44 57 37.5 57 33C57 29.7 54.3 27 51 27ZM51 35C49.9 35 49 34.1 49 33C49 31.9 49.9 31 51 31C52.1 31 53 31.9 53 33C53 34.1 52.1 35 51 35Z" fill="#FFFFFF"/></svg>s7Go</a>
   <div class="pnav-r"><a class="plink" href="#" data-navtab="track">Track</a><a class="plink" href="#" data-navtab="driver">Drive</a><a class="ptext" href="#" data-navtab="dispatch">Dispatch</a><button class="ptext gear" type="button" id="open-settings" aria-label="Settings and backup" title="Settings and backup">⚙<span class="dot" id="backup-dot" hidden></span></button></div>
 </nav></header>
   <section class="paybar" id="paybar" aria-label="Revenue and payout summary"></section>
@@ -209,7 +209,7 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
 </dialog>
 
 <main class="pwrap">
-  <p class="eyebrow">S7 Global · East Point &amp; Metro Atlanta</p>
+  <p class="eyebrow">s7Go · East Point &amp; Metro Atlanta</p>
   <h1>Food, packages, door to door.</h1>
   <p class="muted">Order from local spots or book an express courier, watch your driver move live on the map, and hand over your PIN at the door. Drivers: go online and get paid per trip.</p>
 
@@ -1057,7 +1057,7 @@ You can book same-day deliveries from your {area} location anytime here:
 
 Your pickup address is already saved, so a booking takes about a minute. Reply to this message with any questions.
 
-Thanks for partnering with S7 Global!`;
+Thanks for partnering with s7Go!`;
   const liveMessage = c => LIVE_TEMPLATE
     .replaceAll("{first}", (c.contact || "").trim().split(/\s+/)[0] || "there")
     .replaceAll("{store}", c.name).replaceAll("{area}", c.area).replaceAll("{link}", BOOKING_LINK);
@@ -1213,7 +1213,7 @@ Thanks for partnering with S7 Global!`;
   // ---------- Pitch & verification (from the delivery-5 build) ----------
   const PKEY = "s7-delivery-pitch-v1";
   const DEFAULT_SCRIPT = `[Hook · 0–5s]
-Hi {first}! I'm {me} with S7 Global, right here in Atlanta. Quick question: when people search for {store} on Google, do they find you with the right hours?
+Hi {first}! I'm {me} with s7Go, right here in Atlanta. Quick question: when people search for {store} on Google, do they find you with the right hours?
 
 [Problem · 5–15s]
 A lot of shops around {area} have a Google listing that isn't claimed or verified, so customers see old info, or can't find you at all and buy from the place down the street.
