@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s7Go | Local Delivery &amp; Courier — Atlanta &amp; East Point</title>
+<meta name="description" content="s7Go by S7 Global: order local food or book an express courier in metro Atlanta, track your driver live, or drive and earn.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+/* ============ portal.css (inlined so this file stands alone) ============ */
+:root{
+  --bg:#070a10; --surface:#0d121b; --surface2:#131a26; --line:#22304a;
+  --text:#eef3f8; --muted:#93a3b8; --cyan:#08dff2; --gold:#f7bd4a;
+  --ok:#52d69a; --bad:#ff6b6b; --ink:#001114;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif;font-size:16px;line-height:1.5}
+h1{font-family:"Archivo Black",sans-serif;font-size:clamp(1.9rem,5vw,2.9rem);line-height:1.05;margin:.15em 0 .3em}
+h2{font-family:"Archivo Black",sans-serif;font-size:1.05rem;margin:0;letter-spacing:.01em}
+a{color:var(--cyan)}
+.ptop{position:sticky;top:0;z-index:500;background:#070a10e6;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.pnav{max-width:980px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mark{font-family:"Archivo Black",sans-serif;color:var(--text);text-decoration:none;font-size:1.25rem;display:flex;align-items:center;gap:8px}
+.mark .seven{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--cyan);color:var(--ink);font-size:1.05rem}
+.pnav-r{display:flex;align-items:center;gap:14px}
+.plink{color:var(--muted);text-decoration:none;font-weight:700;font-size:.92rem}
+.plink:hover{color:var(--text)}
+.ptext{color:var(--cyan);text-decoration:none;font-weight:800;font-size:.92rem;border:1px solid var(--cyan);padding:7px 12px;border-radius:10px}
+.pwrap{max-width:980px;margin:0 auto;padding:22px 16px 30px}
+.pfoot{max-width:980px;margin:0 auto;padding:18px 16px 30px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.88rem}
+.eyebrow{color:var(--cyan);font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:.75rem;margin:0}
+.muted{color:var(--muted)} .small{font-size:.85rem}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);font-size:.75rem;font-weight:800;text-transform:lowercase}
+.pill.cy{border-color:var(--cyan);color:var(--cyan)} .pill.ok{border-color:var(--ok);color:var(--ok)}
+.pill.warn{border-color:var(--gold);color:var(--gold)} .pill.bad{border-color:var(--bad);color:var(--bad)}
+label{display:block;margin:14px 0 6px;font-weight:700;font-size:.9rem}
+input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font-size:16px;font-family:inherit}
+input:focus{outline:2px solid var(--cyan);outline-offset:1px}
+.pbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:12px 18px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font:700 .95rem "DM Sans",sans-serif;cursor:pointer;text-decoration:none}
+.pbtn.primary{background:var(--cyan);border-color:var(--cyan);color:var(--ink);width:100%;margin-top:16px}
+.pbtn.primary.inline,.pbtn.inline{width:auto;margin-top:0}
+.pbtn.sm{min-height:40px;padding:8px 12px;font-size:.85rem;margin-top:0}
+.pbtn.ghost{background:transparent;color:var(--muted)}
+.pbtn:disabled{opacity:.45;cursor:not-allowed}
+.pmsg{min-height:1.2em;font-size:.9rem;margin:10px 0 0}
+.pmsg.err{color:var(--bad)} .pmsg.ok{color:var(--ok)}
+.prow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.olist{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px}
+.olist .order{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.order .l1{display:flex;justify-content:space-between;gap:10px;font-weight:800}
+.order .l2{color:var(--muted);font-size:.85rem;margin-top:3px}
+.order .price{color:var(--cyan);font-weight:800;white-space:nowrap}
+.empty{color:var(--muted);padding:10px 2px;list-style:none}
+/* ============ page styles ============ */
+.pwrap{max-width:980px}.pnav,.pfoot{max-width:980px}
+.tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:5px;margin-top:18px;overflow-x:auto}
+.tab{flex:1;min-height:44px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:700 .92rem "DM Sans",sans-serif;cursor:pointer;white-space:nowrap;padding:0 12px}
+.tab[aria-selected="true"]{background:var(--cyan);color:var(--ink)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+select,textarea{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font-size:16px;font-family:inherit}
+textarea{min-height:70px;resize:vertical}
+select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg.four{grid-template-columns:repeat(4,1fr)}
+.seg label{margin:0;position:relative}
+.seg input{position:absolute;opacity:0;width:1px;height:1px}
+.seg span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:var(--text);font-weight:700;text-align:center;cursor:pointer;font-size:.9rem}
+.seg span small{color:var(--muted);font-weight:600;font-size:.75rem}
+.seg input:checked+span{border-color:var(--cyan);background:#08dff21a}
+.seg input:focus-visible+span{outline:2px solid var(--cyan)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{min-height:44px;padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font:700 .9rem "DM Sans",sans-serif;cursor:pointer}
+.chip[aria-selected="true"]{border-color:var(--cyan);color:var(--cyan);background:#08dff21a}
+.menu{display:grid;gap:10px;margin-top:12px}
+.mi{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.mi b{display:block}
+.mi .d{color:var(--muted);font-size:.84rem}
+.mi .pr{color:var(--cyan);font-weight:800;white-space:nowrap}
+.map{height:340px;border-radius:14px;border:1px solid var(--line);margin-top:12px;background:var(--surface2);z-index:0}
+.map.tall{height:420px}
+.quote{display:grid;gap:4px;margin-top:12px;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+.quote .row{display:flex;justify-content:space-between;color:var(--muted);font-size:.9rem;gap:10px}
+.quote .total{display:flex;justify-content:space-between;font-weight:800;font-size:1.15rem;border-top:1px solid var(--line);padding-top:8px;margin-top:4px}
+.quote .total b{color:var(--cyan)}
+.steps{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:0}
+.steps li{position:relative;padding:0 0 16px 30px;color:var(--muted)}
+.steps li::before{content:"";position:absolute;left:6px;top:4px;width:12px;height:12px;border-radius:50%;border:2px solid var(--line);background:var(--bg)}
+.steps li::after{content:"";position:absolute;left:12px;top:20px;bottom:0;width:2px;background:var(--line)}
+.steps li:last-child::after{display:none}
+.steps li.done{color:var(--text)}.steps li.done::before{background:var(--ok);border-color:var(--ok)}
+.steps li.now{color:var(--text);font-weight:700}.steps li.now::before{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 0 5px #08dff22e}
+.steps time{display:block;font-size:.78rem;color:var(--muted);font-weight:400}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+@media(max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat b{display:block;font-family:"Archivo Black",sans-serif;font-size:1.4rem}
+.stat span{color:var(--muted);font-size:.8rem}
+.eta{font-family:"Archivo Black",sans-serif;font-size:1.8rem;color:var(--cyan);margin:4px 0 0}
+.pinbig{font-family:"Archivo Black",sans-serif;font-size:1.6rem;letter-spacing:.35em;color:var(--gold);margin:2px 0 0}
+.banner{margin-top:14px;padding:10px 14px;border-radius:12px;border:1px solid #6a5220;background:#f7bd4a14;color:var(--gold);font-size:.85rem}
+.inline-row{display:flex;gap:8px;align-items:flex-end}.inline-row>div{flex:1}
+.order .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.order select{padding:8px 10px;font-size:.85rem;width:auto;min-height:40px}
+.order input.pin-in{width:110px;padding:9px 10px;min-height:40px}
+.leaflet-container{background:#0d121b;font-family:"DM Sans",sans-serif}
+.pin{width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:grid;place-items:center;border:2px solid #070a10;box-shadow:0 2px 8px #0008}
+.pin i{transform:rotate(45deg);font-style:normal;font-weight:800;font-size:12px;color:#001114}
+.pin.a{background:var(--cyan)}.pin.b{background:var(--gold)}
+.car{width:30px;height:30px;border-radius:50%;background:var(--ok);border:3px solid #070a10;display:grid;place-items:center;font-size:15px;box-shadow:0 0 0 6px #52d69a33}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--cyan);color:var(--text);padding:12px 18px;border-radius:12px;z-index:1000;font-weight:700;max-width:calc(100% - 32px);text-align:center}
+.surgebar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header class="ptop"><nav class="pnav">
+  <a class="mark" href="#" data-navtab="order"><span class="seven">7</span>s7Go</a>
+  <div class="pnav-r"><a class="plink" href="#" data-navtab="track">Track</a><a class="plink" href="#" data-navtab="driver">Drive</a><a class="ptext" href="#" data-navtab="dispatch">Dispatch</a></div>
+</nav></header>
+
+<main class="pwrap">
+  <p class="eyebrow">S7 Global · East Point &amp; Metro Atlanta</p>
+  <h1>Food, packages, door to door.</h1>
+  <p class="muted">Order from local spots or book an express courier, watch your driver move live on the map, and hand over your PIN at the door. Drivers: go online and get paid per trip.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="order" aria-selected="true">Order</button>
+    <button class="tab" role="tab" data-tab="track" aria-selected="false">Track</button>
+    <button class="tab" role="tab" data-tab="driver" aria-selected="false">Drive</button>
+    <button class="tab" role="tab" data-tab="dispatch" aria-selected="false">Dispatch</button>
+  </div>
+
+  <!-- ORDER -->
+  <section id="v-order" role="tabpanel">
+    <div class="pcard surgebar">
+      <div><h2>Demand</h2><p class="muted small" style="margin:2px 0 0" id="surge-label">Standard demand · 1.0x</p></div>
+      <button class="pbtn sm" id="surge-btn" type="button">Change surge</button>
+    </div>
+    <div class="grid2">
+      <div>
+        <div class="pcard">
+          <div class="phead"><h2>Local spots</h2><span class="pill cy">East Point / Atlanta</span></div>
+          <div class="chips" id="s-stores"></div>
+          <div class="menu" id="s-menu"></div>
+        </div>
+
+        <form class="pcard" id="courier-form">
+          <div class="phead"><h2>s7Go Express Courier</h2><span class="pill">Point to point</span></div>
+          <label for="o-pick">Pickup area</label>
+          <select id="o-pick" required></select>
+          <label for="o-pick-addr">Pickup street address</label>
+          <input id="o-pick-addr" autocomplete="street-address" placeholder="123 Main St, East Point">
+          <label for="o-drop">Drop-off area</label>
+          <select id="o-drop" required></select>
+          <label for="o-drop-addr">Drop-off street address</label>
+          <input id="o-drop-addr" placeholder="456 Washington Rd, East Point">
+          <label>Package size</label>
+          <div class="seg" id="o-size">
+            <label><input type="radio" name="size" value="small" checked><span>Small<small>Envelope, bag · +$0</small></span></label>
+            <label><input type="radio" name="size" value="medium"><span>Medium<small>Box to 25 lb · +$3</small></span></label>
+            <label><input type="radio" name="size" value="large"><span>Large<small>Bulky · +$6</small></span></label>
+          </div>
+          <label>Speed</label>
+          <div class="seg" id="o-speed">
+            <label><input type="radio" name="speed" value="standard" checked><span>Standard<small>Same day</small></span></label>
+            <label><input type="radio" name="speed" value="rush"><span>Rush<small>Within 90 min · +$12</small></span></label>
+            <label><input type="radio" name="speed" value="scheduled"><span>Scheduled<small>Pick a time · +$3</small></span></label>
+          </div>
+          <div id="o-when-wrap" hidden>
+            <label for="o-when">Pickup time</label>
+            <input id="o-when" type="datetime-local">
+          </div>
+          <label for="o-notes">Handoff instructions</label>
+          <textarea id="o-notes" placeholder="Gate code, leave with front desk, fragile..."></textarea>
+          <button class="pbtn primary" type="submit">Add courier trip to order</button>
+          <p class="pmsg" id="o-msg" role="status"></p>
+          <div class="map" id="map-order"></div>
+          <div class="quote" id="quote"></div>
+        </form>
+      </div>
+
+      <div>
+        <div class="pcard">
+          <div class="phead"><h2>Your s7Go order</h2><button class="pbtn sm ghost" id="cart-clear" type="button">Clear</button></div>
+          <ul class="olist" id="cart-list"></ul>
+          <label for="c-name">Your name</label>
+          <input id="c-name" autocomplete="name">
+          <label for="c-phone">Phone</label>
+          <input id="c-phone" type="tel" autocomplete="tel">
+          <label for="c-droparea">Delivery area (food orders)</label>
+          <select id="c-droparea"></select>
+          <label for="c-dropaddr">Delivery address</label>
+          <input id="c-dropaddr" placeholder="Street address for drop-off">
+          <label for="c-promo">Promo code</label>
+          <div class="inline-row">
+            <div><input id="c-promo" placeholder="S7GO20 or ATL5" autocapitalize="characters"></div>
+            <button class="pbtn inline" id="promo-btn" type="button">Apply</button>
+          </div>
+          <p class="pmsg" id="promo-msg" role="status"></p>
+          <label>Driver tip — 100% goes to your driver</label>
+          <div class="seg four" id="c-tip">
+            <label><input type="radio" name="tip" value="2"><span>$2</span></label>
+            <label><input type="radio" name="tip" value="4" checked><span>$4</span></label>
+            <label><input type="radio" name="tip" value="6"><span>$6</span></label>
+            <label><input type="radio" name="tip" value="10"><span>$10</span></label>
+          </div>
+          <label>Payment — no card fees</label>
+          <div class="seg four" id="c-pay">
+            <label><input type="radio" name="pay" value="cashapp" checked><span>Cash App<small id="pay-cashapp-handle"></small></span></label>
+            <label><input type="radio" name="pay" value="zelle"><span>Zelle<small id="pay-zelle-handle"></small></span></label>
+            <label><input type="radio" name="pay" value="tap"><span>Tap-to-Pay<small>At the door</small></span></label>
+            <label><input type="radio" name="pay" value="cash"><span>Cash<small>On delivery</small></span></label>
+          </div>
+          <div class="quote" id="totals"></div>
+          <button class="pbtn primary" id="place-btn" type="button">Send order to live dispatch</button>
+          <p class="pmsg" id="c-msg" role="status"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRACK -->
+  <section id="v-track" role="tabpanel" hidden>
+    <div class="pcard">
+      <form class="inline-row" id="track-form">
+        <div><label for="t-id" style="margin-top:0">Tracking number</label><input id="t-id" placeholder="S7-4821" autocapitalize="characters"></div>
+        <button class="pbtn primary inline" type="submit">Track</button>
+      </form>
+      <p class="pmsg" id="t-msg" role="status"></p>
+    </div>
+    <div class="grid2" id="track-out" hidden>
+      <div class="pcard">
+        <div class="phead"><h2 id="t-title">S7-0000</h2><span class="pill" id="t-pill"></span></div>
+        <p class="muted small" style="margin:0" id="t-route"></p>
+        <p class="eyebrow" style="margin-top:14px">Your door PIN — give it to the driver</p>
+        <p class="pinbig" id="t-pin">----</p>
+        <p class="eyebrow" style="margin-top:14px" id="t-eta-label">Estimated arrival</p>
+        <p class="eta" id="t-eta">--</p>
+        <p class="muted small" id="t-driver" style="margin:4px 0 0"></p>
+        <p class="muted small" id="t-gps" style="margin:4px 0 0"></p>
+        <ol class="steps" id="t-steps"></ol>
+      </div>
+      <div class="pcard">
+        <h2>Live map</h2>
+        <div class="map tall" id="map-track"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRIVER -->
+  <section id="v-driver" role="tabpanel" hidden>
+    <div class="pcard">
+      <div class="phead"><h2>Driver mode</h2><span class="pill" id="d-status">Offline</span></div>
+      <p class="muted small" style="margin:0" id="d-who-line"></p>
+      <div class="stats">
+        <div class="stat"><b id="d-wallet">$0.00</b><span>Driver wallet</span></div>
+        <div class="stat"><b id="d-trips">0</b><span>Trips completed</span></div>
+        <div class="stat"><b id="d-open-count">0</b><span>Open offers</span></div>
+        <div class="stat"><b id="d-active-count">0</b><span>Active jobs</span></div>
+      </div>
+      <button class="pbtn primary" id="d-toggle" type="button">Go online</button>
+      <p class="muted small" id="d-gps" style="margin:10px 0 0">GPS: not broadcasting. Go online to share your real phone location with your customer.</p>
+    </div>
+    <div class="grid2">
+      <div class="pcard"><h2>My active jobs</h2><ul class="olist" id="d-mine"></ul></div>
+      <div class="pcard"><h2>Open offers</h2><ul class="olist" id="d-open"></ul></div>
+    </div>
+  </section>
+
+  <!-- DISPATCH -->
+  <section id="v-dispatch" role="tabpanel" hidden>
+    <div class="pcard">
+      <div class="phead"><h2>Dispatch board</h2>
+        <div class="prow" style="margin:0">
+          <button class="pbtn sm" id="x-seed" type="button">Add sample orders</button>
+          <button class="pbtn sm ghost" id="x-clear" type="button">Clear all</button>
+        </div>
+      </div>
+      <div class="stats" id="x-stats"></div>
+      <div class="map" id="map-dispatch"></div>
+    </div>
+    <div class="pcard">
+      <div class="phead"><h2>All orders</h2>
+        <select id="x-filter" aria-label="Filter orders" style="width:auto">
+          <option value="all">All</option><option value="active">Active</option><option value="placed">Needs driver</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <ul class="olist" id="x-list"></ul>
+    </div>
+  </section>
+
+  <p class="banner" id="sync-banner">Local dispatch mode: orders sync between tabs on this device. To sync across phones, paste your free Firebase Realtime Database URL into FIREBASE_DB_URL at the top of this file's script — setup steps are in the README that came with this build.</p>
+</main>
+
+<footer class="pfoot"><span>© S7 Global LLC · Atlanta, GA</span><span>s7Go — powered by S7 Global</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(() => {
+  // =====================================================================
+  //  CONFIG — EDIT EVERYTHING IN THIS BLOCK BEFORE YOU LAUNCH
+  // =====================================================================
+  // 1) FREE CROSS-DEVICE DATABASE: create a free Firebase Realtime
+  //    Database (steps in README) and paste its URL here, e.g.
+  //    "https://s7go-dispatch-default-rtdb.firebaseio.com"
+  //    Leave empty "" to run in local-only mode on one device.
+  const FIREBASE_DB_URL = "";
+
+  // 2) YOUR RATES, PAYMENT HANDLES AND SURGE LEVELS
+  const RATES = {
+    baseFare: 4.50,          // base pickup fee per order ($)
+    perMile: 1.50,           // per road mile ($)
+    serviceFee: 1.99,        // platform service fee per order ($)
+    sizeExtras:  { small: 0, medium: 3.00, large: 6.00 },
+    speedExtras: { standard: 0, rush: 12.00, scheduled: 3.00 },
+    surgeMultipliers: [1.0, 1.25, 1.5],   // Standard / Busy / Peak
+    driverCutPercent: 0.85,  // driver keeps 85% of delivery charges + 100% of tip
+    cashAppTag: "$CHANGE_ME",             // <-- your real Cash App $tag
+    zelleHandle: "CHANGE_ME",             // <-- your real Zelle email or phone
+  };
+
+  // 3) THE DRIVER PROFILE SHOWN TO CUSTOMERS (no fake names — set yours)
+  const ACTIVE_DRIVER = { id: "driver-1", name: "S7 Dispatch Lead", vehicle: "S7 Go Fleet Vehicle", zone: "East Point / Atlanta" };
+
+  const SURGE_LABELS = ["Standard demand · 1.0x", "Busy rush · 1.25x surge", "Peak · 1.5x surge"];
+  const ROAD_FACTOR = 1.3, AVG_MPH = 24;
+
+  const AREAS = [
+    ["Downtown", 33.7537, -84.3901], ["Midtown", 33.7840, -84.3830], ["Buckhead", 33.8384, -84.3797],
+    ["Old Fourth Ward", 33.7650, -84.3720], ["Inman Park", 33.7590, -84.3530], ["Little Five Points", 33.7646, -84.3494],
+    ["Virginia-Highland", 33.7790, -84.3530], ["West Midtown", 33.7870, -84.4120], ["Grant Park", 33.7380, -84.3700],
+    ["East Atlanta", 33.7400, -84.3420], ["Decatur", 33.7748, -84.2963], ["Kirkwood", 33.7550, -84.3220],
+    ["West End", 33.7360, -84.4130], ["Sandy Springs", 33.9304, -84.3733], ["Brookhaven", 33.8651, -84.3366],
+    ["College Park", 33.6534, -84.4494], ["East Point", 33.6795, -84.4394], ["Smyrna", 33.8840, -84.5144],
+    ["Chamblee", 33.8921, -84.2988], ["Tucker", 33.8545, -84.2171],
+  ].map(([name, lat, lng]) => ({ name, lat, lng }));
+  const areaBy = n => AREAS.find(a => a.name === n) || AREAS[0];
+
+  // Menu prices are yours to edit — they live here, next to each item.
+  const STORES = [
+    { id: "touchdown", name: "Touchdown Wings", area: "East Point", items: [
+      { id: "td1", name: "10 Pc Honey Hot Wings Combo", desc: "Crispy wings in signature Honey Hot sauce with seasoned fries.", price: 16.99 },
+      { id: "td2", name: "15 Pc Lemon Pepper Wet", desc: "Atlanta classic, extra-wet lemon pepper wings with celery.", price: 19.99 },
+      { id: "td3", name: "Philly Cheesesteak & 6 Wings", desc: "Loaded steak sub paired with 6 wings in your choice of sauce.", price: 17.99 },
+    ]},
+    { id: "soul", name: "East Point Soul Kitchen", area: "East Point", items: [
+      { id: "ep1", name: "Smothered Pork Chops Plate", desc: "Two tender chops in brown gravy with mac & cheese and greens.", price: 15.99 },
+      { id: "ep2", name: "Crispy Fried Catfish Basket", desc: "Golden cornmeal catfish fillets with candied yams and hushpuppies.", price: 14.99 },
+    ]},
+    { id: "mart", name: "Metro QuickMart", area: "College Park", items: [
+      { id: "mq1", name: "Late-Night Snack & Drink Bundle", desc: "2 sodas, family-size chips, and a candy pack.", price: 9.99 },
+      { id: "mq2", name: "Phone Fast-Charger Kit (USB-C)", desc: "20W wall adapter plus braided 6 ft fast-charge cable.", price: 12.99 },
+    ]},
+  ];
+  const storeBy = id => STORES.find(s => s.id === id);
+
+  const FLOW = ["placed", "assigned", "picked_up", "delivered"];
+  const LABEL = { placed: "Order placed", assigned: "Driver on the way to pickup", picked_up: "Picked up, heading to you", delivered: "Delivered", cancelled: "Cancelled" };
+  const PILL = { placed: "warn", assigned: "cy", picked_up: "cy", delivered: "ok", cancelled: "bad" };
+  const SHORT = { placed: "needs driver", assigned: "assigned", picked_up: "in transit", delivered: "delivered", cancelled: "cancelled" };
+  const PAYLABEL = { cashapp: "Cash App", zelle: "Zelle", tap: "Tap-to-Pay on delivery", cash: "Cash on delivery" };
+
+  // ---------- Helpers ----------
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const money = n => "$" + (Math.round(n * 100) / 100).toFixed(2);
+  const fmtTime = t => new Date(t).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  function miles(a, b) {
+    const R = 3958.8, r = x => x * Math.PI / 180;
+    const dLat = r(b.lat - a.lat), dLng = r(b.lng - a.lng);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h)) * ROAD_FACTOR;
+  }
+  const jitter = (p, k) => ({ lat: p.lat + (Math.sin(k * 7.1) * 0.006), lng: p.lng + (Math.cos(k * 3.3) * 0.006) });
+  function toast(msg) { document.querySelectorAll(".toast").forEach(x => x.remove()); const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; t.setAttribute("role", "status"); document.body.appendChild(t); setTimeout(() => t.remove(), 3200); }
+
+  // ---------- Order store: localStorage + optional Firebase sync ----------
+  const KEY = "s7go-orders-v2";
+  let mem = [];
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || mem; } catch { return mem; } };
+  const saveLocal = list => { mem = list; try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {} };
+  const cloudBase = () => FIREBASE_DB_URL.replace(/\/$/, "");
+  async function cloudPut(order) {
+    if (!FIREBASE_DB_URL) return;
+    try { await fetch(cloudBase() + "/orders/" + encodeURIComponent(order.id) + ".json", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(order) }); } catch {}
+  }
+  async function cloudPatch(id, patch) {
+    if (!FIREBASE_DB_URL) return;
+    try { await fetch(cloudBase() + "/orders/" + encodeURIComponent(id) + ".json", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) }); } catch {}
+  }
+  let syncBusy = false;
+  async function syncFromCloud() {
+    if (!FIREBASE_DB_URL || syncBusy) return;
+    syncBusy = true;
+    try {
+      const res = await fetch(cloudBase() + "/orders.json");
+      if (res.ok) {
+        const data = await res.json();
+        if (data) {
+          const remote = Object.values(data);
+          const local = load();
+          const byId = new Map(local.map(o => [o.id, o]));
+          let changed = false;
+          for (const r of remote) {
+            const l = byId.get(r.id);
+            if (!l || (r.updatedAt || 0) > (l.updatedAt || 0)) { byId.set(r.id, r); changed = true; }
+          }
+          if (changed) { saveLocal([...byId.values()].sort((a, b) => b.createdAt - a.createdAt)); renderAll(); }
+        }
+        setSyncBanner(true);
+      }
+    } catch { setSyncBanner(false); }
+    syncBusy = false;
+  }
+  function setSyncBanner(ok) {
+    const b = $("#sync-banner"); if (!b) return;
+    b.textContent = FIREBASE_DB_URL
+      ? (ok ? "Live cloud dispatch connected: orders placed on a customer's phone appear on the driver phone within seconds." : "Cloud dispatch unreachable right now — running on this device's local copy until the connection returns.")
+      : "Local dispatch mode: orders sync between tabs on this device. To sync across phones, paste your free Firebase Realtime Database URL into FIREBASE_DB_URL at the top of this file's script — setup steps are in the README that came with this build.";
+  }
+  const saveOrder = o => { o.updatedAt = Date.now(); const l = load(); const i = l.findIndex(x => x.id === o.id); if (i >= 0) l[i] = o; else l.unshift(o); saveLocal(l); cloudPut(o); };
+  const update = (id, fn) => { const l = load(); const o = l.find(x => x.id === id); if (o) { fn(o); o.updatedAt = Date.now(); saveLocal(l); cloudPut(o); } renderAll(); return o; };
+  const newId = () => { const l = load(); let id; do { id = "S7-" + (1000 + Math.floor(Math.random() * 9000)); } while (l.some(o => o.id === id)); return id; };
+
+  // ---------- Maps (Leaflet, free — no API key) ----------
+  const hasL = typeof L !== "undefined";
+  function makeMap(el) {
+    if (!hasL) { el.innerHTML = '<p class="empty" style="margin:12px">Map could not load. Check your connection.</p>'; return null; }
+    const m = L.map(el, { zoomControl: true, attributionControl: true }).setView([33.72, -84.42], 11);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19, subdomains: "abcd", attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    }).addTo(m);
+    return { m, layer: L.layerGroup().addTo(m) };
+  }
+  const pinIcon = (cls, txt) => hasL && L.divIcon({ className: "", html: `<div class="pin ${cls}"><i>${txt}</i></div>`, iconSize: [28, 28], iconAnchor: [14, 28] });
+  const carIcon = () => hasL && L.divIcon({ className: "", html: '<div class="car">🚗</div>', iconSize: [30, 30], iconAnchor: [15, 15] });
+  function drawRoute(map, o) {
+    if (!map) return null;
+    const a = [o.pick.lat, o.pick.lng], b = [o.drop.lat, o.drop.lng];
+    L.polyline([a, b], { color: "#08dff2", weight: 3, opacity: .7, dashArray: "6 8" }).addTo(map.layer);
+    L.marker(a, { icon: pinIcon("a", "A") }).bindTooltip("Pickup: " + o.pickArea).addTo(map.layer);
+    L.marker(b, { icon: pinIcon("b", "B") }).bindTooltip("Drop-off: " + o.dropArea).addTo(map.layer);
+    // Real driver GPS only — no simulated car. The marker appears when the
+    // driver's phone is actually broadcasting its location.
+    if (o.driverGps && (o.status === "assigned" || o.status === "picked_up")) {
+      L.marker([o.driverGps.lat, o.driverGps.lng], { icon: carIcon(), zIndexOffset: 1000 }).bindTooltip((o.driverName || "Driver") + " · live GPS").addTo(map.layer);
+    }
+    return [a, b];
+  }
+  const maps = {};
+  function ensureMap(name) {
+    if (!maps[name]) maps[name] = makeMap($("#map-" + name));
+    else if (maps[name]) setTimeout(() => maps[name].m.invalidateSize(), 0);
+    return maps[name];
+  }
+  function etaText(o) {
+    if (o.status === "delivered") return { label: "Delivered at", value: fmtTime(o.history.at(-1).at) };
+    if (o.status === "cancelled") return { label: "Status", value: "Cancelled" };
+    if (o.status === "placed") return { label: "Status", value: o.when ? "Pickup " + new Date(o.when).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" }) : "Finding a driver" };
+    const target = o.status === "assigned" ? o.pick : o.drop;
+    if (o.driverGps) {
+      const miLeft = Math.max(miles(o.driverGps, target), 0);
+      const mins = Math.ceil(miLeft / AVG_MPH * 60 + 3);
+      const dest = o.status === "assigned" ? " (then on to you)" : "";
+      return { label: "Estimated arrival", value: miLeft < 0.2 ? "Arriving now" : "about " + mins + " min · " + fmtTime(Date.now() + mins * 60000) + dest };
+    }
+    return { label: "Status", value: o.status === "assigned" ? "Driver heading to pickup" : "On the way to you" };
+  }
+
+  // ---------- Tabs ----------
+  let current = "order";
+  function show(tab) {
+    current = tab;
+    document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === tab)));
+    document.querySelectorAll("[role=tabpanel]").forEach(p => p.hidden = p.id !== "v-" + tab);
+    try { history.replaceState(null, "", "#" + tab + (tab === "track" && trackId ? "=" + trackId : "")); } catch {}
+    renderAll();
+  }
+  document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => show(b.dataset.tab)));
+  document.querySelectorAll("[data-navtab]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); show(a.dataset.navtab); }));
+
+  // ---------- App state ----------
+  let state = {
+    surgeIdx: 0, activeStore: "touchdown", cart: [], tip: 4, promo: null,
+    driverOnline: false, gpsWatchId: null, driverCoords: null, lastGpsPush: 0,
+    wallet: parseFloat(localStorage.getItem("s7go_wallet") || "0"),
+    trips: parseInt(localStorage.getItem("s7go_trips") || "0"),
+    declined: new Set(),
+  };
+  const surge = () => RATES.surgeMultipliers[state.surgeIdx];
+
+  // ---------- Pricing ----------
+  function courierCharge(pick, drop, size, speed) {
+    const mi = Math.max(miles(pick, drop), 0.5);
+    const billed = Math.max(mi, 2);
+    const charge = billed * RATES.perMile + (RATES.sizeExtras[size] || 0) + (RATES.speedExtras[speed] || 0);
+    return { mi, charge: Math.round(charge * 100) / 100 };
+  }
+  function totals() {
+    const cart = state.cart;
+    const subtotal = cart.reduce((s, i) => s + i.price * (i.qty || 1), 0);
+    let discount = 0;
+    if (state.promo && subtotal > 0) discount = state.promo.type === "pct" ? subtotal * state.promo.val : Math.min(state.promo.val, subtotal);
+    const deliveryService = cart.length ? (RATES.baseFare + RATES.serviceFee) * surge() : 0;
+    const courierCharges = cart.filter(i => i.kind === "courier").reduce((s, i) => s + i.price, 0);
+    const maxMiles = cart.length ? Math.max(...cart.map(i => i.miles || 0)) : 0;
+    const total = Math.max(subtotal - discount, 0) + deliveryService + state.tip;
+    const driverPay = cart.length ? (deliveryService + courierCharges) * RATES.driverCutPercent + state.tip : 0;
+    return { subtotal, discount, deliveryService, total, driverPay, maxMiles };
+  }
+
+  // ---------- Storefront ----------
+  function renderStores() {
+    $("#s-stores").innerHTML = STORES.map(s => `<button type="button" class="chip" data-store="${s.id}" aria-selected="${String(s.id === state.activeStore)}">${esc(s.name)}</button>`).join("");
+    const st = storeBy(state.activeStore);
+    $("#s-menu").innerHTML = st.items.map(it => `
+      <div class="mi"><div><b>${esc(it.name)}</b><span class="d">${esc(it.desc)}</span></div>
+      <div style="text-align:right"><span class="pr">${money(it.price)}</span><br>
+      <button type="button" class="pbtn sm primary inline" data-add="${it.id}">Add</button></div></div>`).join("");
+  }
+  document.addEventListener("click", e => {
+    const chip = e.target.closest("[data-store]");
+    if (chip) { state.activeStore = chip.dataset.store; renderStores(); return; }
+    const add = e.target.closest("[data-add]");
+    if (add) {
+      const st = storeBy(state.activeStore), it = st.items.find(x => x.id === add.dataset.add);
+      const found = state.cart.find(i => i.id === it.id);
+      if (found) found.qty = (found.qty || 1) + 1;
+      else state.cart.push({ kind: "food", id: it.id, name: it.name, price: it.price, qty: 1, storeId: st.id, storeName: st.name, storeArea: st.area, miles: 0 });
+      renderCart(); toast(it.name + " added.");
+    }
+  });
+
+  // ---------- Courier form + live quote ----------
+  const fillAreas = (sel, def) => { sel.innerHTML = AREAS.map(a => `<option${a.name === def ? " selected" : ""}>${esc(a.name)}</option>`).join(""); };
+  fillAreas($("#o-pick"), "East Point"); fillAreas($("#o-drop"), "College Park"); fillAreas($("#c-droparea"), "East Point");
+  const courierVals = () => ({
+    pickArea: $("#o-pick").value, dropArea: $("#o-drop").value,
+    size: document.querySelector("input[name=size]:checked").value,
+    speed: document.querySelector("input[name=speed]:checked").value,
+  });
+  function renderQuote() {
+    const v = courierVals();
+    const pick = jitter(areaBy(v.pickArea), 1), drop = jitter(areaBy(v.dropArea), 2);
+    const q = courierCharge(pick, drop, v.size, v.speed);
+    $("#o-when-wrap").hidden = v.speed !== "scheduled";
+    $("#quote").innerHTML =
+      `<div class="row"><span>Distance</span><span>${q.mi.toFixed(1)} mi (road est.)</span></div>` +
+      `<div class="row"><span>Per-mile (${money(RATES.perMile)} × billed mi)</span><span>${money(Math.max(q.mi, 2) * RATES.perMile)}</span></div>` +
+      (RATES.sizeExtras[v.size] ? `<div class="row"><span>${esc(v.size)} package</span><span>${money(RATES.sizeExtras[v.size])}</span></div>` : "") +
+      (RATES.speedExtras[v.speed] ? `<div class="row"><span>${esc(v.speed)}</span><span>${money(RATES.speedExtras[v.speed])}</span></div>` : "") +
+      `<div class="total"><span>Courier trip</span><b>${money(q.charge)}</b></div>` +
+      `<div class="row"><span>Drive time</span><span>about ${Math.ceil(q.mi / AVG_MPH * 60 + 3)} min</span></div>`;
+    const map = ensureMap("order");
+    if (map) { map.layer.clearLayers(); const pts = drawRoute(map, { pick, drop, pickArea: v.pickArea, dropArea: v.dropArea, status: "placed" }); if (pts) map.m.fitBounds(pts, { padding: [40, 40], maxZoom: 13 }); }
+    return { v, pick, drop, q };
+  }
+  $("#courier-form").addEventListener("input", renderQuote);
+  $("#courier-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const msg = $("#o-msg"); msg.className = "pmsg err";
+    if (!$("#o-pick-addr").value.trim()) { msg.textContent = "Please add the pickup street address."; $("#o-pick-addr").focus(); return; }
+    if (!$("#o-drop-addr").value.trim()) { msg.textContent = "Please add the drop-off street address."; $("#o-drop-addr").focus(); return; }
+    const { v, q } = renderQuote();
+    if (v.speed === "scheduled" && !$("#o-when").value) { msg.textContent = "Pick a pickup time."; $("#o-when").focus(); return; }
+    state.cart.push({
+      kind: "courier", id: "cx-" + Date.now(), name: "s7Go Express Courier (" + v.size + ", " + v.speed + ")",
+      price: q.charge, qty: 1, miles: q.mi, size: v.size, speed: v.speed,
+      pickArea: v.pickArea, pickAddr: $("#o-pick-addr").value.trim(),
+      dropArea: v.dropArea, dropAddr: $("#o-drop-addr").value.trim(),
+      notes: $("#o-notes").value.trim(), when: v.speed === "scheduled" ? $("#o-when").value : "",
+    });
+    msg.className = "pmsg ok"; msg.textContent = "Courier trip added to your order below.";
+    renderCart(); toast("Courier trip added — finish checkout on the right.");
+  });
+
+  // ---------- Cart / checkout ----------
+  function renderCart() {
+    state.tip = parseFloat(document.querySelector("input[name=tip]:checked")?.value || 4);
+    const list = $("#cart-list");
+    list.innerHTML = state.cart.length ? state.cart.map((i, ix) => `
+      <li class="order"><div class="l1"><span>${esc(i.name)}${i.qty > 1 ? " × " + i.qty : ""}</span><span class="price">${money(i.price * (i.qty || 1))}</span></div>
+      <div class="l2">${i.kind === "courier" ? esc(i.pickArea) + " → " + esc(i.dropArea) + " · " + i.miles.toFixed(1) + " mi" : "From " + esc(i.storeName)}</div>
+      <div class="acts"><button type="button" class="pbtn sm ghost" data-remove="${ix}">Remove</button></div></li>`).join("")
+      : '<li class="empty">Your cart is empty. Add food from a local spot, or a courier trip.</li>';
+    const t = totals();
+    $("#totals").innerHTML =
+      `<div class="row"><span>Subtotal</span><span>${money(t.subtotal)}</span></div>` +
+      (t.discount ? `<div class="row"><span>Promo ${esc(state.promo.code)}</span><span>-${money(t.discount)}</span></div>` : "") +
+      `<div class="row"><span>Delivery + service (${surge().toFixed(2)}x surge)</span><span>${money(t.deliveryService)}</span></div>` +
+      `<div class="row"><span>Driver tip</span><span>${money(state.tip)}</span></div>` +
+      `<div class="total"><span>Total due</span><b>${money(t.total)}</b></div>` +
+      `<div class="row"><span>Driver earns on this order</span><span>${money(t.driverPay)}</span></div>`;
+  }
+  document.addEventListener("click", e => {
+    const rm = e.target.closest("[data-remove]");
+    if (rm) { state.cart.splice(parseInt(rm.dataset.remove), 1); renderCart(); }
+  });
+  $("#cart-clear").addEventListener("click", () => { state.cart = []; state.promo = null; $("#promo-msg").textContent = ""; renderCart(); });
+  $("#c-tip").addEventListener("change", renderCart);
+  $("#promo-btn").addEventListener("click", () => {
+    const code = $("#c-promo").value.trim().toUpperCase(), msg = $("#promo-msg");
+    if (code === "S7GO20") { state.promo = { code, type: "pct", val: 0.20 }; msg.className = "pmsg ok"; msg.textContent = "S7GO20 applied: 20% off your subtotal."; }
+    else if (code === "ATL5") { state.promo = { code, type: "flat", val: 5.00 }; msg.className = "pmsg ok"; msg.textContent = "ATL5 applied: $5.00 off."; }
+    else { state.promo = null; msg.className = "pmsg err"; msg.textContent = "That code doesn't work. Try S7GO20 or ATL5."; }
+    renderCart();
+  });
+  $("#surge-btn").addEventListener("click", () => {
+    state.surgeIdx = (state.surgeIdx + 1) % RATES.surgeMultipliers.length;
+    $("#surge-label").textContent = SURGE_LABELS[state.surgeIdx];
+    renderCart(); renderQuote();
+  });
+  $("#pay-cashapp-handle").textContent = RATES.cashAppTag;
+  $("#pay-zelle-handle").textContent = RATES.zelleHandle;
+
+  $("#place-btn").addEventListener("click", () => {
+    const msg = $("#c-msg"); msg.className = "pmsg err";
+    if (!state.cart.length) { msg.textContent = "Your cart is empty — add food or a courier trip first."; return; }
+    const name = $("#c-name").value.trim(), phone = $("#c-phone").value.trim();
+    if (!name) { msg.textContent = "Please add your name."; $("#c-name").focus(); return; }
+    if (phone.replace(/\D/g, "").length < 10) { msg.textContent = "Please enter a 10-digit phone number."; $("#c-phone").focus(); return; }
+    const first = state.cart[0];
+    const courierItem = state.cart.find(i => i.kind === "courier");
+    // Origin: courier pickup if there's a courier trip, else the first store.
+    const pickArea = courierItem ? courierItem.pickArea : first.storeArea;
+    const pickAddr = courierItem ? courierItem.pickAddr : first.storeName + " (" + first.storeArea + ", GA)";
+    // Destination: the delivery fields, falling back to the courier trip's
+    // drop-off when a mixed cart left the delivery address blank.
+    const useCourierDrop = !!courierItem && (state.cart.length === 1 || !$("#c-dropaddr").value.trim());
+    const dropArea = useCourierDrop ? courierItem.dropArea : $("#c-droparea").value;
+    const dropAddr = useCourierDrop ? courierItem.dropAddr : $("#c-dropaddr").value.trim();
+    if (!dropAddr) { msg.textContent = "Please add the delivery address."; $("#c-dropaddr").focus(); return; }
+    const pick = jitter(areaBy(pickArea), 3), drop = jitter(areaBy(dropArea), 4);
+    // Food miles: store -> drop-off. Courier miles were set when the trip was added.
+    state.cart.forEach(i => { if (i.kind === "food") i.miles = Math.max(miles(jitter(areaBy(i.storeArea), 3), drop), 0.5); });
+    const t = totals();
+    const payKey = document.querySelector("input[name=pay]:checked").value;
+    const payText = payKey === "cashapp" ? "Cash App (" + RATES.cashAppTag + ")" : payKey === "zelle" ? "Zelle (" + RATES.zelleHandle + ")" : PAYLABEL[payKey];
+    const o = {
+      id: newId(), kind: state.cart.some(i => i.kind === "courier") ? "courier+food" : "food",
+      items: state.cart.map(i => ({ name: i.name, qty: i.qty || 1, price: i.price })),
+      itemsSummary: state.cart.map(i => i.name + (i.qty > 1 ? " × " + i.qty : "")).join(", "),
+      storeName: first.storeName || "s7Go Express Courier",
+      pickArea, pickAddr, dropArea, dropAddr, pick, drop,
+      name, phone, notes: courierItem ? courierItem.notes || "" : "", when: courierItem ? courierItem.when || "" : "",
+      miles: t.maxMiles, subtotal: t.subtotal, discount: t.discount, deliveryService: t.deliveryService,
+      tip: state.tip, total: Math.round(t.total * 100) / 100, driverPay: Math.round(t.driverPay * 100) / 100,
+      promo: state.promo ? state.promo.code : "", paymentMethod: payText, surge: surge(),
+      pin: String(Math.floor(1000 + Math.random() * 9000)),
+      driver: null, driverName: null, driverGps: null,
+      status: "placed", history: [{ status: "placed", at: Date.now() }], createdAt: Date.now(), updatedAt: Date.now(),
+    };
+    saveOrder(o);
+    try { localStorage.setItem("s7go_my_order_id", o.id); } catch {}
+    state.cart = []; state.promo = null; renderCart();
+    msg.className = "pmsg ok"; msg.textContent = "";
+    toast("Order " + o.id + " sent to dispatch! Your door PIN is " + o.pin);
+    trackId = o.id; $("#t-id").value = o.id; show("track");
+  });
+
+  // ---------- Track ----------
+  let trackId = "";
+  try { trackId = localStorage.getItem("s7go_my_order_id") || ""; if (trackId) $("#t-id").value = trackId; } catch {}
+  $("#track-form").addEventListener("submit", e => { e.preventDefault(); trackId = $("#t-id").value.trim().toUpperCase(); if (trackId && !trackId.startsWith("S7-")) trackId = "S7-" + trackId.replace(/\D/g, ""); show("track"); });
+  let trackFitFor = "";
+  function renderTrack() {
+    const out = $("#track-out"), msg = $("#t-msg");
+    if (!trackId) { out.hidden = true; msg.className = "pmsg"; msg.textContent = "Enter the tracking number from your confirmation."; return; }
+    const o = load().find(x => x.id === trackId);
+    if (!o) { out.hidden = true; msg.className = "pmsg err"; msg.textContent = "No order found for " + trackId + "."; return; }
+    msg.textContent = ""; out.hidden = false;
+    $("#t-title").textContent = o.id;
+    const pill = $("#t-pill"); pill.className = "pill " + PILL[o.status]; pill.textContent = SHORT[o.status];
+    $("#t-route").textContent = o.pickArea + " → " + o.dropArea + " · " + o.miles.toFixed(1) + " mi · " + money(o.total) + " · " + o.paymentMethod;
+    $("#t-pin").textContent = o.status === "delivered" ? "✓" : o.pin;
+    const eta = etaText(o); $("#t-eta-label").textContent = eta.label; $("#t-eta").textContent = eta.value;
+    $("#t-driver").textContent = o.driverName ? "Driver: " + o.driverName : "";
+    $("#t-gps").innerHTML = o.driverGps
+      ? "Driver GPS live · updated " + fmtTime(o.driverGps.updatedAt) + ' · <a target="_blank" rel="noopener" href="https://www.google.com/maps?q=' + o.driverGps.lat + "," + o.driverGps.lng + '">Open in Google Maps</a>'
+      : (o.status === "assigned" || o.status === "picked_up") ? "Waiting for the driver's phone GPS…" : "";
+    const steps = o.status === "cancelled" ? o.history.map(h => h.status) : FLOW;
+    const idx = steps.indexOf(o.status);
+    $("#t-steps").innerHTML = steps.map((s, i) => {
+      const h = o.history.find(x => x.status === s);
+      const cls = i < idx || o.status === "delivered" ? "done" : i === idx ? "now" : "";
+      return `<li class="${cls}">${esc(LABEL[s])}${h ? `<time>${fmtTime(h.at)}${s === "delivered" && o.pod ? " · " + esc(o.pod) : ""}</time>` : ""}</li>`;
+    }).join("");
+    const map = ensureMap("track");
+    if (map) {
+      map.layer.clearLayers(); const pts = drawRoute(map, o);
+      if (pts && trackFitFor !== o.id) { map.m.fitBounds(pts, { padding: [40, 40], maxZoom: 14 }); trackFitFor = o.id; }
+    }
+  }
+
+  // ---------- Driver mode: real phone GPS + wallet ----------
+  $("#d-who-line").textContent = "Signed in as " + ACTIVE_DRIVER.name + " · " + ACTIVE_DRIVER.vehicle + " · " + ACTIVE_DRIVER.zone + " (edit ACTIVE_DRIVER at the top of the script).";
+  function setDriverUI() {
+    $("#d-status").textContent = state.driverOnline ? "Online" : "Offline";
+    $("#d-status").className = "pill " + (state.driverOnline ? "ok" : "");
+    $("#d-toggle").textContent = state.driverOnline ? "Go offline" : "Go online";
+    $("#d-wallet").textContent = money(state.wallet);
+    $("#d-trips").textContent = state.trips;
+    const l = load();
+    $("#d-open-count").textContent = l.filter(o => o.status === "placed").length;
+    $("#d-active-count").textContent = l.filter(o => o.driver === ACTIVE_DRIVER.id && (o.status === "assigned" || o.status === "picked_up")).length;
+  }
+  function pushGpsToJobs() {
+    if (!state.driverCoords) return;
+    const l = load(); let changed = false;
+    for (const o of l) {
+      if (o.driver === ACTIVE_DRIVER.id && (o.status === "assigned" || o.status === "picked_up")) {
+        o.driverGps = state.driverCoords; o.updatedAt = Date.now(); changed = true;
+        cloudPatch(o.id, { driverGps: state.driverCoords, updatedAt: o.updatedAt });
+      }
+    }
+    if (changed) saveLocal(l);
+  }
+  function startGps() {
+    if (!("geolocation" in navigator)) { $("#d-gps").textContent = "GPS: this browser doesn't support location sharing."; return; }
+    state.gpsWatchId = navigator.geolocation.watchPosition(
+      pos => {
+        state.driverCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude, updatedAt: Date.now() };
+        $("#d-gps").textContent = "GPS broadcasting live: " + pos.coords.latitude.toFixed(5) + ", " + pos.coords.longitude.toFixed(5) + " · updated " + fmtTime(Date.now());
+        if (Date.now() - state.lastGpsPush > 5000) { state.lastGpsPush = Date.now(); pushGpsToJobs(); if (current !== "order") renderAll(); }
+      },
+      () => { $("#d-gps").textContent = "GPS: location permission was denied. Turn on Location Services for your browser, then go offline and online again."; },
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+    );
+  }
+  function stopGps() {
+    if (state.gpsWatchId !== null) { navigator.geolocation.clearWatch(state.gpsWatchId); state.gpsWatchId = null; }
+    state.driverCoords = null;
+    $("#d-gps").textContent = "GPS: not broadcasting. Go online to share your real phone location with your customer.";
+  }
+  $("#d-toggle").addEventListener("click", () => {
+    state.driverOnline = !state.driverOnline;
+    if (state.driverOnline) { startGps(); toast("You're online. New offers will show below."); }
+    else stopGps();
+    setDriverUI(); renderAll();
+  });
+
+  const orderCard = (o, acts, extra = "") => `<li class="order">
+    <div class="l1"><span>${esc(o.id)} · ${esc(o.pickArea)} → ${esc(o.dropArea)}</span><span class="price">${money(o.total)}</span></div>
+    <div class="l2"><span class="pill ${PILL[o.status]}">${SHORT[o.status]}</span> ${esc(o.itemsSummary || "")} · ${o.miles.toFixed(1)} mi</div>
+    ${extra}${acts ? `<div class="acts">${acts}</div>` : ""}</li>`;
+
+  function renderDriver() {
+    setDriverUI();
+    const l = load();
+    const mine = l.filter(o => o.driver === ACTIVE_DRIVER.id && (o.status === "assigned" || o.status === "picked_up"));
+    $("#d-mine").innerHTML = mine.length ? mine.map(o => {
+      const stop = o.status === "assigned" ? `<b>Pickup:</b> ${esc(o.pickAddr)}, ${esc(o.pickArea)}` : `<b>Drop-off:</b> ${esc(o.dropAddr)}, ${esc(o.dropArea)}`;
+      const nav = o.status === "assigned" ? o.pickAddr + ", " + o.pickArea + ", GA" : o.dropAddr + ", " + o.dropArea + ", GA";
+      const extra = `<div class="l2" style="margin-top:6px">${stop}</div><div class="l2">Customer: ${esc(o.name)} · <a href="tel:${esc(o.phone.replace(/[^\d+]/g, ""))}">${esc(o.phone)}</a> · Pay: ${money(o.driverPay)} · ${esc(o.paymentMethod)}</div>${o.notes ? `<div class="l2">Note: ${esc(o.notes)}</div>` : ""}`;
+      const acts = `<a class="pbtn sm" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(nav)}">Navigate</a>` +
+        (o.status === "assigned"
+          ? `<button class="pbtn sm primary inline" data-act="pickup" data-id="${o.id}">Mark picked up</button>`
+          : `<input class="pin-in" id="pin-${o.id}" inputmode="numeric" maxlength="4" placeholder="Door PIN" aria-label="Customer PIN for ${o.id}"><button class="pbtn sm primary inline" data-act="deliver" data-id="${o.id}">Verify PIN &amp; complete</button>`);
+      return orderCard(o, acts, extra);
+    }).join("") : '<li class="empty">No active jobs. Accept an offer to get rolling.</li>';
+    const open = l.filter(o => o.status === "placed" && !state.declined.has(o.id));
+    $("#d-open").innerHTML = open.length ? open.map(o => {
+      const perMi = o.miles > 0 ? money(o.driverPay / o.miles) + "/mi" : "—";
+      const extra = `<div class="l2" style="margin-top:6px"><b style="color:var(--ok)">Guaranteed pay ${money(o.driverPay)}</b> · ${o.miles.toFixed(1)} mi · ${perMi} · ${esc(o.paymentMethod)}</div>`;
+      const acts = state.driverOnline
+        ? `<button class="pbtn sm primary inline" data-act="accept" data-id="${o.id}">Accept</button><button class="pbtn sm ghost" data-act="decline" data-id="${o.id}">Decline</button>`
+        : `<span class="muted small">Go online to accept offers.</span>`;
+      return orderCard(o, acts, extra);
+    }).join("") : '<li class="empty">No open offers right now.</li>';
+  }
+
+  const advance = (id, status, patch = {}) => update(id, o => { Object.assign(o, patch); o.status = status; o.history.push({ status, at: Date.now() }); });
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const id = b.dataset.id, act = b.dataset.act;
+    if (act === "accept" || act === "assign") { advance(id, "assigned", { driver: ACTIVE_DRIVER.id, driverName: ACTIVE_DRIVER.name }); toast(id + " accepted. Head to pickup."); }
+    if (act === "decline") { state.declined.add(id); renderAll(); }
+    if (act === "pickup") { advance(id, "picked_up"); pushGpsToJobs(); toast(id + " picked up."); }
+    if (act === "deliver") {
+      const o = load().find(x => x.id === id); if (!o) return;
+      const entered = (document.getElementById("pin-" + id)?.value || "").trim();
+      if (entered !== o.pin) { toast("That PIN doesn't match " + id + ". Ask the customer for their 4-digit door PIN."); return; }
+      advance(id, "delivered", { pod: "PIN verified at the door" });
+      state.wallet += o.driverPay; state.trips += 1;
+      try { localStorage.setItem("s7go_wallet", state.wallet.toFixed(2)); localStorage.setItem("s7go_trips", String(state.trips)); } catch {}
+      toast(id + " delivered! +" + money(o.driverPay) + " added to your wallet.");
+      renderAll();
+    }
+    if (act === "cancel" && confirm("Cancel " + id + "?")) advance(id, "cancelled");
+    if (act === "track") { trackId = id; $("#t-id").value = id; show("track"); }
+  });
+
+  // ---------- Dispatch ----------
+  $("#x-filter").addEventListener("change", renderAll);
+  $("#x-clear").addEventListener("click", () => { if (confirm("Delete every order saved on this device?")) { saveLocal([]); renderAll(); } });
+  $("#x-seed").addEventListener("click", () => {
+    const specs = [
+      { pickArea: "East Point", dropArea: "Midtown", summary: "10 Pc Honey Hot Wings Combo", kind: "food" },
+      { pickArea: "Decatur", dropArea: "Grant Park", summary: "s7Go Express Courier (medium, standard)", kind: "courier" },
+      { pickArea: "West Midtown", dropArea: "Sandy Springs", summary: "s7Go Express Courier (large, standard)", kind: "courier" },
+      { pickArea: "East Point", dropArea: "East Point", summary: "Smothered Pork Chops Plate", kind: "food" },
+    ];
+    const names = ["Taylor B.", "Chris M.", "Dana K.", "Sam P."];
+    const now = Date.now(), l = load();
+    specs.forEach((sp, i) => {
+      const pick = jitter(areaBy(sp.pickArea), i + 3), drop = jitter(areaBy(sp.dropArea), i + 9);
+      const mi = Math.max(miles(pick, drop), 0.5);
+      const total = Math.round((14 + mi * RATES.perMile + RATES.serviceFee) * 100) / 100;
+      const o = { id: newId(), kind: sp.kind, items: [{ name: sp.summary, qty: 1, price: total }], itemsSummary: sp.summary, storeName: sp.kind === "food" ? "Local spot" : "s7Go Express Courier",
+        pickArea: sp.pickArea, pickAddr: (100 + i * 37) + " Sample St", dropArea: sp.dropArea, dropAddr: (20 + i * 11) + " Example Ave", pick, drop,
+        name: names[i], phone: "(404) 555-01" + (10 + i), notes: "", when: "", miles: mi, subtotal: total, discount: 0, deliveryService: RATES.baseFare + RATES.serviceFee,
+        tip: 4, total, driverPay: Math.round(((RATES.baseFare + RATES.serviceFee) * RATES.driverCutPercent + 4) * 100) / 100, promo: "", paymentMethod: "Cash on delivery", surge: 1,
+        pin: String(1000 + i * 111), driver: null, driverName: null, driverGps: null, status: "placed",
+        history: [{ status: "placed", at: now - (4 - i) * 60000 }], createdAt: now - (4 - i) * 60000, updatedAt: now };
+      if (i === 1) { o.driver = ACTIVE_DRIVER.id; o.driverName = ACTIVE_DRIVER.name; o.status = "picked_up"; o.history.push({ status: "assigned", at: now - 120000 }, { status: "picked_up", at: now - 20000 }); }
+      if (i === 2) { o.driver = ACTIVE_DRIVER.id; o.driverName = ACTIVE_DRIVER.name; o.status = "assigned"; o.history.push({ status: "assigned", at: now - 15000 }); }
+      l.unshift(o); cloudPut(o);
+    });
+    saveLocal(l); renderAll(); toast("Added 4 sample orders.");
+  });
+  function renderDispatch() {
+    const l = load(), f = $("#x-filter").value;
+    const today = new Date().toDateString();
+    const active = l.filter(o => o.status === "assigned" || o.status === "picked_up");
+    const doneToday = l.filter(o => o.status === "delivered" && new Date(o.history.at(-1).at).toDateString() === today);
+    $("#x-stats").innerHTML = [
+      [l.filter(o => o.status === "placed").length, "Need a driver"], [active.length, "On the road"],
+      [doneToday.length, "Delivered today"], [money(doneToday.reduce((s, o) => s + o.total, 0)), "Revenue today"],
+    ].map(([n, k]) => `<div class="stat"><b>${n}</b><span>${k}</span></div>`).join("");
+    const shown = l.filter(o => f === "all" ? true : f === "active" ? active.includes(o) : o.status === f);
+    $("#x-list").innerHTML = shown.length ? shown.map(o => {
+      let acts = `<button class="pbtn sm" data-act="track" data-id="${o.id}">Track</button>`;
+      if (o.status === "placed") acts = `<button class="pbtn sm primary inline" data-act="assign" data-id="${o.id}">Assign to ${esc(ACTIVE_DRIVER.name)}</button>` + acts;
+      if (o.status !== "delivered" && o.status !== "cancelled") acts += `<button class="pbtn sm ghost" data-act="cancel" data-id="${o.id}">Cancel</button>`;
+      const extra = `<div class="l2">${esc(o.name)} · ${esc(o.phone)}${o.driverName ? " · Driver: " + esc(o.driverName) : ""} · booked ${fmtTime(o.history[0].at)} · PIN ${esc(o.pin)}</div>`;
+      return orderCard(o, acts, extra);
+    }).join("") : '<li class="empty">No orders yet. Place one on the Order tab, or add sample orders.</li>';
+    const map = ensureMap("dispatch");
+    if (map) { map.layer.clearLayers(); l.filter(o => o.status !== "delivered" && o.status !== "cancelled").forEach(o => drawRoute(map, o)); }
+  }
+
+  // ---------- Loop / init ----------
+  function renderAll() {
+    if (current === "order") { renderQuote(); renderCart(); }
+    if (current === "track") renderTrack();
+    if (current === "driver") renderDriver();
+    if (current === "dispatch") renderDispatch();
+  }
+  setInterval(syncFromCloud, 3000);
+  setInterval(() => { if (current === "track" || current === "dispatch") renderAll(); }, 5000);
+  window.addEventListener("storage", e => { if (e.key === KEY) renderAll(); });
+
+  renderStores(); renderCart(); setSyncBanner(false); syncFromCloud();
+  const h = location.hash.slice(1);
+  if (h.startsWith("track=")) { trackId = decodeURIComponent(h.slice(6)); $("#t-id").value = trackId; show("track"); }
+  else show(["order", "track", "driver", "dispatch"].includes(h) ? h : "order");
+})();
+</script>
+</body>
+</html>
