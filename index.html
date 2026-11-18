@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="s7Go">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#070a10">
 <title>s7Go | Local Delivery &amp; Courier — Atlanta &amp; East Point</title>
 <meta name="description" content="s7Go by S7 Global: order local food or book an express courier in metro Atlanta, track your driver live, or drive and earn.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -170,6 +172,11 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
 .car{width:30px;height:30px;border-radius:50%;background:var(--ok);border:3px solid #070a10;display:grid;place-items:center;font-size:15px;box-shadow:0 0 0 6px #52d69a33}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--cyan);color:var(--text);padding:12px 18px;border-radius:12px;z-index:1000;font-weight:700;max-width:calc(100% - 32px);text-align:center}
 .surgebar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.podwrap{position:fixed;inset:0;z-index:1200;background:#000d;padding:16px;overflow-y:auto}
+.podcard{max-width:480px;margin:24px auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+#pod-sig{width:100%;height:160px;background:#fff;border-radius:12px;touch-action:none;display:block}
+#pod-photo-preview{width:100%;border-radius:12px;margin-top:8px}
+.share-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 </style>
 </head>
 <body>
@@ -207,6 +214,27 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
     <p class="pmsg" id="rs-msg" role="status"></p>
   </div>
 </dialog>
+
+<div class="podwrap" id="pod-modal" hidden>
+  <div class="podcard">
+    <div class="phead"><h2>Proof of delivery</h2><span class="pill cy" id="pod-order-label"></span></div>
+    <p class="muted small" style="margin:0">PIN verified. Add a photo and the recipient's signature to finish this drop-off.<span id="pod-required-note"></span></p>
+    <label for="pod-photo">Delivery photo (rear camera)</label>
+    <input type="file" id="pod-photo" accept="image/*" capture="environment">
+    <img id="pod-photo-preview" alt="Delivery photo preview" hidden>
+    <label>Recipient signature</label>
+    <canvas id="pod-sig" width="440" height="160"></canvas>
+    <div class="prow"><button class="pbtn sm" type="button" id="pod-sig-clear">Clear signature</button></div>
+    <label for="pod-name">Recipient name</label>
+    <input id="pod-name" placeholder="Who received it?" autocomplete="off">
+    <p class="pmsg" id="pod-msg" role="status"></p>
+    <div class="prow">
+      <button class="pbtn primary inline" type="button" id="pod-confirm">Complete delivery</button>
+      <button class="pbtn" type="button" id="pod-skip">Skip proof</button>
+      <button class="pbtn ghost" type="button" id="pod-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <main class="pwrap">
   <p class="eyebrow">s7Go · East Point &amp; Metro Atlanta</p>
@@ -334,6 +362,10 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
         <p class="eta" id="t-eta">--</p>
         <p class="muted small" id="t-driver" style="margin:4px 0 0"></p>
         <p class="muted small" id="t-gps" style="margin:4px 0 0"></p>
+        <div class="share-row" id="t-share" hidden>
+          <a class="pbtn sm" id="t-share-sms" href="#">Text tracking link</a>
+          <a class="pbtn sm" id="t-share-wa" href="#" target="_blank" rel="noopener">WhatsApp tracking link</a>
+        </div>
         <ol class="steps" id="t-steps"></ol>
       </div>
       <div class="pcard">
@@ -356,6 +388,7 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
       </div>
       <button class="pbtn primary" id="d-toggle" type="button">Go online</button>
       <p class="muted small" id="d-gps" style="margin:10px 0 0">GPS: not broadcasting. Go online to share your real phone location with your customer.</p>
+      <button class="pbtn" type="button" id="d-ledger" style="width:100%;margin-top:10px">Export earnings &amp; mileage CSV (tax ledger)</button>
     </div>
     <div class="grid2">
       <div class="pcard"><h2>My active jobs</h2><ul class="olist" id="d-mine"></ul></div>
@@ -375,6 +408,43 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
       <div class="stats" id="x-stats"></div>
       <div class="map" id="map-dispatch"></div>
     </div>
+    <form class="pcard" id="sd-form">
+      <div class="phead"><h2>Store dispatch</h2><span class="pill cy">Merchant mode</span></div>
+      <p class="muted small" style="margin:0">A store sends a delivery straight to the driver board — no cart, no checkout. Catering and medical runs add chain-of-custody proof at drop-off.</p>
+      <label for="sd-store">Store</label>
+      <select id="sd-store"><option value="">Custom store / walk-in</option></select>
+      <label for="sd-store-name">Store name</label>
+      <input id="sd-store-name" placeholder="Touchdown Wings">
+      <div class="grid2" style="gap:10px">
+        <div><label for="sd-pick">Pickup area</label><select id="sd-pick"></select></div>
+        <div><label for="sd-drop">Drop-off area</label><select id="sd-drop"></select></div>
+      </div>
+      <label for="sd-pick-addr">Pickup street address</label>
+      <input id="sd-pick-addr" placeholder="Store address">
+      <label for="sd-drop-addr">Drop-off street address</label>
+      <input id="sd-drop-addr" placeholder="Customer address">
+      <div class="grid2" style="gap:10px">
+        <div><label for="sd-cust">Customer name</label><input id="sd-cust" autocomplete="off"></div>
+        <div><label for="sd-phone">Customer phone</label><input id="sd-phone" type="tel" autocomplete="off"></div>
+      </div>
+      <label for="sd-details">What's being delivered</label>
+      <input id="sd-details" placeholder="2 large wings orders, 1 drink">
+      <label>Service tier</label>
+      <div class="seg" id="sd-tier">
+        <label><input type="radio" name="sdtier" value="standard" checked><span>Standard<small>Regular drop-off</small></span></label>
+        <label><input type="radio" name="sdtier" value="catering"><span>Catering White-Glove<small>+$15 · photo + signature</small></span></label>
+        <label><input type="radio" name="sdtier" value="medical"><span>Medical Chain-of-Custody<small>+$25 · proof required</small></span></label>
+      </div>
+      <label>Package size</label>
+      <div class="seg" id="sd-size">
+        <label><input type="radio" name="sdsize" value="small" checked><span>Small<small>+$0</small></span></label>
+        <label><input type="radio" name="sdsize" value="medium"><span>Medium<small>+$3</small></span></label>
+        <label><input type="radio" name="sdsize" value="large"><span>Large<small>+$6</small></span></label>
+      </div>
+      <div class="quote" id="sd-quote"></div>
+      <button class="pbtn primary" type="submit">Send dispatch to drivers</button>
+      <p class="pmsg" id="sd-msg" role="status"></p>
+    </form>
     <div class="pcard">
       <div class="phead"><h2>All orders</h2>
         <select id="x-filter" aria-label="Filter orders" style="width:auto">
@@ -522,6 +592,14 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
   const ACTIVE_DRIVER = { id: "driver-1", name: "S7 Dispatch Lead", vehicle: "S7 Go Fleet Vehicle", zone: "East Point / Atlanta" };
 
   const SURGE_LABELS = ["Standard demand · 1.0x", "Busy rush · 1.25x surge", "Peak · 1.5x surge"];
+
+  // Store-dispatch service tiers (merchant mode). Catering and medical runs
+  // are chain-of-custody: proof of delivery (photo + signature) is required.
+  const DISPATCH_TIERS = {
+    standard: { label: "Standard", fee: 0 },
+    catering: { label: "Catering White-Glove", fee: 15 },
+    medical: { label: "Medical Chain-of-Custody", fee: 25 },
+  };
   const ROAD_FACTOR = 1.3, AVG_MPH = 24;
 
   const AREAS = [
@@ -865,10 +943,15 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
   let trackFitFor = "";
   function renderTrack() {
     const out = $("#track-out"), msg = $("#t-msg");
-    if (!trackId) { out.hidden = true; msg.className = "pmsg"; msg.textContent = "Enter the tracking number from your confirmation."; return; }
+    if (!trackId) { out.hidden = true; $("#t-share").hidden = true; msg.className = "pmsg"; msg.textContent = "Enter the tracking number from your confirmation."; return; }
     const o = load().find(x => x.id === trackId);
-    if (!o) { out.hidden = true; msg.className = "pmsg err"; msg.textContent = "No order found for " + trackId + "."; return; }
+    if (!o) { out.hidden = true; $("#t-share").hidden = true; msg.className = "pmsg err"; msg.textContent = "No order found for " + trackId + "."; return; }
     msg.textContent = ""; out.hidden = false;
+    const shareUrl = location.origin + location.pathname + "?order=" + o.id + "#track=" + o.id;
+    const shareMsg = "s7Go delivery update\nOrder " + o.id + " · " + o.storeName + "\nStatus: " + LABEL[o.status] + "\nPIN: " + o.pin + "\nTrack live: " + shareUrl;
+    $("#t-share").hidden = false;
+    $("#t-share-sms").href = "sms:?&body=" + encodeURIComponent(shareMsg);
+    $("#t-share-wa").href = "https://wa.me/?text=" + encodeURIComponent(shareMsg);
     $("#t-title").textContent = o.id;
     const pill = $("#t-pill"); pill.className = "pill " + PILL[o.status]; pill.textContent = SHORT[o.status];
     $("#t-route").textContent = o.pickArea + " → " + o.dropArea + " · " + o.miles.toFixed(1) + " mi · " + money(o.total) + " · " + o.paymentMethod;
@@ -941,7 +1024,7 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
 
   const orderCard = (o, acts, extra = "") => `<li class="order">
     <div class="l1"><span>${esc(o.id)} · ${esc(o.pickArea)} → ${esc(o.dropArea)}</span><span class="price">${money(o.total)}</span></div>
-    <div class="l2"><span class="pill ${PILL[o.status]}">${SHORT[o.status]}</span> ${esc(o.itemsSummary || "")} · ${o.miles.toFixed(1)} mi</div>
+    <div class="l2"><span class="pill ${PILL[o.status]}">${SHORT[o.status]}</span> ${esc(o.itemsSummary || "")} · ${o.miles.toFixed(1)} mi${o.tierLabel ? " · " + esc(o.tierLabel) : ""}</div>
     ${extra}${acts ? `<div class="acts">${acts}</div>` : ""}</li>`;
 
   function renderDriver() {
@@ -967,6 +1050,130 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
         : `<span class="muted small">Go online to accept offers.</span>`;
       return orderCard(o, acts, extra);
     }).join("") : '<li class="empty">No open offers right now.</li>';
+    checkNewOrderAlerts(l);
+  }
+
+  // ---------- Proof of delivery: photo + signature (upgrade set) ----------
+  let podFor = null, podPhotoData = "", podSigDrawn = false, podDrawing = false;
+  const podCanvas = $("#pod-sig");
+  const podCtx = (() => { try { const c = podCanvas.getContext("2d"); if (c) { c.lineWidth = 3; c.lineCap = "round"; c.strokeStyle = "#111"; } return c; } catch { return null; } })();
+  function podPos(e) { const r = podCanvas.getBoundingClientRect(); return { x: (e.clientX - r.left) * (podCanvas.width / (r.width || 1)), y: (e.clientY - r.top) * (podCanvas.height / (r.height || 1)) }; }
+  podCanvas.addEventListener("pointerdown", e => { if (!podCtx) { podSigDrawn = true; return; } podDrawing = true; podSigDrawn = true; const p = podPos(e); podCtx.beginPath(); podCtx.moveTo(p.x, p.y); try { podCanvas.setPointerCapture(e.pointerId); } catch {} });
+  podCanvas.addEventListener("pointermove", e => { if (!podDrawing || !podCtx) return; const p = podPos(e); podCtx.lineTo(p.x, p.y); podCtx.stroke(); });
+  window.addEventListener("pointerup", () => { podDrawing = false; });
+  $("#pod-sig-clear").addEventListener("click", () => { if (podCtx) podCtx.clearRect(0, 0, podCanvas.width, podCanvas.height); podSigDrawn = false; });
+  $("#pod-photo").addEventListener("change", e => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const max = 800, sc = Math.min(1, max / Math.max(img.width, img.height));
+        const cv = document.createElement("canvas"); cv.width = Math.max(1, Math.round(img.width * sc)); cv.height = Math.max(1, Math.round(img.height * sc));
+        cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+        podPhotoData = cv.toDataURL("image/jpeg", 0.72);
+      } catch { podPhotoData = ""; }
+      if (podPhotoData) { const pv = $("#pod-photo-preview"); pv.src = podPhotoData; pv.hidden = false; }
+      try { URL.revokeObjectURL(img.src); } catch {}
+    };
+    try { img.src = URL.createObjectURL(f); } catch {}
+  });
+  function openPod(id) {
+    const o = load().find(x => x.id === id); if (!o) return;
+    podFor = id; podPhotoData = ""; podSigDrawn = false;
+    if (podCtx) podCtx.clearRect(0, 0, podCanvas.width, podCanvas.height);
+    $("#pod-photo").value = ""; $("#pod-photo-preview").hidden = true; $("#pod-name").value = ""; $("#pod-msg").textContent = "";
+    $("#pod-order-label").textContent = id;
+    $("#pod-required-note").textContent = o.custody
+      ? " This is a " + (o.tierLabel || "chain-of-custody") + " run: photo and signature are required."
+      : " Optional on standard runs — tap Skip proof to finish with the PIN only.";
+    $("#pod-skip").hidden = !!o.custody;
+    $("#pod-modal").hidden = false;
+  }
+  function closePod() { $("#pod-modal").hidden = true; podFor = null; }
+  $("#pod-cancel").addEventListener("click", closePod);
+  $("#pod-skip").addEventListener("click", () => { if (podFor) completeDelivery(podFor, null); });
+  $("#pod-confirm").addEventListener("click", () => {
+    if (!podFor) return;
+    const o = load().find(x => x.id === podFor); if (!o) { closePod(); return; }
+    const msg = $("#pod-msg"); msg.className = "pmsg err";
+    if (o.custody && (!podPhotoData || !podSigDrawn)) { msg.textContent = "Chain-of-custody runs need both a delivery photo and a signature."; return; }
+    let sigData = null;
+    if (podSigDrawn) { try { sigData = podCanvas.toDataURL("image/png"); } catch {} }
+    const proof = { photo: podPhotoData || null, signature: sigData, recipient: $("#pod-name").value.trim(), at: Date.now(), by: ACTIVE_DRIVER.name };
+    completeDelivery(podFor, (proof.photo || proof.signature || proof.recipient) ? proof : null);
+  });
+  function completeDelivery(id, proof) {
+    const o = load().find(x => x.id === id); if (!o || o.status === "delivered") { closePod(); return; }
+    const podText = proof ? "PIN + photo/signature proof" + (proof.recipient ? " · received by " + proof.recipient : "") : "PIN verified at the door";
+    advance(id, "delivered", { pod: podText, ...(proof ? { proof } : {}) });
+    state.wallet += o.driverPay; state.trips += 1;
+    try { localStorage.setItem("s7go_wallet", state.wallet.toFixed(2)); localStorage.setItem("s7go_trips", String(state.trips)); } catch {}
+    const done = load().find(x => x.id === id); if (done) recordTrip(done);
+    closePod();
+    toast(id + " delivered! +" + money(o.driverPay) + " added to your wallet.");
+    renderAll();
+  }
+
+  // ---------- Earnings & mileage ledger (CSV tax export) ----------
+  const LKEY = "s7go_tax_ledger";
+  const loadLedger = () => { try { return JSON.parse(localStorage.getItem(LKEY)) || []; } catch { return []; } };
+  function recordTrip(o) {
+    const led = loadLedger();
+    if (led.some(t => t.orderId === o.id)) return;
+    const deliveredAt = (o.history || []).filter(h => h.status === "delivered").at(-1);
+    led.push({
+      date: new Date(deliveredAt ? deliveredAt.at : Date.now()).toISOString().slice(0, 10), orderId: o.id,
+      store: o.storeName || "", pickup: ((o.pickAddr || "") + ", " + (o.pickArea || "")).replace(/^, /, ""), dropoff: ((o.dropAddr || "") + ", " + (o.dropArea || "")).replace(/^, /, ""),
+      miles: Math.round((o.miles || 0) * 10) / 10, driverPay: Math.round((o.driverPay || 0) * 100) / 100,
+      total: Math.round((o.total || 0) * 100) / 100, tip: o.tip || 0, paymentMethod: o.paymentMethod || "",
+    });
+    try { localStorage.setItem(LKEY, JSON.stringify(led)); } catch {}
+  }
+  const csvCell = v => '"' + String(v ?? "").replace(/"/g, '""') + '"';
+  function exportLedgerCsv() {
+    load().filter(o => o.status === "delivered").forEach(recordTrip); // backfill older deliveries
+    const led = loadLedger();
+    if (!led.length) { toast("No completed trips yet — the ledger fills in as you deliver."); return; }
+    const head = ["Date", "Order ID", "Store", "Pickup", "Drop-off", "Miles", "Driver Pay ($)", "Customer Total ($)", "Tip ($)", "Payment Method"];
+    const rows = led.map(t => [t.date, t.orderId, t.store, t.pickup, t.dropoff, t.miles, Number(t.driverPay).toFixed(2), Number(t.total).toFixed(2), Number(t.tip).toFixed(2), t.paymentMethod].map(csvCell).join(","));
+    const tm = led.reduce((s, t) => s + Number(t.miles || 0), 0), tp = led.reduce((s, t) => s + Number(t.driverPay || 0), 0);
+    rows.push(["TOTALS", "", "", "", "", tm.toFixed(1), tp.toFixed(2), "", "", ""].map(csvCell).join(","));
+    const csv = [head.map(csvCell).join(","), ...rows].join("\n");
+    try {
+      const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+      const a = document.createElement("a"); a.href = url; a.download = "s7go-tax-ledger-" + new Date().toISOString().slice(0, 10) + ".csv";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {}
+    toast("Ledger exported: " + led.length + " trips, " + tm.toFixed(1) + " mi, " + money(tp) + " earned.");
+  }
+  $("#d-ledger").addEventListener("click", exportLedgerCsv);
+
+  // ---------- Dispatch chime + vibration on new orders ----------
+  const AKEY = "s7go_announced_ids";
+  let announced = new Set(); try { announced = new Set(JSON.parse(localStorage.getItem(AKEY) || "[]")); } catch {}
+  let audioCtx = null;
+  function playChime() {
+    try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch {}
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+      audioCtx = audioCtx || new AC();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      [659.25, 880.0].forEach((f, i) => {
+        const osc = audioCtx.createOscillator(), g = audioCtx.createGain(), t0 = audioCtx.currentTime + i * 0.22;
+        osc.type = "triangle"; osc.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.5, t0 + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
+        osc.connect(g); g.connect(audioCtx.destination); osc.start(t0); osc.stop(t0 + 0.55);
+      });
+    } catch {}
+  }
+  function checkNewOrderAlerts(list) {
+    if (!state.driverOnline) return;
+    let rang = false;
+    for (const o of list) {
+      if (o.status === "placed" && !announced.has(o.id)) { announced.add(o.id); rang = true; toast("New order " + o.id + " · " + money(o.driverPay) + " pay"); }
+    }
+    if (rang) { try { localStorage.setItem(AKEY, JSON.stringify([...announced])); } catch {} playChime(); }
   }
 
   const advance = (id, status, patch = {}) => update(id, o => { Object.assign(o, patch); o.status = status; o.history.push({ status, at: Date.now() }); });
@@ -980,11 +1187,7 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
       const o = load().find(x => x.id === id); if (!o) return;
       const entered = (document.getElementById("pin-" + id)?.value || "").trim();
       if (entered !== o.pin) { toast("That PIN doesn't match " + id + ". Ask the customer for their 4-digit door PIN."); return; }
-      advance(id, "delivered", { pod: "PIN verified at the door" });
-      state.wallet += o.driverPay; state.trips += 1;
-      try { localStorage.setItem("s7go_wallet", state.wallet.toFixed(2)); localStorage.setItem("s7go_trips", String(state.trips)); } catch {}
-      toast(id + " delivered! +" + money(o.driverPay) + " added to your wallet.");
-      renderAll();
+      openPod(id); // PIN verified — proof-of-delivery step finishes the drop-off
     }
     if (act === "cancel" && confirm("Cancel " + id + "?")) advance(id, "cancelled");
     if (act === "track") { trackId = id; $("#t-id").value = id; show("track"); }
@@ -1037,7 +1240,74 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
     }).join("") : '<li class="empty">No orders yet. Place one on the Order tab, or add sample orders.</li>';
     const map = ensureMap("dispatch");
     if (map) { map.layer.clearLayers(); l.filter(o => o.status !== "delivered" && o.status !== "cancelled").forEach(o => drawRoute(map, o)); }
+    checkNewOrderAlerts(l);
   }
+
+  // ---------- Store dispatch (merchant mode, from the upgrade set) ----------
+  fillAreas($("#sd-pick"), "East Point"); fillAreas($("#sd-drop"), "College Park");
+  function fillSdStores() {
+    const sel = $("#sd-store"), cur = sel.value, stores = loadC();
+    sel.innerHTML = '<option value="">Custom store / walk-in</option>' + stores.map(c => `<option value="${c.id}">${esc(c.name)} · ${esc(c.area)}${c.status === "live" ? "" : " (Claimed)"}</option>`).join("");
+    sel.value = stores.some(c => c.id === cur) ? cur : "";
+  }
+  $("#sd-store").addEventListener("change", () => {
+    const c = loadC().find(x => x.id === $("#sd-store").value); if (!c) return;
+    $("#sd-store-name").value = c.name; fillAreas($("#sd-pick"), c.area); $("#sd-pick-addr").value = c.addr || "";
+    renderSdQuote();
+  });
+  const sdVals = () => ({
+    tier: document.querySelector("input[name=sdtier]:checked").value,
+    size: document.querySelector("input[name=sdsize]:checked").value,
+    pickArea: $("#sd-pick").value, dropArea: $("#sd-drop").value,
+  });
+  function sdQuote() {
+    const v = sdVals();
+    const pick = jitter(areaBy(v.pickArea), 5), drop = jitter(areaBy(v.dropArea), 6);
+    const q = courierCharge(pick, drop, v.size, "standard");
+    const tierFee = DISPATCH_TIERS[v.tier].fee;
+    const total = Math.round((q.charge + tierFee) * 100) / 100;
+    const driverPay = Math.round(total * RATES.driverCutPercent * 100) / 100;
+    return { v, pick, drop, q, tierFee, total, driverPay };
+  }
+  function renderSdQuote() {
+    const { v, q, tierFee, total, driverPay } = sdQuote();
+    $("#sd-quote").innerHTML =
+      `<div class="row"><span>Distance</span><span>${q.mi.toFixed(1)} mi (road est.)</span></div>` +
+      `<div class="row"><span>Courier trip</span><span>${money(q.charge)}</span></div>` +
+      (tierFee ? `<div class="row"><span>${esc(DISPATCH_TIERS[v.tier].label)}</span><span>${money(tierFee)}</span></div>` : "") +
+      `<div class="total"><span>Store pays</span><b>${money(total)}</b></div>` +
+      `<div class="row"><span>Driver earns (85%)</span><span>${money(driverPay)}</span></div>`;
+  }
+  $("#sd-form").addEventListener("input", renderSdQuote);
+  $("#sd-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const msg = $("#sd-msg"); msg.className = "pmsg err";
+    const storeName = $("#sd-store-name").value.trim();
+    if (!storeName) { msg.textContent = "Add the store name."; $("#sd-store-name").focus(); return; }
+    if (!$("#sd-pick-addr").value.trim()) { msg.textContent = "Add the pickup street address."; $("#sd-pick-addr").focus(); return; }
+    if (!$("#sd-drop-addr").value.trim()) { msg.textContent = "Add the drop-off street address."; $("#sd-drop-addr").focus(); return; }
+    const cust = $("#sd-cust").value.trim(), phone = $("#sd-phone").value.trim();
+    if (!cust) { msg.textContent = "Add the customer's name."; $("#sd-cust").focus(); return; }
+    if (phone.replace(/\D/g, "").length < 10) { msg.textContent = "Add the customer's 10-digit phone."; $("#sd-phone").focus(); return; }
+    const { v, pick, drop, q, tierFee, total, driverPay } = sdQuote();
+    const tier = DISPATCH_TIERS[v.tier];
+    const details = $("#sd-details").value.trim() || "Store pickup";
+    const o = {
+      id: newId(), kind: "courier", storeDispatch: true, tier: v.tier, tierLabel: tier.label, custody: v.tier !== "standard",
+      items: [{ name: details, qty: 1, price: total }], itemsSummary: details + " · " + tier.label,
+      storeName, store: $("#sd-store").value || "",
+      pickArea: v.pickArea, pickAddr: $("#sd-pick-addr").value.trim(), dropArea: v.dropArea, dropAddr: $("#sd-drop-addr").value.trim(), pick, drop,
+      name: cust, phone, notes: "", when: "", miles: q.mi, subtotal: total, discount: 0, deliveryService: 0,
+      tip: 0, total, driverPay, promo: "", paymentMethod: "Merchant account", surge: 1,
+      pin: String(Math.floor(1000 + Math.random() * 9000)), driver: null, driverName: null, driverGps: null,
+      status: "placed", history: [{ status: "placed", at: Date.now() }], createdAt: Date.now(), updatedAt: Date.now(),
+    };
+    saveOrder(o);
+    msg.className = "pmsg ok";
+    msg.textContent = "Dispatch " + o.id + " is on the driver board. Door PIN " + o.pin + " — the customer gives it to the driver at drop-off.";
+    toast("Store dispatch " + o.id + " sent to drivers.");
+    renderAll();
+  });
 
   // ---------- Clients (merged from the delivery-2 build) ----------
   const CKEY = "s7go-clients-v1";
@@ -1447,17 +1717,29 @@ A small deposit gets you started today, and the $125 balance is due once you're 
     if (current === "pitch") renderPitch();
     if (current === "track") renderTrack();
     if (current === "driver") renderDriver();
-    if (current === "dispatch") renderDispatch();
+    if (current === "dispatch") { fillSdStores(); renderSdQuote(); renderDispatch(); }
   }
   setInterval(syncFromCloud, 3000);
   setInterval(() => { if (current === "track" || current === "dispatch") renderAll(); }, 5000);
   window.addEventListener("storage", e => { if (e.key === KEY || e.key === CKEY || e.key === PKEY) renderAll(); });
 
   renderStores(); renderCart(); renderPaybar(); setSyncBanner(false); syncFromCloud();
+  // Deep links: ?order=S7-1234 opens that order's tracker; ?mode=driver /
+  // ?mode=store (merchant) / ?mode=dispatch etc. open the matching tab.
+  const params = new URLSearchParams(location.search);
+  const sharedOrder = params.get("order");
+  if (sharedOrder) { trackId = sharedOrder.trim().toUpperCase(); try { localStorage.setItem("s7go_my_order_id", trackId); } catch {} $("#t-id").value = trackId; }
+  const modeMap = { order: "order", track: "track", driver: "driver", drive: "driver", dispatch: "dispatch", store: "dispatch", merchant: "dispatch", clients: "clients", pitch: "pitch" };
+  const modeTab = modeMap[(params.get("mode") || "").toLowerCase()];
   const h = location.hash.slice(1);
-  if (h.startsWith("track=")) { trackId = decodeURIComponent(h.slice(6)); $("#t-id").value = trackId; show("track"); }
+  if (sharedOrder) show("track");
+  else if (modeTab) show(modeTab);
+  else if (h.startsWith("track=")) { trackId = decodeURIComponent(h.slice(6)); $("#t-id").value = trackId; show("track"); }
   else show(["order", "track", "driver", "dispatch", "clients", "pitch"].includes(h) ? h : "order");
 })();
+</script>
+<script>
+if ("serviceWorker" in navigator) { window.addEventListener("load", () => { navigator.serviceWorker.register("./sw.js").catch(() => {}); }); }
 </script>
 </body>
 </html>
