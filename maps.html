@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S7 Global — Maps Setup Tracker</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: -apple-system, Arial, Helvetica, sans-serif; background: #0e1a2e; color: #eef3fa; padding: 16px 14px 40px; }
+  .wrap { max-width: 560px; margin: 0 auto; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .seven { width: 46px; height: 46px; border-radius: 12px; background: #0b2a52; border: 1px solid #2ee6a8; color: #2ee6a8; display: grid; place-items: center; font-size: 27px; font-weight: 900; }
+  h1 { font-size: 21px; letter-spacing: .03em; }
+  .tag { color: #2ee6a8; font-size: 13px; font-weight: 700; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+  .stat { background: #16263f; border: 1px solid #24405f; border-radius: 12px; padding: 10px; text-align: center; }
+  .stat b { display: block; font-size: 20px; color: #2ee6a8; }
+  .stat span { font-size: 11px; color: #9db2cc; text-transform: uppercase; letter-spacing: .05em; }
+  .card { background: #fff; color: #10233f; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+  .card h2 { font-size: 16px; color: #0b2a52; margin-bottom: 10px; }
+  label { display: block; font-size: 12px; font-weight: 700; color: #5a6d88; text-transform: uppercase; letter-spacing: .04em; margin: 10px 0 4px; }
+  input, select, textarea { width: 100%; padding: 11px; border: 2px solid #c9d5e4; border-radius: 10px; font-size: 16px; font-family: inherit; background: #fff; color: #10233f; }
+  textarea { min-height: 120px; font-size: 13px; }
+  .btn { display: block; width: 100%; padding: 13px; border: 0; border-radius: 10px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 12px; background: #0e7a55; color: #fff; }
+  .btn.alt { background: #0b2a52; }
+  .btn.ghost { background: #e8edf3; color: #0b2a52; }
+  .btn.small { padding: 9px; font-size: 13px; margin-top: 8px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .client-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .client-head h2 { margin: 0; }
+  .meta { font-size: 13px; color: #5a6d88; margin-top: 2px; }
+  .del { background: none; border: 0; color: #b3372f; font-size: 13px; font-weight: 700; cursor: pointer; padding: 2px 0; }
+  .bar { height: 10px; background: #e8edf3; border-radius: 999px; overflow: hidden; margin: 10px 0 6px; }
+  .bar i { display: block; height: 100%; background: #0e7a55; border-radius: 999px; }
+  .stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
+  .stage { padding: 9px 4px; border-radius: 9px; border: 2px solid #c9d5e4; background: #fff; font-size: 12.5px; font-weight: 700; color: #5a6d88; cursor: pointer; text-align: center; }
+  .stage.on { border-color: #0e7a55; background: #f0fbf6; color: #0b2a52; }
+  .pay { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #f4f7fb; border-radius: 10px; padding: 10px 12px; margin-top: 8px; font-size: 14px; }
+  .pay .amt { font-weight: 800; color: #0b2a52; }
+  .toggle { position: relative; width: 50px; height: 28px; flex: none; }
+  .toggle input { opacity: 0; width: 100%; height: 100%; position: absolute; margin: 0; cursor: pointer; }
+  .toggle i { position: absolute; inset: 0; background: #c9d5e4; border-radius: 999px; pointer-events: none; }
+  .toggle i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: #fff; border-radius: 50%; transition: left .15s; }
+  .toggle input:checked + i { background: #0e7a55; }
+  .toggle input:checked + i::after { left: 25px; }
+  .empty { text-align: center; color: #9db2cc; padding: 26px 10px; font-size: 14px; }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: #2ee6a8; color: #06281a; font-weight: 800; padding: 11px 20px; border-radius: 999px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .toast.show { opacity: 1; }
+  details summary { cursor: pointer; font-weight: 800; color: #0b2a52; font-size: 15px; }
+  .hint { font-size: 12px; color: #5a6d88; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="seven">7</div>
+    <div>
+      <h1>S7 GLOBAL</h1>
+      <div class="tag">Local Maps Setup — Client Tracker</div>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><b id="stClients">0</b><span>Clients</span></div>
+    <div class="stat"><b id="stCollected">$0</b><span>Collected</span></div>
+    <div class="stat"><b id="stOwed">$0</b><span>Still Owed</span></div>
+  </div>
+
+  <div class="card">
+    <h2>Payment links (set once)</h2>
+    <label>$125 deposit link</label>
+    <input id="cfgDeposit" placeholder="Paste your Cash App / Stripe / Venmo link">
+    <label>$125 balance link</label>
+    <input id="cfgBalance" placeholder="Paste your Cash App / Stripe / Venmo link">
+    <p class="hint">Create these two links once (see KIT.md). They save on this phone and power the Copy buttons on every client.</p>
+  </div>
+
+  <div class="card">
+    <h2>Add a client</h2>
+    <label>Store name</label>
+    <input id="fStore" placeholder="e.g. Touchdown Wings">
+    <div class="row">
+      <div>
+        <label>Owner name</label>
+        <input id="fOwner" placeholder="Owner">
+      </div>
+      <div>
+        <label>Phone</label>
+        <input id="fPhone" inputmode="tel" placeholder="(404) 555-0100">
+      </div>
+    </div>
+    <label>Package</label>
+    <select id="fPkg">
+      <option value="full">Full Setup — $250 ($125 + $125)</option>
+      <option value="basic">Basic Listing — $150 (due when live)</option>
+    </select>
+    <label>Google review link (add once they're live)</label>
+    <input id="fReview" placeholder="https://g.page/...">
+    <button class="btn" id="addBtn">Add Client</button>
+  </div>
+
+  <div id="clients"></div>
+  <div class="empty" id="emptyMsg">No clients yet. Walk in, pitch, add them here.</div>
+
+  <div class="card">
+    <details>
+      <summary>Receipt builder</summary>
+      <label>Client</label>
+      <select id="rClient"></select>
+      <button class="btn alt small" id="rGen">Build Receipt</button>
+      <label>Receipt text</label>
+      <textarea id="rText" readonly></textarea>
+      <button class="btn small" id="rCopy">Copy Receipt</button>
+    </details>
+  </div>
+</div>
+<div class="toast" id="toast">Copied</div>
+
+<script>
+"use strict";
+var KEY = "s7_maps_clients_v1", CFG = "s7_maps_cfg_v1";
+var STAGES = ["Claimed (1/3)", "Verification (2/3)", "Live (3/3)"];
+var clients = load(KEY, []), cfg = load(CFG, { deposit: "", balance: "" });
+
+function load(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
+function save() { localStorage.setItem(KEY, JSON.stringify(clients)); localStorage.setItem(CFG, JSON.stringify(cfg)); }
+function money(n) { return "$" + n.toLocaleString("en-US"); }
+function amounts(c) { return c.pkg === "full" ? { dep: 125, bal: 125, total: 250 } : { dep: 0, bal: 150, total: 150 }; }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]; }); }
+function toast(msg) { var t = document.getElementById("toast"); t.textContent = msg; t.className = "toast show"; setTimeout(function () { t.className = "toast"; }, 1600); }
+function copyText(txt, msg) {
+  function done() { toast(msg || "Copied"); }
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, function () { fallback(); }); } else { fallback(); }
+  function fallback() { var ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); done(); } catch (e) { toast("Copy failed — long-press to copy"); } document.body.removeChild(ta); }
+}
+
+function render() {
+  var box = document.getElementById("clients");
+  document.getElementById("emptyMsg").style.display = clients.length ? "none" : "block";
+  var collected = 0, owed = 0;
+  box.innerHTML = clients.map(function (c, i) {
+    var a = amounts(c), pct = Math.round((c.stage + 1) / 3 * 100);
+    var got = (c.depPaid ? a.dep : 0) + (c.balPaid ? a.bal : 0);
+    collected += got; owed += a.total - got;
+    var stageBtns = STAGES.map(function (s, si) {
+      return '<button class="stage' + (si <= c.stage ? " on" : "") + '" data-act="stage" data-i="' + i + '" data-s="' + si + '">' + s + "</button>";
+    }).join("");
+    var payRows = "";
+    if (a.dep > 0) {
+      payRows += '<div class="pay"><span><span class="amt">' + money(a.dep) + '</span> deposit — 50% upfront</span>' +
+        '<label class="toggle"><input type="checkbox" data-act="dep" data-i="' + i + '"' + (c.depPaid ? " checked" : "") + '><i></i></label></div>';
+    }
+    payRows += '<div class="pay"><span><span class="amt">' + money(a.bal) + '</span> ' + (c.pkg === "full" ? "final balance — due when live" : "full payment — due when live") + '</span>' +
+      '<label class="toggle"><input type="checkbox" data-act="bal" data-i="' + i + '"' + (c.balPaid ? " checked" : "") + '><i></i></label></div>';
+    var copyRow = '<div class="row">' +
+      (a.dep > 0 ? '<button class="btn alt small" data-act="copyDep" data-i="' + i + '">Copy ' + money(a.dep) + ' deposit link</button>' : "") +
+      '<button class="btn alt small" data-act="copyBal" data-i="' + i + '">Copy ' + money(a.bal) + ' balance link</button></div>' +
+      '<div class="row"><button class="btn ghost small" data-act="copyLive" data-i="' + i + '">Copy “you’re live” text</button>' +
+      '<button class="btn ghost small" data-act="copyReview" data-i="' + i + '">Copy review link</button></div>' +
+      '<button class="btn ghost small" data-act="qr" data-i="' + i + '">Show review QR code</button>' +
+      '<div id="qr-' + i + '" style="display:none;text-align:center;margin-top:10px"></div>';
+    return '<div class="card">' +
+      '<div class="client-head"><div><h2>' + esc(c.store) + '</h2><div class="meta">' + esc(c.owner || "") + (c.phone ? " · " + esc(c.phone) : "") + " · " + (c.pkg === "full" ? "Full Setup $250" : "Basic $150") + '</div></div>' +
+      '<button class="del" data-act="del" data-i="' + i + '">Remove</button></div>' +
+      '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="meta">Store verification — ' + STAGES[c.stage] + " · " + pct + '% complete</div>' +
+      '<div class="stages">' + stageBtns + "</div>" + payRows + copyRow + "</div>";
+  }).join("");
+  document.getElementById("stClients").textContent = clients.length;
+  document.getElementById("stCollected").textContent = money(collected);
+  document.getElementById("stOwed").textContent = money(owed);
+  var sel = document.getElementById("rClient");
+  sel.innerHTML = clients.map(function (c, i) { return '<option value="' + i + '">' + esc(c.store) + "</option>"; }).join("") || '<option value="">No clients yet</option>';
+}
+
+function liveText(c) {
+  return "Hey " + (c.owner || "there") + ", great news! " + c.store + " is officially verified and live on Google Search and Google Maps. You can search for " + c.store + " right now and you'll see your pin, photos, and hours." +
+    (c.review ? " I also attached your custom 5-Star Review QR Code so you can print it for the front counter." : "") +
+    " Whenever you're ready, just send the remaining balance here: " + (cfg.balance || "[balance link]") + " and I'll mark your account as complete. Thanks again for trusting S7 Global!";
+}
+function receiptText(c) {
+  var a = amounts(c);
+  return "S7 Global – Local Search & Maps Setup Receipt\n" +
+    "• Client: " + c.store + "\n" +
+    "• Service: Complete setup & verification on Google Search, Google Maps, and Apple Maps + Custom Customer Review QR Code\n" +
+    "• Total Flat Fee: " + money(a.total) + ".00\n" +
+    "• Deposit Paid Today: " + money(c.depPaid ? a.dep : 0) + ".00\n" +
+    "• Remaining Balance Due Upon Live Listing: " + money(a.total - (c.depPaid ? a.dep : 0) - (c.balPaid ? a.bal : 0)) + ".00\n" +
+    "• Ownership: " + c.store + " retains 100% full ownership of all profiles. S7 Global is added strictly as a setup manager and can be removed at any time. No monthly fees unless requested separately.";
+}
+
+document.getElementById("clients").addEventListener("click", function (e) {
+  var b = e.target.closest("[data-act]"); if (!b) return;
+  var i = +b.dataset.i, c = clients[i]; if (!c) return;
+  if (b.dataset.act === "stage") { c.stage = +b.dataset.s; }
+  else if (b.dataset.act === "del") { if (confirm("Remove " + c.store + "?")) clients.splice(i, 1); else return; }
+  else if (b.dataset.act === "copyDep") { copyText(cfg.deposit || "", cfg.deposit ? "Deposit link copied" : "No deposit link set yet — add it at the top"); return; }
+  else if (b.dataset.act === "copyBal") { copyText(cfg.balance || "", cfg.balance ? "Balance link copied" : "No balance link set yet — add it at the top"); return; }
+  else if (b.dataset.act === "copyLive") { copyText(liveText(c), "Follow-up text copied"); return; }
+  else if (b.dataset.act === "copyReview") { copyText(c.review || "", c.review ? "Review link copied" : "No review link on this client yet"); return; }
+  else if (b.dataset.act === "qr") {
+    var box = document.getElementById("qr-" + i);
+    if (box.style.display !== "none") { box.style.display = "none"; return; }
+    if (!c.review) { toast("Add the review link when the store goes live"); return; }
+    box.innerHTML = '<img alt="Google review QR code for ' + esc(c.store) + '" width="220" height="220" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(c.review) + '"><div class="meta">Screenshot or print this for their front counter</div>';
+    box.style.display = "block"; return;
+  }
+  save(); render();
+});
+document.getElementById("clients").addEventListener("change", function (e) {
+  var b = e.target.closest("[data-act]"); if (!b) return;
+  var c = clients[+b.dataset.i]; if (!c) return;
+  if (b.dataset.act === "dep") c.depPaid = b.checked;
+  if (b.dataset.act === "bal") c.balPaid = b.checked;
+  save(); render();
+});
+document.getElementById("addBtn").addEventListener("click", function () {
+  var store = document.getElementById("fStore").value.trim();
+  if (!store) { toast("Add the store name first"); return; }
+  clients.unshift({
+    store: store,
+    owner: document.getElementById("fOwner").value.trim(),
+    phone: document.getElementById("fPhone").value.trim(),
+    pkg: document.getElementById("fPkg").value,
+    review: document.getElementById("fReview").value.trim(),
+    stage: 0, depPaid: false, balPaid: false
+  });
+  document.getElementById("fStore").value = ""; document.getElementById("fOwner").value = "";
+  document.getElementById("fPhone").value = ""; document.getElementById("fReview").value = "";
+  save(); render(); toast("Client added");
+});
+["cfgDeposit", "cfgBalance"].forEach(function (id) {
+  var el = document.getElementById(id);
+  el.value = id === "cfgDeposit" ? cfg.deposit : cfg.balance;
+  el.addEventListener("change", function () { cfg[id === "cfgDeposit" ? "deposit" : "balance"] = el.value.trim(); save(); toast("Payment link saved"); });
+});
+document.getElementById("rGen").addEventListener("click", function () {
+  var c = clients[+document.getElementById("rClient").value];
+  document.getElementById("rText").value = c ? receiptText(c) : "";
+});
+document.getElementById("rCopy").addEventListener("click", function () {
+  var v = document.getElementById("rText").value;
+  if (v) copyText(v, "Receipt copied");
+});
+render();
+</script>
+</body>
+</html>
