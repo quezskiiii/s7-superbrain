@@ -107,6 +107,15 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
 .banner{margin-top:14px;padding:10px 14px;border-radius:12px;border:1px solid #6a5220;background:#f7bd4a14;color:var(--gold);font-size:.85rem}
 .inline-row{display:flex;gap:8px;align-items:flex-end}.inline-row>div{flex:1}
 .order .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.switch{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:4px 12px 4px 4px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);font:700 .85rem "DM Sans",sans-serif;cursor:pointer}
+.switch .knob{width:44px;height:26px;border-radius:999px;background:#6a5220;position:relative;transition:background .15s;flex:none}
+.switch .knob::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--gold);transition:transform .15s,background .15s}
+.switch[aria-checked="true"] .knob{background:#1f5a40}.switch[aria-checked="true"] .knob::after{transform:translateX(18px);background:var(--ok)}
+.switch:focus-visible{outline:2px solid var(--cyan)}
+.msgbox{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.msghead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:.88rem}
+.msgbox summary{cursor:pointer;color:var(--cyan);font-size:.85rem;font-weight:700;margin-top:6px;min-height:32px;display:flex;align-items:center}
+.msgtext{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:.88rem;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:6px 0 0;color:var(--text)}
 .order select{padding:8px 10px;font-size:.85rem;width:auto;min-height:40px}
 .order input.pin-in{width:110px;padding:9px 10px;min-height:40px}
 .leaflet-container{background:#0d121b;font-family:"DM Sans",sans-serif}
@@ -134,6 +143,7 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
     <button class="tab" role="tab" data-tab="track" aria-selected="false">Track</button>
     <button class="tab" role="tab" data-tab="driver" aria-selected="false">Drive</button>
     <button class="tab" role="tab" data-tab="dispatch" aria-selected="false">Dispatch</button>
+    <button class="tab" role="tab" data-tab="clients" aria-selected="false">Clients</button>
   </div>
 
   <!-- ORDER -->
@@ -152,6 +162,10 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
 
         <form class="pcard" id="courier-form">
           <div class="phead"><h2>s7Go Express Courier</h2><span class="pill">Point to point</span></div>
+          <div id="o-store-wrap" hidden>
+            <label for="o-store">Pickup from a client store</label>
+            <select id="o-store"><option value="">Custom pickup address</option></select>
+          </div>
           <label for="o-pick">Pickup area</label>
           <select id="o-pick" required></select>
           <label for="o-pick-addr">Pickup street address</label>
@@ -292,6 +306,47 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
         </select>
       </div>
       <ul class="olist" id="x-list"></ul>
+    </div>
+  </section>
+
+  <!-- CLIENTS -->
+  <section id="v-clients" role="tabpanel" hidden>
+    <div class="grid2">
+      <form class="pcard" id="cl-form" novalidate>
+        <div class="phead"><h2 id="cl-form-title">Add a store</h2><button class="pbtn sm ghost" type="button" id="cl-cancel" hidden>Cancel edit</button></div>
+        <input type="hidden" id="cl-id">
+        <label for="cl-name">Store name</label>
+        <input id="cl-name" placeholder="Peach State Florist" required>
+        <div class="grid2" style="gap:10px">
+          <div><label for="cl-contact">Contact person</label><input id="cl-contact" autocomplete="off"></div>
+          <div><label for="cl-phone">Phone</label><input id="cl-phone" type="tel" autocomplete="off"></div>
+        </div>
+        <label for="cl-email">Email</label>
+        <input id="cl-email" type="email" autocomplete="off">
+        <label for="cl-area">Area</label>
+        <select id="cl-area"></select>
+        <label for="cl-addr">Street address</label>
+        <input id="cl-addr" placeholder="789 Ponce de Leon Ave NE">
+        <label>Status</label>
+        <div class="seg" style="grid-template-columns:1fr 1fr">
+          <label><input type="radio" name="cl-status" value="claimed" checked><span>Claimed<small>Signed up, not live</small></span></label>
+          <label><input type="radio" name="cl-status" value="live"><span>Live<small>Taking deliveries</small></span></label>
+        </div>
+        <label for="cl-notes">Notes</label>
+        <textarea id="cl-notes" placeholder="Pickup hours, back door, who to ask for..."></textarea>
+        <button class="pbtn primary" type="submit" id="cl-submit">Save store</button>
+        <p class="pmsg" id="cl-msg" role="status"></p>
+      </form>
+      <div class="pcard">
+        <div class="phead"><h2>Client stores</h2>
+          <select id="cl-filter" aria-label="Filter stores" style="width:auto">
+            <option value="all">All</option><option value="claimed">Claimed</option><option value="live">Live</option>
+          </select>
+        </div>
+        <div class="stats" id="cl-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+        <input id="cl-search" type="search" placeholder="Search stores" aria-label="Search stores" style="margin-top:12px">
+        <ul class="olist" id="cl-list"></ul>
+      </div>
     </div>
   </section>
 
@@ -575,6 +630,7 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
       pickArea: v.pickArea, pickAddr: $("#o-pick-addr").value.trim(),
       dropArea: v.dropArea, dropAddr: $("#o-drop-addr").value.trim(),
       notes: $("#o-notes").value.trim(), when: v.speed === "scheduled" ? $("#o-when").value : "",
+      store: $("#o-store").value || "",
     });
     msg.className = "pmsg ok"; msg.textContent = "Courier trip added to your order below.";
     renderCart(); toast("Courier trip added — finish checkout on the right.");
@@ -648,7 +704,7 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
       itemsSummary: state.cart.map(i => i.name + (i.qty > 1 ? " × " + i.qty : "")).join(", "),
       storeName: first.storeName || "s7Go Express Courier",
       pickArea, pickAddr, dropArea, dropAddr, pick, drop,
-      name, phone, notes: courierItem ? courierItem.notes || "" : "", when: courierItem ? courierItem.when || "" : "",
+      name, phone, notes: courierItem ? courierItem.notes || "" : "", when: courierItem ? courierItem.when || "" : "", store: courierItem ? courierItem.store || "" : "",
       miles: t.maxMiles, subtotal: t.subtotal, discount: t.discount, deliveryService: t.deliveryService,
       tip: state.tip, total: Math.round(t.total * 100) / 100, driverPay: Math.round(t.driverPay * 100) / 100,
       promo: state.promo ? state.promo.code : "", paymentMethod: payText, surge: surge(),
@@ -845,21 +901,150 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
     if (map) { map.layer.clearLayers(); l.filter(o => o.status !== "delivered" && o.status !== "cancelled").forEach(o => drawRoute(map, o)); }
   }
 
+  // ---------- Clients (merged from the delivery-2 build) ----------
+  const CKEY = "s7go-clients-v1";
+  let cmem = [];
+  const loadC = () => { try { return JSON.parse(localStorage.getItem(CKEY)) || cmem; } catch { return cmem; } };
+  const saveC = list => { cmem = list; try { localStorage.setItem(CKEY, JSON.stringify(list)); } catch {} };
+  fillAreas($("#cl-area"), "East Point");
+
+  // "Your Store Is Live" message (from the delivery-3 build). Edit the wording
+  // here; {first}, {store}, {area} and {link} are filled in per store.
+  const BOOKING_LINK = "https://quezskiiii.github.io/s7go-app/";
+  const LIVE_SUBJECT = "Your Store Is Live on s7Go";
+  const LIVE_TEMPLATE = `Hi {first}! Great news: {store} is now LIVE on s7Go Local Delivery.
+
+You can book same-day deliveries from your {area} location anytime here:
+{link}
+
+Your pickup address is already saved, so a booking takes about a minute. Reply to this message with any questions.
+
+Thanks for partnering with S7 Global!`;
+  const liveMessage = c => LIVE_TEMPLATE
+    .replaceAll("{first}", (c.contact || "").trim().split(/\s+/)[0] || "there")
+    .replaceAll("{store}", c.name).replaceAll("{area}", c.area).replaceAll("{link}", BOOKING_LINK);
+  async function copyTextC(text) {
+    try { await navigator.clipboard.writeText(text); return true; } catch {}
+    const t = document.createElement("textarea"); t.value = text; t.setAttribute("readonly", ""); t.style.position = "fixed"; t.style.opacity = "0";
+    document.body.appendChild(t); t.select(); let ok = false; try { ok = document.execCommand("copy"); } catch {} t.remove(); return ok;
+  }
+  const markNotified = id => { const l = loadC(), c = l.find(x => x.id === id); if (c) { c.notifiedAt = Date.now(); saveC(l); } renderAll(); };
+
+  const clStatusVal = () => document.querySelector("input[name=cl-status]:checked").value;
+  function resetClientForm() {
+    $("#cl-form").reset(); $("#cl-id").value = ""; fillAreas($("#cl-area"), "East Point");
+    $("#cl-form-title").textContent = "Add a store"; $("#cl-submit").textContent = "Save store"; $("#cl-cancel").hidden = true;
+  }
+  $("#cl-cancel").addEventListener("click", () => { resetClientForm(); $("#cl-msg").textContent = ""; });
+  $("#cl-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const msg = $("#cl-msg"); msg.className = "pmsg err";
+    const name = $("#cl-name").value.trim();
+    if (!name) { msg.textContent = "Please add the store name."; $("#cl-name").focus(); return; }
+    const email = $("#cl-email").value.trim();
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) { msg.textContent = "That email doesn't look right."; $("#cl-email").focus(); return; }
+    const l = loadC(), id = $("#cl-id").value;
+    const dup = l.find(c => c.id !== id && c.name.toLowerCase() === name.toLowerCase());
+    if (dup) { msg.textContent = dup.name + " is already on the list."; return; }
+    const data = { name, contact: $("#cl-contact").value.trim(), phone: $("#cl-phone").value.trim(), email, area: $("#cl-area").value, addr: $("#cl-addr").value.trim(), notes: $("#cl-notes").value.trim(), status: clStatusVal() };
+    if (id) {
+      const c = l.find(x => x.id === id);
+      if (c) { if (c.status !== data.status) c.statusAt = Date.now(); Object.assign(c, data); }
+      saveC(l); toast(name + " updated.");
+    } else {
+      saveC([{ id: "c" + Date.now().toString(36), created: Date.now(), statusAt: Date.now(), ...data }, ...l]);
+      toast(name + " saved as " + (data.status === "live" ? "Live" : "Claimed") + ".");
+    }
+    resetClientForm(); msg.textContent = ""; renderAll();
+  });
+  $("#cl-filter").addEventListener("change", renderAll);
+  $("#cl-search").addEventListener("input", renderAll);
+  function renderClients() {
+    const l = loadC(), orders = load(), f = $("#cl-filter").value, q = $("#cl-search").value.trim().toLowerCase();
+    const live = l.filter(c => c.status === "live").length;
+    $("#cl-stats").innerHTML = [[l.length, "Stores"], [l.length - live, "Claimed"], [live, "Live"]]
+      .map(([n, k]) => `<div class="stat"><b>${n}</b><span>${k}</span></div>`).join("");
+    const shown = l.filter(c => (f === "all" || c.status === f) && (!q || [c.name, c.contact, c.area, c.addr].join(" ").toLowerCase().includes(q)));
+    $("#cl-list").innerHTML = shown.length ? shown.map(c => {
+      const isLive = c.status === "live";
+      const n = orders.filter(o => o.store === c.id).length;
+      const contact = [c.contact && esc(c.contact), c.phone && `<a href="tel:${esc(c.phone.replace(/[^\d+]/g, ""))}">${esc(c.phone)}</a>`, c.email && `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`].filter(Boolean).join(" · ");
+      return `<li class="order">
+        <div class="l1"><span>${esc(c.name)}</span><span class="pill ${isLive ? "ok" : "warn"}">${isLive ? "Live" : "Claimed"}</span></div>
+        <div class="l2">${esc(c.addr ? c.addr + ", " : "")}${esc(c.area)} · ${n} deliver${n === 1 ? "y" : "ies"}</div>
+        ${contact ? `<div class="l2">${contact}</div>` : ""}
+        ${c.notes ? `<div class="l2">Note: ${esc(c.notes)}</div>` : ""}
+        <div class="l2">${isLive ? "Live" : "Claimed"} since ${new Date(c.statusAt || c.created).toLocaleDateString([], { month: "short", day: "numeric" })}</div>
+        <div class="acts">
+          <button class="switch" role="switch" aria-checked="${isLive}" data-clact="toggle" data-id="${c.id}" aria-label="${esc(c.name)} is ${isLive ? "Live" : "Claimed"}. Switch status"><span class="knob"></span>${isLive ? "Live" : "Claimed"}</button>
+          <button class="pbtn sm" data-clact="edit" data-id="${c.id}">Edit</button>
+          ${isLive ? `<button class="pbtn sm" data-clact="send" data-id="${c.id}">Send from here</button>` : ""}
+          <button class="pbtn sm ghost" data-clact="delete" data-id="${c.id}">Remove</button>
+        </div>
+        ${isLive ? (() => {
+          const msg = liveMessage(c), phone = (c.phone || "").replace(/[^\d+]/g, "");
+          const sent = c.notifiedAt && c.notifiedAt >= (c.statusAt || 0);
+          return `<div class="msgbox">
+            <div class="msghead"><b>"Your Store Is Live" message</b>${sent ? `<span class="pill ok">Copied ${new Date(c.notifiedAt).toLocaleDateString([], { month: "short", day: "numeric" })}</span>` : `<span class="pill warn">Not sent yet</span>`}</div>
+            <details><summary>Preview message</summary><pre class="msgtext">${esc(msg)}</pre></details>
+            <div class="acts">
+              <button class="pbtn sm primary inline" data-clact="copy" data-id="${c.id}">Copy Live message</button>
+              ${phone ? `<a class="pbtn sm" data-clact="sms" data-id="${c.id}" href="sms:${esc(phone)}?&body=${encodeURIComponent(msg)}">Text</a>` : ""}
+              ${c.email ? `<a class="pbtn sm" data-clact="mail" data-id="${c.id}" href="mailto:${esc(c.email)}?subject=${encodeURIComponent(LIVE_SUBJECT)}&body=${encodeURIComponent(msg)}">Email</a>` : ""}
+            </div></div>`;
+        })() : ""}</li>`;
+    }).join("") : `<li class="empty">${l.length ? "No stores match." : "No stores yet. Add your first one on the left."}</li>`;
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-clact]"); if (!b) return;
+    const l = loadC(), c = l.find(x => x.id === b.dataset.id); if (!c) return;
+    const act = b.dataset.clact;
+    if (act === "toggle") { c.status = c.status === "live" ? "claimed" : "live"; c.statusAt = Date.now(); saveC(l); renderAll(); toast(c.name + " is now " + (c.status === "live" ? "Live" : "Claimed") + "."); }
+    if (act === "edit") {
+      $("#cl-id").value = c.id; $("#cl-name").value = c.name; $("#cl-contact").value = c.contact; $("#cl-phone").value = c.phone;
+      $("#cl-email").value = c.email; fillAreas($("#cl-area"), c.area); $("#cl-addr").value = c.addr; $("#cl-notes").value = c.notes;
+      document.querySelector(`input[name=cl-status][value=${c.status}]`).checked = true;
+      $("#cl-form-title").textContent = "Edit store"; $("#cl-submit").textContent = "Save changes"; $("#cl-cancel").hidden = false;
+      $("#cl-name").focus(); $("#cl-form").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    if (act === "delete" && confirm("Remove " + c.name + " from your client list?")) { saveC(l.filter(x => x.id !== c.id)); if ($("#cl-id").value === c.id) resetClientForm(); renderAll(); }
+    if (act === "send") { show("order"); $("#o-store").value = c.id; applyStore(); }
+    if (act === "copy") copyTextC(liveMessage(c)).then(ok => { if (ok) { markNotified(c.id); toast("Copied the Live message for " + c.name + "."); } else toast("Couldn't copy. Open the preview and copy it by hand."); });
+    if (act === "sms" || act === "mail") setTimeout(() => markNotified(c.id), 0);
+  });
+
+  // Live client stores appear as quick pickup choices on the courier form.
+  function fillStores() {
+    const live = loadC().filter(c => c.status === "live"), sel = $("#o-store"), cur = sel.value;
+    sel.innerHTML = '<option value="">Custom pickup address</option>' + live.map(c => `<option value="${c.id}">${esc(c.name)} · ${esc(c.area)}</option>`).join("");
+    sel.value = live.some(c => c.id === cur) ? cur : "";
+    $("#o-store-wrap").hidden = !live.length;
+  }
+  function applyStore() {
+    const c = loadC().find(x => x.id === $("#o-store").value); if (!c) return;
+    fillAreas($("#o-pick"), c.area); $("#o-pick-addr").value = c.addr || c.name;
+    if (c.contact && !$("#c-name").value) $("#c-name").value = c.contact;
+    if (c.phone && !$("#c-phone").value) $("#c-phone").value = c.phone;
+    renderQuote();
+  }
+  $("#o-store").addEventListener("change", applyStore);
+
   // ---------- Loop / init ----------
   function renderAll() {
-    if (current === "order") { renderQuote(); renderCart(); }
+    if (current === "order") { fillStores(); renderQuote(); renderCart(); }
+    if (current === "clients") renderClients();
     if (current === "track") renderTrack();
     if (current === "driver") renderDriver();
     if (current === "dispatch") renderDispatch();
   }
   setInterval(syncFromCloud, 3000);
   setInterval(() => { if (current === "track" || current === "dispatch") renderAll(); }, 5000);
-  window.addEventListener("storage", e => { if (e.key === KEY) renderAll(); });
+  window.addEventListener("storage", e => { if (e.key === KEY || e.key === CKEY) renderAll(); });
 
   renderStores(); renderCart(); setSyncBanner(false); syncFromCloud();
   const h = location.hash.slice(1);
   if (h.startsWith("track=")) { trackId = decodeURIComponent(h.slice(6)); $("#t-id").value = trackId; show("track"); }
-  else show(["order", "track", "driver", "dispatch"].includes(h) ? h : "order");
+  else show(["order", "track", "driver", "dispatch", "clients"].includes(h) ? h : "order");
 })();
 </script>
 </body>
