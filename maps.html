@@ -8,8 +8,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="S7 Global">
-<title>S7 Global — Maps Setup Tracker</title>
+<meta name="apple-mobile-web-app-title" content="s7Go">
+<title>s7Go — Local Maps Setup — Client Tracker</title>
 <style>
   * { box-sizing: border-box; margin: 0; }
   body { font-family: -apple-system, Arial, Helvetica, sans-serif; background: #0e1a2e; color: #eef3fa; padding: 16px 14px 40px; }
@@ -59,9 +59,9 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="seven">7</div>
+    <svg width="46" height="46" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="s7Go logo"><rect width="64" height="64" rx="14" fill="#0D1626" stroke="#00E5FF" stroke-width="2"/><path d="M14 22H28L25 28H19L18 31H27L24 42H11L13 36H20L21 33H12L14 22Z" fill="#00E5FF"/><path d="M31 22H46L39 42H32L37 28H29L31 22Z" fill="#00E5FF"/><circle cx="51" cy="36" r="5" fill="#84CC16"/><path d="M51 27C47.7 27 45 29.7 45 33C45 37.5 51 44 51 44C51 44 57 37.5 57 33C57 29.7 54.3 27 51 27ZM51 35C49.9 35 49 34.1 49 33C49 31.9 49.9 31 51 31C52.1 31 53 31.9 53 33C53 34.1 52.1 35 51 35Z" fill="#FFFFFF"/></svg>
     <div>
-      <h1>S7 GLOBAL</h1>
+      <h1><span style="color:#00E5FF">s7</span>Go</h1>
       <div class="tag">Local Maps Setup — Client Tracker</div>
     </div>
   </header>
@@ -99,6 +99,8 @@
     <select id="fPkg">
       <option value="full">Full Setup — $250 ($125 + $125)</option>
       <option value="basic">Basic Listing — $150 (due when live)</option>
+      <option value="care49">Basic Care — $49/mo (hours, photos &amp; review alerts)</option>
+      <option value="pro150">Pro Growth — $150/mo (weekly posts, review replies &amp; monthly report)</option>
     </select>
     <label>Google review link (add once they're live)</label>
     <input id="fReview" placeholder="https://g.page/...">
@@ -131,7 +133,15 @@ var clients = load(KEY, []), cfg = load(CFG, { deposit: "", balance: "" });
 function load(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
 function save() { localStorage.setItem(KEY, JSON.stringify(clients)); localStorage.setItem(CFG, JSON.stringify(cfg)); }
 function money(n) { return "$" + n.toLocaleString("en-US"); }
-function amounts(c) { return c.pkg === "full" ? { dep: 125, bal: 125, total: 250 } : { dep: 0, bal: 150, total: 150 }; }
+var PKGS = {
+  full: { dep: 125, bal: 125, total: 250, label: "Full Setup $250" },
+  basic: { dep: 0, bal: 150, total: 150, label: "Basic $150" },
+  care49: { dep: 0, bal: 49, total: 49, label: "Basic Care $49/mo", care: true, name: "Basic Care" },
+  pro150: { dep: 0, bal: 150, total: 150, label: "Pro Growth $150/mo", care: true, name: "Pro Growth" }
+};
+function pkgOf(c) { return PKGS[c.pkg] || PKGS.basic; }
+function amounts(c) { var p = pkgOf(c); return { dep: p.dep, bal: p.bal, total: p.total }; }
+function isCare(c) { return !!pkgOf(c).care; }
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]; }); }
 function toast(msg) { var t = document.getElementById("toast"); t.textContent = msg; t.className = "toast show"; setTimeout(function () { t.className = "toast"; }, 1600); }
 function copyText(txt, msg) {
@@ -156,7 +166,7 @@ function render() {
       payRows += '<div class="pay"><span><span class="amt">' + money(a.dep) + '</span> deposit — 50% upfront</span>' +
         '<label class="toggle"><input type="checkbox" data-act="dep" data-i="' + i + '"' + (c.depPaid ? " checked" : "") + '><i></i></label></div>';
     }
-    payRows += '<div class="pay"><span><span class="amt">' + money(a.bal) + '</span> ' + (c.pkg === "full" ? "final balance — due when live" : "full payment — due when live") + '</span>' +
+    payRows += '<div class="pay"><span><span class="amt">' + money(a.bal) + '</span> ' + (isCare(c) ? "monthly payment — renews monthly" : (c.pkg === "full" ? "final balance — due when live" : "full payment — due when live")) + '</span>' +
       '<label class="toggle"><input type="checkbox" data-act="bal" data-i="' + i + '"' + (c.balPaid ? " checked" : "") + '><i></i></label></div>';
     var copyRow = '<div class="row">' +
       (a.dep > 0 ? '<button class="btn alt small" data-act="copyDep" data-i="' + i + '">Copy ' + money(a.dep) + ' deposit link</button>' : "") +
@@ -167,7 +177,7 @@ function render() {
       '<button class="btn ghost small" data-act="remind" data-i="' + i + '">Copy payment reminder</button>' +
       '<div id="qr-' + i + '" style="display:none;text-align:center;margin-top:10px"></div>';
     return '<div class="card">' +
-      '<div class="client-head"><div><h2>' + esc(c.store) + '</h2><div class="meta">' + esc(c.owner || "") + (c.phone ? " · " + esc(c.phone) : "") + " · " + (c.pkg === "full" ? "Full Setup $250" : "Basic $150") + '</div></div>' +
+      '<div class="client-head"><div><h2>' + esc(c.store) + '</h2><div class="meta">' + esc(c.owner || "") + (c.phone ? " · " + esc(c.phone) : "") + " · " + pkgOf(c).label + '</div></div>' +
       '<button class="del" data-act="del" data-i="' + i + '">Remove</button></div>' +
       '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="meta">Store verification — ' + STAGES[c.stage] + " · " + pct + '% complete</div>' +
@@ -183,22 +193,22 @@ function render() {
 function liveText(c) {
   return "Hey " + (c.owner || "there") + ", great news! " + c.store + " is officially verified and live on Google Search and Google Maps. You can search for " + c.store + " right now and you'll see your pin, photos, and hours." +
     (c.review ? " I also attached your custom 5-Star Review QR Code so you can print it for the front counter." : "") +
-    " Whenever you're ready, just send the remaining balance here: " + (cfg.balance || "[balance link]") + " and I'll mark your account as complete. Thanks again for trusting S7 Global!";
+    " Whenever you're ready, just send the remaining balance here: " + (cfg.balance || "[balance link]") + " and I'll mark your account as complete. Thanks again for trusting s7Go!";
 }
 function reminderText(c) {
   var a = amounts(c);
   var owed = a.total - (c.depPaid ? a.dep : 0) - (c.balPaid ? a.bal : 0);
-  return "Hey " + (c.owner || "there") + ", just circling back on " + c.store + " — your map pin and review QR code are live and working well. Quick reminder: the remaining " + money(owed) + " balance for your S7 Global Maps Setup is due now that you're live. You can send it here: " + (cfg.balance || "[balance link]") + ". Thanks again for trusting S7 Global!";
+  return "Hey " + (c.owner || "there") + ", just circling back on " + c.store + " — your map pin and review QR code are live and working well. Quick reminder: the remaining " + money(owed) + (isCare(c) ? " monthly care payment for your s7Go Maps Setup is due. You can send it here: " : " balance for your s7Go Maps Setup is due now that you're live. You can send it here: ") + (cfg.balance || "[balance link]") + ". Thanks again for trusting s7Go!";
 }
 function receiptText(c) {
   var a = amounts(c);
-  return "S7 Global – Local Search & Maps Setup Receipt\n" +
+  return "s7Go – Local Search & Maps Setup Receipt\n" +
     "• Client: " + c.store + "\n" +
     "• Service: Complete setup & verification on Google Search, Google Maps, and Apple Maps + Custom Customer Review QR Code\n" +
-    "• Total Flat Fee: " + money(a.total) + ".00\n" +
-    "• Deposit Paid Today: " + money(c.depPaid ? a.dep : 0) + ".00\n" +
-    "• Remaining Balance Due Upon Live Listing: " + money(a.total - (c.depPaid ? a.dep : 0) - (c.balPaid ? a.bal : 0)) + ".00\n" +
-    "• Ownership: " + c.store + " retains 100% full ownership of all profiles. S7 Global is added strictly as a setup manager and can be removed at any time. No monthly fees unless requested separately.";
+    (isCare(c) ? "• Monthly Care Plan (" + pkgOf(c).name + "): " + money(a.total) + ".00/month\n" : "• Total Flat Fee: " + money(a.total) + ".00\n") +
+    (isCare(c) ? "" : "• Deposit Paid Today: " + money(c.depPaid ? a.dep : 0) + ".00\n") +
+    (isCare(c) ? "• Monthly Amount Due: " + money(a.total - (c.depPaid ? a.dep : 0) - (c.balPaid ? a.bal : 0)) + ".00\n" : "• Remaining Balance Due Upon Live Listing: " + money(a.total - (c.depPaid ? a.dep : 0) - (c.balPaid ? a.bal : 0)) + ".00\n") +
+    "• Ownership: " + c.store + " retains 100% full ownership of all profiles. s7Go is added strictly as a setup manager and can be removed at any time." + (isCare(c) ? " Care plan billed monthly." : " No monthly fees unless requested separately.");
 }
 
 document.getElementById("clients").addEventListener("click", function (e) {
