@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="s7Go">
 <title>s7Go | Local Delivery &amp; Courier — Atlanta &amp; East Point</title>
 <meta name="description" content="s7Go by S7 Global: order local food or book an express courier in metro Atlanta, track your driver live, or drive and earn.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,6 +122,45 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
 .msghead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:.88rem}
 .msgbox summary{cursor:pointer;color:var(--cyan);font-size:.85rem;font-weight:700;margin-top:6px;min-height:32px;display:flex;align-items:center}
 .msgtext{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:.88rem;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:6px 0 0;color:var(--text)}
+.paybar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:18px}
+.paytile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.paytile span{color:var(--muted);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.paytile b{font-family:"Archivo Black",sans-serif;font-size:1.35rem;font-weight:400;overflow-wrap:anywhere}
+.paytile small{color:var(--muted);font-size:.75rem}
+.paytile.hl{border-color:#11606a;background:linear-gradient(160deg,#08dff21f,var(--surface))}.paytile.hl b{color:var(--cyan)}
+.paytile.warn b{color:var(--gold)}
+.paylink{grid-column:1/-1;justify-self:end;background:none;border:0;color:var(--gold);font:700 .85rem "DM Sans",sans-serif;cursor:pointer;min-height:32px;padding:0}
+@media(max-width:820px){.paybar{grid-template-columns:repeat(2,1fr)}.paytile.hl{grid-column:1/-1}}
+.payrow{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:.88rem;color:var(--muted)}
+.payrow b{color:var(--text)}.payrow .pbtn{margin-left:auto}
+.script{display:grid;gap:10px;margin-top:12px}
+.beat{background:var(--surface2);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;padding:12px 14px;font-size:1.08rem;line-height:1.6;transition:border-color .2s,background .2s}
+.beat .tag{display:block;color:var(--cyan);font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.beat.on{border-color:var(--cyan);border-left-color:var(--cyan);background:#08dff214}
+.beat.past{opacity:.55}
+.beat mark{background:#08dff22e;color:var(--text);border-radius:4px;padding:0 3px}
+.beat mark.blank{background:#f7bd4a33;color:var(--gold)}
+.timerbar{position:relative;height:30px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);margin-top:12px;overflow:hidden}
+.timerbar div{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#08dff255,#08dff2);transition:width .25s linear}
+.timerbar span{position:relative;display:flex;align-items:center;justify-content:center;height:100%;font-weight:800;font-size:.85rem}
+.rules{margin:12px 0;padding:0;list-style:none;display:grid;gap:8px}
+.rules li{padding-left:26px;position:relative}
+.rules li::before{content:"✓";position:absolute;left:4px;color:var(--ok);font-weight:800}
+.rules li.no::before{content:"✕";color:var(--bad)}
+.chkgroup{margin-top:12px}.chkgroup h3{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin:0 0 6px}
+.chk{display:flex;gap:12px;align-items:flex-start;margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:var(--text);font-size:.95rem;cursor:pointer;margin-top:6px}
+.chk input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:var(--ok)}
+.chk small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+.chk:has(input:checked){border-color:#1f5a40}.chk:has(input:checked) span{color:var(--muted);text-decoration:line-through}
+.donebox{margin-top:12px;padding:12px 14px;border-radius:12px;border:1px solid #1f5a40;background:#52d69a14;color:var(--ok);font-weight:700}
+.donebox .pbtn{margin-top:8px}
+.warn-text{color:var(--gold)}
+.gear{position:relative;min-width:44px;padding:0;font-size:1.15rem;cursor:pointer;font-family:inherit;background:none;border:0;color:var(--text)}
+.gear .dot{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--bg)}
+dialog#settings{width:min(520px,calc(100% - 24px));max-height:calc(100dvh - 24px);overflow:auto;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;padding:20px}
+dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
+.setsec{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.setsec h3{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin:0 0 10px}
 .order select{padding:8px 10px;font-size:.85rem;width:auto;min-height:40px}
 .order input.pin-in{width:110px;padding:9px 10px;min-height:40px}
 .leaflet-container{background:#0d121b;font-family:"DM Sans",sans-serif}
@@ -130,8 +175,38 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
 <body>
 <header class="ptop"><nav class="pnav">
   <a class="mark" href="#" data-navtab="order"><span class="seven">7</span>s7Go</a>
-  <div class="pnav-r"><a class="plink" href="#" data-navtab="track">Track</a><a class="plink" href="#" data-navtab="driver">Drive</a><a class="ptext" href="#" data-navtab="dispatch">Dispatch</a></div>
+  <div class="pnav-r"><a class="plink" href="#" data-navtab="track">Track</a><a class="plink" href="#" data-navtab="driver">Drive</a><a class="ptext" href="#" data-navtab="dispatch">Dispatch</a><button class="ptext gear" type="button" id="open-settings" aria-label="Settings and backup" title="Settings and backup">⚙<span class="dot" id="backup-dot" hidden></span></button></div>
 </nav></header>
+  <section class="paybar" id="paybar" aria-label="Revenue and payout summary"></section>
+<dialog id="settings" aria-labelledby="set-title">
+  <div class="phead"><h2 id="set-title">Settings &amp; backup</h2><button class="pbtn sm ghost" type="button" id="close-settings" aria-label="Close">✕</button></div>
+  <p class="muted small" style="margin:0">Everything lives in this browser only. Back up to a file before clearing your browser or switching phones.</p>
+
+  <div class="setsec">
+    <h3>Back up</h3>
+    <div class="stats" id="bk-counts" style="grid-template-columns:repeat(3,1fr);margin-top:0"></div>
+    <p class="small" id="bk-last" style="margin:10px 0 0"></p>
+    <button class="pbtn primary" type="button" id="bk-save">Save backup file</button>
+    <div class="prow"><button class="pbtn sm" type="button" id="bk-copy">Copy backup as text</button></div>
+  </div>
+
+  <div class="setsec">
+    <h3>Restore</h3>
+    <p class="muted small" style="margin:0">Choose a backup file, or paste backup text below.</p>
+    <label class="pbtn" style="margin-top:10px;width:100%" for="rs-file">Choose backup file</label>
+    <input type="file" id="rs-file" accept=".json,application/json,text/plain" hidden>
+    <textarea id="rs-text" rows="3" placeholder="…or paste backup text here" style="margin-top:8px"></textarea>
+    <div id="rs-preview" hidden>
+      <p class="small" id="rs-summary" style="margin:10px 0 0"></p>
+      <div class="prow">
+        <button class="pbtn sm primary inline" type="button" id="rs-merge">Merge into my data</button>
+        <button class="pbtn sm" type="button" id="rs-replace">Replace everything</button>
+      </div>
+      <p class="muted small" style="margin:6px 0 0">Merge keeps everything you have and adds or updates items from the backup. Replace erases what's here first.</p>
+    </div>
+    <p class="pmsg" id="rs-msg" role="status"></p>
+  </div>
+</dialog>
 
 <main class="pwrap">
   <p class="eyebrow">S7 Global · East Point &amp; Metro Atlanta</p>
@@ -144,6 +219,7 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
     <button class="tab" role="tab" data-tab="driver" aria-selected="false">Drive</button>
     <button class="tab" role="tab" data-tab="dispatch" aria-selected="false">Dispatch</button>
     <button class="tab" role="tab" data-tab="clients" aria-selected="false">Clients</button>
+    <button class="tab" role="tab" data-tab="pitch" aria-selected="false">Pitch</button>
   </div>
 
   <!-- ORDER -->
@@ -327,6 +403,10 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
         <select id="cl-area"></select>
         <label for="cl-addr">Street address</label>
         <input id="cl-addr" placeholder="789 Ponce de Leon Ave NE">
+        <div class="grid2" style="gap:10px">
+          <div><label for="cl-deposit">Deposit collected ($)</label><input id="cl-deposit" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+          <div><label for="cl-bal" id="cl-bal-label">Balance</label><select id="cl-bal"><option value="due">Pending</option><option value="paid">Paid</option></select></div>
+        </div>
         <label>Status</label>
         <div class="seg" style="grid-template-columns:1fr 1fr">
           <label><input type="radio" name="cl-status" value="claimed" checked><span>Claimed<small>Signed up, not live</small></span></label>
@@ -340,12 +420,70 @@ select:focus,textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
       <div class="pcard">
         <div class="phead"><h2>Client stores</h2>
           <select id="cl-filter" aria-label="Filter stores" style="width:auto">
-            <option value="all">All</option><option value="claimed">Claimed</option><option value="live">Live</option>
+            <option value="all">All</option><option value="claimed">Claimed</option><option value="live">Live</option><option value="due">Balance pending</option><option value="paid">Paid in full</option>
           </select>
         </div>
         <div class="stats" id="cl-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
         <input id="cl-search" type="search" placeholder="Search stores" aria-label="Search stores" style="margin-top:12px">
         <ul class="olist" id="cl-list"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PITCH -->
+  <section id="v-pitch" role="tabpanel" hidden>
+    <div class="pcard">
+      <div class="phead"><h2>Who are you visiting?</h2><span class="pill cy" id="p-progress-pill">0/0</span></div>
+      <div class="grid2" style="gap:10px">
+        <div><label for="p-store">Store</label><select id="p-store"></select></div>
+        <div><label for="p-me">Your name (for the script)</label><input id="p-me" autocomplete="given-name" placeholder="Your first name"></div>
+      </div>
+      <div id="p-walkin" class="grid2" style="gap:10px">
+        <div><label for="p-wname">Store name</label><input id="p-wname" placeholder="Corner Market"></div>
+        <div><label for="p-wcontact">Owner or manager</label><input id="p-wcontact" placeholder="First name"></div>
+      </div>
+      <div class="prow" id="p-walkin-act"><button class="pbtn sm" type="button" id="p-save-walkin">Save as Claimed store</button></div>
+    </div>
+
+    <div class="pcard">
+      <div class="phead"><h2>30-second pitch</h2>
+        <div class="prow" style="margin:0">
+          <button class="pbtn sm primary inline" type="button" id="p-timer">Practice: start 30s</button>
+          <button class="pbtn sm" type="button" id="p-edit">Edit script</button>
+        </div>
+      </div>
+      <div class="timerbar" id="p-timerbar" hidden><div id="p-timerfill"></div><span id="p-timerlabel">30s</span></div>
+      <div id="p-script" class="script"></div>
+      <div id="p-editor" hidden>
+        <label for="p-text">Script. Use {first}, {store}, {area} and {me}; they fill in for the store you picked. Start a paragraph with [Label · 0–5s] to tag a beat for the timer.</label>
+        <textarea id="p-text" rows="14"></textarea>
+        <div class="prow"><button class="pbtn sm primary inline" type="button" id="p-save-script">Save script</button><button class="pbtn sm" type="button" id="p-cancel-script">Cancel</button><button class="pbtn sm ghost" type="button" id="p-reset-script">Reset to default</button></div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="pcard">
+        <h2>Google's video rules</h2>
+        <p class="muted small" style="margin:0">The owner or manager records this on <b>their</b> phone, signed in to <b>their</b> Google Business Profile. You coach; they hold the phone.</p>
+        <ul class="rules">
+          <li>One continuous take: no edits, no breaks</li>
+          <li>At least 30 seconds long</li>
+          <li>Recorded live in the Business Profile on a phone. A video recorded earlier can't be uploaded.</li>
+          <li class="no">No bank, tax or ID numbers on screen</li>
+          <li class="no">No private info about anyone</li>
+          <li class="no">No other people's faces: wait for customers to clear the shot</li>
+        </ul>
+        <p class="muted small">Source: Google Business Profile Help, "Verify your business with a video recording". Google reviews videos in up to 5 business days.</p>
+      </div>
+      <div class="pcard">
+        <div class="phead"><h2>Verification checklist</h2>
+          <select id="p-type" aria-label="Business type" style="width:auto">
+            <option value="storefront">Storefront</option><option value="sab">Service-area</option>
+          </select>
+        </div>
+        <div id="p-checks"></div>
+        <div id="p-done" class="donebox" hidden></div>
+        <div class="prow"><button class="pbtn sm ghost" type="button" id="p-reset-checks">Reset checklist for this store</button></div>
       </div>
     </div>
   </section>
@@ -930,6 +1068,31 @@ Thanks for partnering with S7 Global!`;
   }
   const markNotified = id => { const l = loadC(), c = l.find(x => x.id === id); if (c) { c.notifiedAt = Date.now(); saveC(l); } renderAll(); };
 
+  // ---------- Revenue & payouts (from the delivery-4 build) ----------
+  const BALANCE_DUE = 125; // balance each client store owes after its deposit
+  const whole = n => "$" + Math.round(n).toLocaleString();
+  $("#cl-bal-label").textContent = whole(BALANCE_DUE) + " balance";
+  const cashFmt = n => (Number.isInteger(Math.round(n * 100) / 100) ? whole(n) : "$" + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  const orderTotal = o => { const t = Number(o.total); return Number.isFinite(t) ? t : (o.items || []).reduce((s, i) => s + (Number(i.price) || 0) * (Number(i.qty) || 1), 0); };
+  function renderPaybar() {
+    const stores = loadC(), orders = load();
+    const deposits = stores.reduce((s, c) => s + (Number(c.deposit) || 0), 0);
+    const paid = stores.filter(c => c.balancePaid), due = stores.filter(c => !c.balancePaid);
+    const balancesIn = paid.length * BALANCE_DUE, pending = due.length * BALANCE_DUE;
+    const deliveries = orders.filter(o => o.status === "delivered").reduce((s, o) => s + orderTotal(o), 0);
+    const collected = deposits + balancesIn + deliveries;
+    const tiles = [
+      ["Total collected", cashFmt(collected), "Deposits + balances + deliveries", "hl"],
+      ["Deposits collected", cashFmt(deposits), `${stores.filter(c => Number(c.deposit) > 0).length} of ${stores.length} store${stores.length === 1 ? "" : "s"}`],
+      ["Pending balances", cashFmt(pending), `${due.length} × ${whole(BALANCE_DUE)} due`, pending ? "warn" : ""],
+      ["Balances paid", cashFmt(balancesIn), `${paid.length} store${paid.length === 1 ? "" : "s"} paid in full`],
+      ["Delivery revenue", cashFmt(deliveries), `${orders.filter(o => o.status === "delivered").length} delivered`],
+    ];
+    $("#paybar").innerHTML = tiles.map(([k, v, sub, cls = ""]) => `<div class="paytile ${cls}"><span>${k}</span><b>${v}</b><small>${sub}</small></div>`).join("") +
+      (due.length ? `<button class="paylink" type="button" id="pay-due">See ${due.length} pending →</button>` : "");
+    const btn = $("#pay-due"); if (btn) btn.onclick = () => { $("#cl-filter").value = "due"; show("clients"); };
+  }
+
   const clStatusVal = () => document.querySelector("input[name=cl-status]:checked").value;
   function resetClientForm() {
     $("#cl-form").reset(); $("#cl-id").value = ""; fillAreas($("#cl-area"), "East Point");
@@ -946,13 +1109,17 @@ Thanks for partnering with S7 Global!`;
     const l = loadC(), id = $("#cl-id").value;
     const dup = l.find(c => c.id !== id && c.name.toLowerCase() === name.toLowerCase());
     if (dup) { msg.textContent = dup.name + " is already on the list."; return; }
-    const data = { name, contact: $("#cl-contact").value.trim(), phone: $("#cl-phone").value.trim(), email, area: $("#cl-area").value, addr: $("#cl-addr").value.trim(), notes: $("#cl-notes").value.trim(), status: clStatusVal() };
+    const depRaw = $("#cl-deposit").value.trim();
+    const dep = depRaw === "" ? 0 : Number(depRaw);
+    if (!Number.isFinite(dep) || dep < 0) { msg.textContent = "Deposit must be a dollar amount of 0 or more."; $("#cl-deposit").focus(); return; }
+    const balancePaid = $("#cl-bal").value === "paid";
+    const data = { name, contact: $("#cl-contact").value.trim(), phone: $("#cl-phone").value.trim(), email, area: $("#cl-area").value, addr: $("#cl-addr").value.trim(), notes: $("#cl-notes").value.trim(), status: clStatusVal(), deposit: Math.round(dep * 100) / 100, balancePaid };
     if (id) {
       const c = l.find(x => x.id === id);
-      if (c) { if (c.status !== data.status) c.statusAt = Date.now(); Object.assign(c, data); }
+      if (c) { if (c.status !== data.status) c.statusAt = Date.now(); if (balancePaid && !c.balancePaid) c.balancePaidAt = Date.now(); Object.assign(c, data); }
       saveC(l); toast(name + " updated.");
     } else {
-      saveC([{ id: "c" + Date.now().toString(36), created: Date.now(), statusAt: Date.now(), ...data }, ...l]);
+      saveC([{ id: "c" + Date.now().toString(36), created: Date.now(), statusAt: Date.now(), ...(balancePaid ? { balancePaidAt: Date.now() } : {}), ...data }, ...l]);
       toast(name + " saved as " + (data.status === "live" ? "Live" : "Claimed") + ".");
     }
     resetClientForm(); msg.textContent = ""; renderAll();
@@ -964,7 +1131,7 @@ Thanks for partnering with S7 Global!`;
     const live = l.filter(c => c.status === "live").length;
     $("#cl-stats").innerHTML = [[l.length, "Stores"], [l.length - live, "Claimed"], [live, "Live"]]
       .map(([n, k]) => `<div class="stat"><b>${n}</b><span>${k}</span></div>`).join("");
-    const shown = l.filter(c => (f === "all" || c.status === f) && (!q || [c.name, c.contact, c.area, c.addr].join(" ").toLowerCase().includes(q)));
+    const shown = l.filter(c => (f === "all" || (f === "due" ? !c.balancePaid : f === "paid" ? !!c.balancePaid : c.status === f)) && (!q || [c.name, c.contact, c.area, c.addr].join(" ").toLowerCase().includes(q)));
     $("#cl-list").innerHTML = shown.length ? shown.map(c => {
       const isLive = c.status === "live";
       const n = orders.filter(o => o.store === c.id).length;
@@ -974,7 +1141,13 @@ Thanks for partnering with S7 Global!`;
         <div class="l2">${esc(c.addr ? c.addr + ", " : "")}${esc(c.area)} · ${n} deliver${n === 1 ? "y" : "ies"}</div>
         ${contact ? `<div class="l2">${contact}</div>` : ""}
         ${c.notes ? `<div class="l2">Note: ${esc(c.notes)}</div>` : ""}
-        <div class="l2">${isLive ? "Live" : "Claimed"} since ${new Date(c.statusAt || c.created).toLocaleDateString([], { month: "short", day: "numeric" })}</div>
+        <div class="l2">${isLive ? "Live" : "Claimed"} since ${new Date(c.statusAt || c.created).toLocaleDateString([], { month: "short", day: "numeric" })}${(() => { const p = pitchProgress(c.id); return p.done ? ` · Video checklist ${p.done}/${p.total}` : ""; })()}</div>
+        ${isLive ? "" : `<div class="acts" style="margin-top:6px"><button class="pbtn sm" data-clact="pitch" data-id="${c.id}">Open pitch &amp; checklist</button></div>`}
+        <div class="payrow">
+          <span>Deposit <b>${cashFmt(Number(c.deposit) || 0)}</b></span>
+          <span>${whole(BALANCE_DUE)} balance <span class="pill ${c.balancePaid ? "ok" : "warn"}">${c.balancePaid ? "Paid" + (c.balancePaidAt ? " " + new Date(c.balancePaidAt).toLocaleDateString([], { month: "short", day: "numeric" }) : "") : "Pending"}</span></span>
+          <button class="pbtn sm ${c.balancePaid ? "ghost" : ""}" data-clact="balance" data-id="${c.id}">${c.balancePaid ? "Undo paid" : "Mark " + whole(BALANCE_DUE) + " paid"}</button>
+        </div>
         <div class="acts">
           <button class="switch" role="switch" aria-checked="${isLive}" data-clact="toggle" data-id="${c.id}" aria-label="${esc(c.name)} is ${isLive ? "Live" : "Claimed"}. Switch status"><span class="knob"></span>${isLive ? "Live" : "Claimed"}</button>
           <button class="pbtn sm" data-clact="edit" data-id="${c.id}">Edit</button>
@@ -1003,6 +1176,7 @@ Thanks for partnering with S7 Global!`;
     if (act === "edit") {
       $("#cl-id").value = c.id; $("#cl-name").value = c.name; $("#cl-contact").value = c.contact; $("#cl-phone").value = c.phone;
       $("#cl-email").value = c.email; fillAreas($("#cl-area"), c.area); $("#cl-addr").value = c.addr; $("#cl-notes").value = c.notes;
+      $("#cl-deposit").value = c.deposit ? c.deposit : ""; $("#cl-bal").value = c.balancePaid ? "paid" : "due";
       document.querySelector(`input[name=cl-status][value=${c.status}]`).checked = true;
       $("#cl-form-title").textContent = "Edit store"; $("#cl-submit").textContent = "Save changes"; $("#cl-cancel").hidden = false;
       $("#cl-name").focus(); $("#cl-form").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1011,6 +1185,12 @@ Thanks for partnering with S7 Global!`;
     if (act === "send") { show("order"); $("#o-store").value = c.id; applyStore(); }
     if (act === "copy") copyTextC(liveMessage(c)).then(ok => { if (ok) { markNotified(c.id); toast("Copied the Live message for " + c.name + "."); } else toast("Couldn't copy. Open the preview and copy it by hand."); });
     if (act === "sms" || act === "mail") setTimeout(() => markNotified(c.id), 0);
+    if (act === "pitch") { show("pitch"); selectPitch(c.id); }
+    if (act === "balance") {
+      if (c.balancePaid && !confirm("Mark " + c.name + "'s " + whole(BALANCE_DUE) + " balance as pending again?")) return;
+      c.balancePaid = !c.balancePaid; c.balancePaidAt = c.balancePaid ? Date.now() : null; saveC(l); renderAll();
+      toast(c.balancePaid ? c.name + ": " + whole(BALANCE_DUE) + " balance marked paid." : c.name + ": balance back to pending.");
+    }
   });
 
   // Live client stores appear as quick pickup choices on the courier form.
@@ -1030,21 +1210,253 @@ Thanks for partnering with S7 Global!`;
   $("#o-store").addEventListener("change", applyStore);
 
   // ---------- Loop / init ----------
+  // ---------- Pitch & verification (from the delivery-5 build) ----------
+  const PKEY = "s7-delivery-pitch-v1";
+  const DEFAULT_SCRIPT = `[Hook · 0–5s]
+Hi {first}! I'm {me} with S7 Global, right here in Atlanta. Quick question: when people search for {store} on Google, do they find you with the right hours?
+
+[Problem · 5–15s]
+A lot of shops around {area} have a Google listing that isn't claimed or verified, so customers see old info, or can't find you at all and buy from the place down the street.
+
+[Offer · 15–25s]
+We get your listing claimed and verified with you today, it's a quick video on your phone, and we set you up so customers can get same-day delivery from your store through S7.
+
+[Ask · 25–30s]
+A small deposit gets you started today, and the $125 balance is due once you're live. Want to knock out the video now while I'm here?`;
+  const CHECKS = {
+    storefront: [
+      ["Before you record", [
+        ["signin", "Owner or manager is signed in to their Business Profile on their phone", "Profile → Get verified → Business video → Next"],
+        ["name", "The name on the profile matches the sign exactly", "Fix the profile name first if it doesn't"],
+        ["perms", "Phone allows location, camera and microphone", "Tap allow when the app asks"],
+        ["clear", "Register area is clear of customers' faces and paperwork", ""],
+      ]],
+      ["Record: one take, 30+ seconds", [
+        ["loc", "Start outside: street sign, building number or the shops next door", "Proves the business is where Google Maps says"],
+        ["sign", "Pan to the permanent sign showing the business name", "Signboard, wall or window lettering"],
+        ["inside", "Walk in: storefront, showroom, shelves or menu", ""],
+        ["mgmt", "Proof of management: open the register, POS, kitchen or back room", "Something only staff can access"],
+      ]],
+      ["Finish", [
+        ["review", "Watch it back: all three proofs visible and 30s or longer", "Tap Try again to re-record if anything is missing"],
+        ["upload", "Tap Upload video and wait for it to finish", "If it fails, upload again"],
+        ["approved", "Google approved the video", "Review takes up to 5 business days"],
+      ]],
+    ],
+    sab: [
+      ["Before you record", [
+        ["signin", "Owner or manager is signed in to their Business Profile on their phone", "Profile → Get verified → Business video → Next"],
+        ["name", "Business name on documents or vehicle matches the profile", ""],
+        ["perms", "Phone allows location, camera and microphone", ""],
+      ]],
+      ["Record: one take, 30+ seconds", [
+        ["loc", "Where they operate: street signs or landmarks at the business address", "Not empty land; show clear markers"],
+        ["tools", "Proof it exists: tools, equipment, products, branded vehicle or apparel", ""],
+        ["mgmt", "Proof of management: doing the work, unlocking the branded van, or a permit/invoice/utility bill in the business name", "Cover any account or ID numbers"],
+      ]],
+      ["Finish", [
+        ["review", "Watch it back: all three proofs visible and 30s or longer", ""],
+        ["upload", "Tap Upload video and wait for it to finish", ""],
+        ["approved", "Google approved the video", "Review takes up to 5 business days"],
+      ]],
+    ],
+  };
+  let pmem = {};
+  const loadP = () => { try { return JSON.parse(localStorage.getItem(PKEY)) || pmem; } catch { return pmem; } };
+  const saveP = s => { pmem = s; try { localStorage.setItem(PKEY, JSON.stringify(s)); } catch {} };
+  const pState = () => { const s = loadP(); s.checks ||= {}; s.types ||= {}; return s; };
+  const WALKIN = "_walkin";
+  const pickedId = () => $("#p-store").value || WALKIN;
+  const checkItems = type => CHECKS[type].flatMap(g => g[1]);
+  function pitchProgress(id) {
+    const s = pState(), type = s.types[id] || "storefront", items = checkItems(type), done = s.checks[id] || [];
+    return { done: items.filter(i => done.includes(i[0])).length, total: items.length };
+  }
+  function fillPitchStores() {
+    const sel = $("#p-store"), cur = sel.value, stores = loadC();
+    sel.innerHTML = '<option value="">New walk-in (not saved yet)</option>' + stores.map(c => `<option value="${c.id}">${esc(c.name)} · ${c.status === "live" ? "Live" : "Claimed"}</option>`).join("");
+    const want = sel.dataset.init ? cur : (pState().sel || ""); sel.dataset.init = "1";
+    sel.value = stores.some(c => c.id === want) ? want : "";
+    const walk = !sel.value; $("#p-walkin").hidden = !walk; $("#p-walkin-act").hidden = !walk;
+  }
+  function pitchVars() {
+    const c = loadC().find(x => x.id === $("#p-store").value), s = pState();
+    const name = c ? c.name : $("#p-wname").value.trim(), contact = c ? c.contact : $("#p-wcontact").value.trim();
+    return { first: (contact || "").split(/\s+/)[0] || "there", store: name || "your store", area: c ? c.area : "the neighborhood", me: s.me || "" };
+  }
+  function renderScript() {
+    const s = pState(), v = pitchVars(), text = s.script || DEFAULT_SCRIPT;
+    const fill = str => esc(str).replace(/\{(first|store|area|me)\}/g, (_, k) => v[k] ? `<mark>${esc(v[k])}</mark>` : `<mark class="blank">[your name]</mark>`);
+    $("#p-script").innerHTML = text.trim().split(/\n\s*\n/).map((para, i) => {
+      const m = para.match(/^\[([^\]]+)\]\s*\n?/); const tag = m ? m[1] : "";
+      const r = tag.match(/(\d+)\s*[–-]\s*(\d+)\s*s/);
+      return `<div class="beat" data-from="${r ? r[1] : ""}" data-to="${r ? r[2] : ""}">${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${fill(m ? para.slice(m[0].length) : para).replace(/\n/g, "<br>")}</div>`;
+    }).join("");
+  }
+  function renderChecks() {
+    const s = pState(), id = pickedId(), type = s.types[id] || "storefront", done = s.checks[id] || [];
+    $("#p-type").value = type;
+    $("#p-checks").innerHTML = CHECKS[type].map(([title, items]) => `<div class="chkgroup"><h3>${esc(title)}</h3>${items.map(([k, t, sub]) =>
+      `<label class="chk"><input type="checkbox" data-chk="${k}"${done.includes(k) ? " checked" : ""}><div><span>${esc(t)}</span>${sub ? `<small>${esc(sub)}</small>` : ""}</div></label>`).join("")}</div>`).join("");
+    const p = pitchProgress(id);
+    $("#p-progress-pill").textContent = `Checklist ${p.done}/${p.total}`;
+    $("#p-progress-pill").className = "pill " + (p.done === p.total ? "ok" : p.done ? "cy" : "");
+    const c = loadC().find(x => x.id === id), approved = done.includes("approved"), box = $("#p-done");
+    box.hidden = !approved;
+    if (approved) box.innerHTML = c ? (c.status === "live" ? `${esc(c.name)} is verified and Live.` : `Verified! Switch ${esc(c.name)} to Live, then send them the Live message.<br><button class="pbtn sm primary inline" type="button" id="p-golive">Switch ${esc(c.name)} to Live</button>`)
+      : "Verified! Save this walk-in as a store to track it.";
+  }
+  function renderPitch() {
+    fillPitchStores();
+    const s = pState(); if (document.activeElement !== $("#p-me")) $("#p-me").value = s.me || "";
+    renderScript(); renderChecks();
+  }
+  function selectPitch(id) { const s = pState(); s.sel = id; saveP(s); $("#p-store").value = id; renderPitch(); }
+  $("#p-store").addEventListener("change", () => selectPitch($("#p-store").value));
+  ["#p-wname", "#p-wcontact"].forEach(sel => $(sel).addEventListener("input", renderScript));
+  $("#p-me").addEventListener("input", () => { const s = pState(); s.me = $("#p-me").value.trim(); saveP(s); renderScript(); });
+  $("#p-type").addEventListener("change", () => { const s = pState(); s.types[pickedId()] = $("#p-type").value; saveP(s); renderChecks(); });
+  $("#p-checks").addEventListener("change", e => {
+    const k = e.target.dataset.chk; if (!k) return;
+    const s = pState(), id = pickedId(), set = new Set(s.checks[id] || []);
+    e.target.checked ? set.add(k) : set.delete(k); s.checks[id] = [...set]; saveP(s); renderChecks();
+  });
+  $("#p-reset-checks").addEventListener("click", () => { if (!confirm("Clear the checklist for this store?")) return; const s = pState(); delete s.checks[pickedId()]; saveP(s); renderChecks(); });
+  $("#v-pitch").addEventListener("click", e => {
+    if (e.target.id !== "p-golive") return;
+    const l = loadC(), c = l.find(x => x.id === $("#p-store").value); if (!c) return;
+    c.status = "live"; c.statusAt = Date.now(); saveC(l); toast(`${c.name} is now Live. Send them the Live message from Clients.`); renderAll();
+  });
+  $("#p-save-walkin").addEventListener("click", () => {
+    const name = $("#p-wname").value.trim(); if (!name) { toast("Add the store name first."); $("#p-wname").focus(); return; }
+    const l = loadC(); if (l.some(c => c.name.toLowerCase() === name.toLowerCase())) { toast(`${name} is already on your client list.`); return; }
+    const id = "c" + Date.now().toString(36);
+    saveC([{ id, created: Date.now(), statusAt: Date.now(), name, contact: $("#p-wcontact").value.trim(), phone: "", email: "", area: "Midtown", addr: "", notes: "Added from a walk-in pitch. Set the area and address.", status: "claimed", deposit: 0, balancePaid: false }, ...l]);
+    const s = pState(); if (s.checks[WALKIN]) { s.checks[id] = s.checks[WALKIN]; delete s.checks[WALKIN]; } if (s.types[WALKIN]) { s.types[id] = s.types[WALKIN]; delete s.types[WALKIN]; } saveP(s);
+    $("#p-wname").value = ""; $("#p-wcontact").value = "";
+    renderPitch(); selectPitch(id); toast(`${name} saved as Claimed. Add the area and address in Clients.`);
+  });
+  // Script editor
+  $("#p-edit").addEventListener("click", () => { $("#p-text").value = pState().script || DEFAULT_SCRIPT; $("#p-editor").hidden = false; $("#p-script").hidden = true; $("#p-text").focus(); });
+  const closeEditor = () => { $("#p-editor").hidden = true; $("#p-script").hidden = false; renderScript(); };
+  $("#p-cancel-script").addEventListener("click", closeEditor);
+  $("#p-save-script").addEventListener("click", () => { const s = pState(), t = $("#p-text").value.trim(); if (t && t !== DEFAULT_SCRIPT) s.script = t; else delete s.script; saveP(s); closeEditor(); toast("Script saved."); });
+  $("#p-reset-script").addEventListener("click", () => { if (!confirm("Replace your script with the default?")) return; const s = pState(); delete s.script; saveP(s); closeEditor(); toast("Default script restored."); });
+  // 30s practice timer: highlights the beat you should be on
+  let ptimer = null;
+  function stopTimer(label) {
+    clearInterval(ptimer); ptimer = null; $("#p-timer").textContent = "Practice: start 30s";
+    document.querySelectorAll(".beat").forEach(b => b.classList.remove("on", "past"));
+    if (label) { $("#p-timerlabel").textContent = label; } else $("#p-timerbar").hidden = true;
+  }
+  $("#p-timer").addEventListener("click", () => {
+    if (ptimer) return stopTimer();
+    const t0 = Date.now(), LEN = 30; $("#p-timerbar").hidden = false; $("#p-timer").textContent = "Stop";
+    const tickP = () => {
+      const sec = (Date.now() - t0) / 1000;
+      if (sec >= LEN) { $("#p-timerfill").style.width = "100%"; return stopTimer("Time! 30 seconds"); }
+      $("#p-timerfill").style.width = (sec / LEN * 100) + "%"; $("#p-timerlabel").textContent = Math.ceil(LEN - sec) + "s left";
+      document.querySelectorAll(".beat").forEach(b => {
+        const from = Number(b.dataset.from), to = Number(b.dataset.to); if (b.dataset.from === "") return;
+        b.classList.toggle("on", sec >= from && sec < to); b.classList.toggle("past", sec >= to);
+      });
+    };
+    tickP(); ptimer = setInterval(tickP, 250);
+  });
+
+  // ---------- Settings: backup & restore (from the delivery-6 build) ----------
+  const MKEY = "s7-delivery-meta-v1";
+  const loadM = () => { try { return JSON.parse(localStorage.getItem(MKEY)) || {}; } catch { return {}; } };
+  const saveM = m => { try { localStorage.setItem(MKEY, JSON.stringify(m)); } catch {} };
+  const BACKUP_APP = "s7-delivery";
+  const makeBackup = () => ({ app: BACKUP_APP, version: 1, exportedAt: new Date().toISOString(), data: { clients: loadC(), orders: load(), pitch: loadP() } });
+  const backupName = () => `s7-delivery-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  const ago = t => { const d = Math.floor((Date.now() - t) / 86400000); return d <= 0 ? "today" : d === 1 ? "yesterday" : `${d} days ago`; };
+  const hasData = () => loadC().length || load().length;
+  function renderSettings() {
+    const m = loadM();
+    $("#bk-counts").innerHTML = [[loadC().length, "Stores"], [load().length, "Orders"], [Object.keys(pState().checks).length, "Checklists"]]
+      .map(([n, k]) => `<div class="stat"><b>${n}</b><span>${k}</span></div>`).join("");
+    const last = $("#bk-last");
+    last.className = "small " + (m.lastBackup && Date.now() - m.lastBackup < 7 * 86400000 ? "muted" : "warn-text");
+    last.textContent = m.lastBackup ? `Last backup: ${new Date(m.lastBackup).toLocaleDateString([], { month: "short", day: "numeric" })} (${ago(m.lastBackup)})` : "You haven't backed up yet.";
+    renderBackupDot();
+  }
+  function renderBackupDot() {
+    const m = loadM(); $("#backup-dot").hidden = !(hasData() && (!m.lastBackup || Date.now() - m.lastBackup > 7 * 86400000));
+  }
+  const markBackedUp = () => { const m = loadM(); m.lastBackup = Date.now(); saveM(m); renderSettings(); };
+  $("#open-settings").addEventListener("click", () => { renderSettings(); resetRestore(); $("#settings").showModal(); });
+  $("#close-settings").addEventListener("click", () => $("#settings").close());
+  $("#settings").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
+  $("#bk-save").addEventListener("click", async () => {
+    const text = JSON.stringify(makeBackup(), null, 2), name = backupName();
+    const file = typeof File === "function" ? new File([text], name, { type: "application/json" }) : null;
+    // Phones: open the share sheet (Save to Files, AirDrop, email). Desktop: download the file.
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: "S7 Delivery backup" }); markBackedUp(); toast("Backup saved."); return; }
+      catch (err) { if (err && err.name === "AbortError") return; }
+    }
+    const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    markBackedUp(); toast(`Backup downloaded: ${name}`);
+  });
+  $("#bk-copy").addEventListener("click", async () => {
+    if (await copyTextC(JSON.stringify(makeBackup()))) { markBackedUp(); toast("Backup copied. Paste it into Notes or an email to yourself."); }
+    else toast("Couldn't copy. Use Save backup file instead.");
+  });
+
+  let pending = null;
+  function resetRestore() { pending = null; $("#rs-preview").hidden = true; $("#rs-msg").textContent = ""; $("#rs-text").value = ""; $("#rs-file").value = ""; }
+  function parseBackup(text) {
+    const msg = $("#rs-msg"); pending = null; $("#rs-preview").hidden = true; msg.className = "pmsg err";
+    let b; try { b = JSON.parse(text); } catch { msg.textContent = "That isn't a backup file. It should be the .json file this app saved."; return; }
+    const d = b && b.data;
+    if (!b || b.app !== BACKUP_APP || !d || !Array.isArray(d.clients) || !Array.isArray(d.orders)) { msg.textContent = "That file isn't an S7 Delivery backup."; return; }
+    const okStore = c => c && typeof c.id === "string" && typeof c.name === "string";
+    const okOrder = o => o && typeof o.id === "string" && Array.isArray(o.history) && o.pick && o.drop && typeof o.total === "number";
+    const bad = d.clients.filter(c => !okStore(c)).length + d.orders.filter(o => !okOrder(o)).length;
+    pending = { clients: d.clients.filter(okStore), orders: d.orders.filter(okOrder), pitch: d.pitch && typeof d.pitch === "object" ? d.pitch : {} };
+    msg.textContent = ""; $("#rs-preview").hidden = false;
+    $("#rs-summary").textContent = `Backup from ${new Date(b.exportedAt).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}: ${pending.clients.length} stores, ${pending.orders.length} orders.` + (bad ? ` ${bad} damaged item${bad === 1 ? "" : "s"} will be skipped.` : "");
+  }
+  $("#rs-file").addEventListener("change", () => { const f = $("#rs-file").files[0]; if (!f) return; if (f.size > 5e6) { $("#rs-msg").className = "pmsg err"; $("#rs-msg").textContent = "That file is too big to be a backup."; return; } f.text().then(parseBackup); });
+  $("#rs-text").addEventListener("input", () => { const t = $("#rs-text").value.trim(); if (t) parseBackup(t); else { pending = null; $("#rs-preview").hidden = true; $("#rs-msg").textContent = ""; } });
+  const mergeById = (mine, theirs) => { const map = new Map(mine.map(x => [x.id, x])); theirs.forEach(x => map.set(x.id, x)); return [...map.values()]; };
+  const saveOrdersRestored = list => { saveLocal(list); list.forEach(o => { try { cloudPut(o); } catch {} }); };
+  function applyRestore(replace) {
+    if (!pending) return;
+    if (replace && hasData() && !confirm(`Replace everything here (${loadC().length} stores, ${load().length} orders) with the backup? This can't be undone.`)) return;
+    if (replace) { saveC(pending.clients); saveOrdersRestored(pending.orders); saveP(pending.pitch); }
+    else {
+      saveC(mergeById(loadC(), pending.clients)); saveOrdersRestored(mergeById(load(), pending.orders));
+      const p = pState(), q = pending.pitch || {};
+      saveP({ ...p, ...q, me: p.me || q.me, script: p.script || q.script, checks: { ...(q.checks || {}), ...p.checks }, types: { ...(q.types || {}), ...p.types }, sel: p.sel || q.sel });
+    }
+    const n = pending; resetRestore(); $("#settings").close(); renderAll();
+    toast(`Restored ${n.clients.length} stores and ${n.orders.length} orders.`);
+  }
+  $("#rs-merge").addEventListener("click", () => applyRestore(false));
+  $("#rs-replace").addEventListener("click", () => applyRestore(true));
+
   function renderAll() {
+    renderPaybar(); renderBackupDot();
     if (current === "order") { fillStores(); renderQuote(); renderCart(); }
     if (current === "clients") renderClients();
+    if (current === "pitch") renderPitch();
     if (current === "track") renderTrack();
     if (current === "driver") renderDriver();
     if (current === "dispatch") renderDispatch();
   }
   setInterval(syncFromCloud, 3000);
   setInterval(() => { if (current === "track" || current === "dispatch") renderAll(); }, 5000);
-  window.addEventListener("storage", e => { if (e.key === KEY || e.key === CKEY) renderAll(); });
+  window.addEventListener("storage", e => { if (e.key === KEY || e.key === CKEY || e.key === PKEY) renderAll(); });
 
-  renderStores(); renderCart(); setSyncBanner(false); syncFromCloud();
+  renderStores(); renderCart(); renderPaybar(); setSyncBanner(false); syncFromCloud();
   const h = location.hash.slice(1);
   if (h.startsWith("track=")) { trackId = decodeURIComponent(h.slice(6)); $("#t-id").value = trackId; show("track"); }
-  else show(["order", "track", "driver", "dispatch", "clients"].includes(h) ? h : "order");
+  else show(["order", "track", "driver", "dispatch", "clients", "pitch"].includes(h) ? h : "order");
 })();
 </script>
 </body>
