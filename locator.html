@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="s7Go">
+<meta name="theme-color" content="#060B14">
+<title>s7Go — 7-Eleven Locator</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root{--navy:#060B14;--card:#0D1626;--line:#1e2a3d;--cyan:#00E5FF;--lime:#84CC16;--red:#ff5a5a;--muted:#9db4d0;--text:#eef3fa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--navy);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+  header{display:flex;align-items:center;gap:10px;padding:14px 16px}
+  header .word{font-size:24px;font-weight:800;letter-spacing:-.5px}
+  header .word span{color:var(--cyan)}
+  header .tag{color:var(--muted);font-size:13px;margin-left:2px}
+  #map{height:300px;width:100%;background:#0a1220}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:12px;padding:16px}
+  .card h2{margin:0 0 6px;font-size:17px}
+  .card p{margin:0 0 10px;color:var(--muted);font-size:14px}
+  input{width:100%;padding:12px;border-radius:12px;border:1px solid #22314a;background:#0a1220;color:#fff;font-size:16px;margin:4px 0 8px}
+  button{background:var(--cyan);color:#060B14;border:0;padding:13px 16px;border-radius:999px;font-weight:800;width:100%;margin-top:8px;font-size:15px;cursor:pointer}
+  button.alt{background:#132238;color:var(--text);border:1px solid #22314a}
+  .store{border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 12px 10px;background:var(--card)}
+  .store.nearest{border-color:var(--cyan)}
+  .store .nm{font-weight:800;font-size:16px}
+  .store .meta{color:var(--muted);font-size:13px;margin:4px 0}
+  .open{color:var(--lime);font-weight:800}
+  .closed{color:var(--red);font-weight:800}
+  .unk{color:var(--muted);font-weight:700}
+  .dist{color:var(--cyan);font-weight:800}
+  .dir{display:inline-block;margin-top:8px;background:var(--cyan);color:#060B14;text-decoration:none;font-weight:800;padding:9px 16px;border-radius:999px;font-size:14px}
+  .pill{display:inline-block;background:#132238;border:1px solid #22314a;color:var(--cyan);border-radius:999px;font-size:11px;font-weight:800;padding:3px 9px;margin-left:8px;vertical-align:2px}
+  #status{margin:0 12px 10px;color:var(--muted);font-size:14px;min-height:18px}
+  footer{color:var(--muted);font-size:12px;text-align:center;padding:6px 16px 22px}
+  a.back{color:var(--cyan);text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <svg width="38" height="38" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="s7Go logo"><rect width="64" height="64" rx="14" fill="#0D1626" stroke="#00E5FF" stroke-width="2"/><path d="M14 22H28L25 28H19L18 31H27L24 42H11L13 36H20L21 33H12L14 22Z" fill="#00E5FF"/><path d="M31 22H46L39 42H32L37 28H29L31 22Z" fill="#00E5FF"/><circle cx="51" cy="36" r="5" fill="#84CC16"/><path d="M51 27C47.7 27 45 29.7 45 33C45 37.5 51 44 51 44C51 44 57 37.5 57 33C57 29.7 54.3 27 51 27ZM51 35C49.9 35 49 34.1 49 33C49 31.9 49.9 31 51 31C52.1 31 53 31.9 53 33C53 34.1 52.1 35 51 35Z" fill="#FFFFFF"/></svg>
+  <div>
+    <div class="word"><span>s7</span>Go</div>
+    <div class="tag">7-Eleven Locator</div>
+  </div>
+</header>
+
+<div id="map"></div>
+
+<div class="card">
+  <h2>Find a 7-Eleven near you</h2>
+  <p>Use your GPS, or search by ZIP / city. Stores are sorted by distance, nearest first.</p>
+  <input id="q" type="text" placeholder="Enter ZIP or city, e.g. Atlanta, GA" autocomplete="off">
+  <button type="button" id="btnSearch">Search</button>
+  <button type="button" class="alt" id="btnGps">📍 Use My Location</button>
+</div>
+
+<div id="status"></div>
+<div id="results"></div>
+
+<footer>Store data © OpenStreetMap contributors · Open/closed status comes from the hours listed on OpenStreetMap and may lag a store's real hours.<br><br><a class="back" href="./">← Back to s7Go delivery</a></footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var map = L.map("map").setView([33.749, -84.388], 11);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map);
+var userMarker = null, storeLayer = L.layerGroup().addTo(map);
+
+function distance(lat1, lon1, lat2, lon2) {
+  var R = 6371000, t = Math.PI / 180;
+  var dLat = (lat2 - lat1) * t, dLon = (lon2 - lon1) * t;
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * t) * Math.cos(lat2 * t) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+function fmtDist(m) { return (m / 1609.34).toFixed(1) + " mi"; }
+
+var DAY_ORDER = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+function dayMatches(part, today) {
+  var ti = DAY_ORDER.indexOf(today);
+  return part.split(",").some(function (seg) {
+    seg = seg.trim();
+    var mm = seg.match(/^(Mo|Tu|We|Th|Fr|Sa|Su)-(Mo|Tu|We|Th|Fr|Sa|Su)$/);
+    if (mm) {
+      var a = DAY_ORDER.indexOf(mm[1]), b = DAY_ORDER.indexOf(mm[2]);
+      return a <= b ? (ti >= a && ti <= b) : (ti >= a || ti <= b);
+    }
+    return seg === today;
+  });
+}
+function parseOpen(oh, now) {
+  if (!oh) return { state: "unknown", label: "Hours not listed" };
+  var raw = String(oh).trim();
+  if (raw === "24/7") return { state: "open", label: "Open 24 hours" };
+  var days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+  var today = days[now.getDay()];
+  var mins = now.getHours() * 60 + now.getMinutes();
+  var anyRule = false, open = false;
+  var rules = raw.split(";").map(function (s) { return s.trim(); }).filter(Boolean);
+  for (var i = 0; i < rules.length; i++) {
+    var m = rules[i].match(/^(?:((?:Mo|Tu|We|Th|Fr|Sa|Su)(?:\s*[-,]\s*(?:Mo|Tu|We|Th|Fr|Sa|Su))*)\s+)?(.+)$/);
+    if (!m) continue;
+    var dayPart = m[1], timePart = m[2].trim();
+    if (timePart === "24/7" || timePart === "00:00-24:00") {
+      if (!dayPart || dayMatches(dayPart, today)) return { state: "open", label: "Open 24 hours" };
+      continue;
+    }
+    var ranges = timePart.split(",");
+    var valid = [];
+    for (var j = 0; j < ranges.length; j++) {
+      var rm = ranges[j].trim().match(/^(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})$/);
+      if (rm) { valid.push(rm); anyRule = true; }
+    }
+    if (!valid.length) continue;
+    if (dayPart && !dayMatches(dayPart, today)) continue;
+    for (var k = 0; k < valid.length; k++) {
+      var rm2 = valid[k];
+      var a = (+rm2[1]) * 60 + (+rm2[2]);
+      var b = (+rm2[3]) * 60 + (+rm2[4]);
+      if (b === 0) b = 1440;
+      if (b > a) { if (mins >= a && mins < b) open = true; }
+      else if (mins >= a || mins < b) open = true;
+    }
+  }
+  if (open) return { state: "open", label: "Open now" };
+  if (anyRule) return { state: "closed", label: "Closed now" };
+  return { state: "unknown", label: "Hours: " + raw };
+}
+
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]; }); }
+function setStatus(t) { document.getElementById("status").textContent = t || ""; }
+
+function storeAddr(tags) {
+  var parts = [];
+  var street = [tags["addr:housenumber"], tags["addr:street"]].filter(Boolean).join(" ");
+  if (street) parts.push(street);
+  if (tags["addr:city"]) parts.push(tags["addr:city"]);
+  return parts.join(", ");
+}
+
+function renderStores(list) {
+  var box = document.getElementById("results");
+  storeLayer.clearLayers();
+  if (!list.length) { box.innerHTML = ""; setStatus("No 7-Eleven stores found within about 7 miles of that spot. Try a wider search."); return; }
+  var now = new Date();
+  box.innerHTML = list.map(function (s, i) {
+    var st = parseOpen(s.tags.opening_hours, now);
+    var cls = st.state === "open" ? "open" : (st.state === "closed" ? "closed" : "unk");
+    var addr = storeAddr(s.tags);
+    var dir = "https://www.google.com/maps/dir/?api=1&destination=" + s.lat + "," + s.lon;
+    return '<div class="store' + (i === 0 ? " nearest" : "") + '"><span class="nm">' + esc(s.name) + '</span>' +
+      (i === 0 ? '<span class="pill">NEAREST</span>' : "") +
+      '<div class="meta"><span class="dist">' + fmtDist(s.dist) + '</span> · <span class="' + cls + '">' + esc(st.label) + '</span></div>' +
+      (addr ? '<div class="meta">' + esc(addr) + '</div>' : "") +
+      '<a class="dir" target="_blank" rel="noopener" href="' + dir + '">Directions</a></div>';
+  }).join("");
+  list.forEach(function (s) {
+    L.marker([s.lat, s.lon]).addTo(storeLayer).bindPopup(esc(s.name) + "<br>" + fmtDist(s.dist));
+  });
+  setStatus(list.length + " store" + (list.length === 1 ? "" : "s") + " found — nearest is " + fmtDist(list[0].dist) + " away.");
+}
+
+async function fetchStores(lat, lon) {
+  setStatus("Searching for 7-Eleven stores nearby…");
+  var q = '[out:json][timeout:25];(node["brand"="7-Eleven"](around:12000,' + lat + "," + lon + ');way["brand"="7-Eleven"](around:12000,' + lat + "," + lon + '););out center 40;';
+  try {
+    var r = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: "data=" + encodeURIComponent(q) });
+    var j = await r.json();
+    var stores = (j.elements || []).map(function (e) {
+      var la = e.lat != null ? e.lat : (e.center || {}).lat;
+      var lo = e.lon != null ? e.lon : (e.center || {}).lon;
+      if (la == null || lo == null) return null;
+      var tags = e.tags || {};
+      return { name: tags.name || "7-Eleven", lat: la, lon: lo, tags: tags, dist: distance(lat, lon, la, lo) };
+    }).filter(Boolean);
+    stores.sort(function (a, b) { return a.dist - b.dist; });
+    renderStores(stores);
+  } catch (e) {
+    setStatus("Couldn't reach the store database — check your connection and try again.");
+  }
+}
+
+function markUser(lat, lon) {
+  if (userMarker) map.removeLayer(userMarker);
+  userMarker = L.circleMarker([lat, lon], { radius: 8, color: "#00E5FF", fillColor: "#00E5FF", fillOpacity: 0.9 }).addTo(map).bindPopup("You are here");
+  map.setView([lat, lon], 13);
+}
+
+function useGPS() {
+  if (!navigator.geolocation) { setStatus("This browser doesn't share location — search by ZIP or city instead."); return; }
+  setStatus("Getting your location…");
+  navigator.geolocation.getCurrentPosition(function (p) {
+    markUser(p.coords.latitude, p.coords.longitude);
+    fetchStores(p.coords.latitude, p.coords.longitude);
+  }, function () { setStatus("Location wasn't allowed — search by ZIP or city instead."); });
+}
+
+async function searchStores() {
+  var q = document.getElementById("q").value.trim();
+  if (!q) { setStatus("Type a ZIP or city first, or tap Use My Location."); return; }
+  setStatus("Looking up " + q + "…");
+  try {
+    var r = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(q));
+    var j = await r.json();
+    if (!j.length) { setStatus("Couldn't find that place — try another ZIP or city."); return; }
+    var lat = parseFloat(j[0].lat), lon = parseFloat(j[0].lon);
+    markUser(lat, lon);
+    fetchStores(lat, lon);
+  } catch (e) {
+    setStatus("Couldn't look that place up — check your connection and try again.");
+  }
+}
+
+document.getElementById("btnGps").addEventListener("click", useGPS);
+document.getElementById("btnSearch").addEventListener("click", searchStores);
+document.getElementById("q").addEventListener("keydown", function (e) { if (e.key === "Enter") searchStores(); });
+</script>
+</body>
+</html>
