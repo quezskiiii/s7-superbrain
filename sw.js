@@ -2,7 +2,7 @@
 // Pages and the manifest are NETWORK-FIRST: a new deploy shows up on the
 // next load, and the cache is only an offline fallback. Other files are
 // cache-first. Firebase order sync is never intercepted.
-const CACHE_NAME = "s7go-v2";
+const CACHE_NAME = "s7go-v3";
 const CORE = ["./", "./index.html", "./manifest.json", "./icon.png"];
 
 self.addEventListener("install", (event) => {

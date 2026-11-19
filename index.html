@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="s7Go">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#070a10">
+<meta name="theme-color" content="#060B14">
 <title>s7Go | Local Delivery &amp; Courier — Atlanta &amp; East Point</title>
 <meta name="description" content="s7Go by S7 Global: order local food or book an express courier in metro Atlanta, track your driver live, or drive and earn.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,8 +20,8 @@
 <style>
 /* ============ portal.css (inlined so this file stands alone) ============ */
 :root{
-  --bg:#070a10; --surface:#0d121b; --surface2:#131a26; --line:#22304a;
-  --text:#eef3f8; --muted:#93a3b8; --cyan:#08dff2; --gold:#f7bd4a;
+  --bg:#060B14; --surface:#0D1626; --surface2:#122036; --line:#1E2C47;
+  --text:#eef3f8; --muted:#93a3b8; --cyan:#00E5FF; --gold:#f7bd4a; --lime:#84CC16;
   --ok:#52d69a; --bad:#ff6b6b; --ink:#001114;
 }
 *{box-sizing:border-box}
@@ -30,7 +30,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",syste
 h1{font-family:"Archivo Black",sans-serif;font-size:clamp(1.9rem,5vw,2.9rem);line-height:1.05;margin:.15em 0 .3em}
 h2{font-family:"Archivo Black",sans-serif;font-size:1.05rem;margin:0;letter-spacing:.01em}
 a{color:var(--cyan)}
-.ptop{position:sticky;top:0;z-index:500;background:#070a10e6;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.ptop{position:sticky;top:0;z-index:500;background:#060B14e6;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .pnav{max-width:980px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .mark{font-family:"Archivo Black",sans-serif;color:var(--text);text-decoration:none;font-size:1.25rem;display:flex;align-items:center;gap:8px}
 .mark .seven{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--cyan);color:var(--ink);font-size:1.05rem}
@@ -177,12 +177,28 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
 #pod-sig{width:100%;height:160px;background:#fff;border-radius:12px;touch-action:none;display:block}
 #pod-photo-preview{width:100%;border-radius:12px;margin-top:8px}
 .share-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.pbtn.block{width:100%;margin-top:10px}
+.welwrap{position:fixed;inset:0;z-index:1300;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:28px 14px 40px;background:radial-gradient(640px 340px at 50% -60px,#00e5ff26,transparent 70%),var(--bg)}
+.welwrap[hidden]{display:none}
+.welcard{width:100%;max-width:430px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:26px 22px;box-shadow:0 24px 60px #00000080}
+.wel-logo{display:flex;justify-content:center;margin-bottom:10px}
+.wel-h{font-size:2rem;text-align:center}
+.welcard .eyebrow{text-align:center}
+.welcard .muted{text-align:center}
+.rolegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.rolecard{display:block;border:1px solid var(--line);background:var(--surface2);border-radius:14px;padding:12px 10px;cursor:pointer;margin:0}
+.rolecard input{position:absolute;opacity:0;width:1px;height:1px}
+.rolecard b{display:block;font-size:.98rem}
+.rolecard span{display:block;color:var(--muted);font-size:.76rem;margin-top:2px;line-height:1.35}
+.rolecard.sel{border-color:var(--cyan);outline:2px solid var(--cyan);outline-offset:0}
+.rolecard.sel b{color:var(--cyan)}
+.acct{border-color:var(--lime);color:var(--lime)}
 </style>
 </head>
 <body>
 <header class="ptop"><nav class="pnav">
   <a class="mark" href="#" data-navtab="order"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="s7Go logo"><rect width="64" height="64" rx="14" fill="#0D1626" stroke="#00E5FF" stroke-width="2"/><path d="M14 22H28L25 28H19L18 31H27L24 42H11L13 36H20L21 33H12L14 22Z" fill="#00E5FF"/><path d="M31 22H46L39 42H32L37 28H29L31 22Z" fill="#00E5FF"/><circle cx="51" cy="36" r="5" fill="#84CC16"/><path d="M51 27C47.7 27 45 29.7 45 33C45 37.5 51 44 51 44C51 44 57 37.5 57 33C57 29.7 54.3 27 51 27ZM51 35C49.9 35 49 34.1 49 33C49 31.9 49.9 31 51 31C52.1 31 53 31.9 53 33C53 34.1 52.1 35 51 35Z" fill="#FFFFFF"/></svg>s7Go</a>
-  <div class="pnav-r"><a class="plink" href="#" data-navtab="track">Track</a><a class="plink" href="#" data-navtab="driver">Drive</a><a class="ptext" href="#" data-navtab="dispatch">Dispatch</a><button class="ptext gear" type="button" id="open-settings" aria-label="Settings and backup" title="Settings and backup">⚙<span class="dot" id="backup-dot" hidden></span></button></div>
+  <div class="pnav-r"><a class="plink" href="#" data-navtab="track">Track</a><a class="plink" href="#" data-navtab="driver">Drive</a><a class="ptext" href="#" data-navtab="dispatch">Dispatch</a><button class="ptext acct" type="button" id="acct-btn" hidden>Account</button><button class="ptext gear" type="button" id="open-settings" aria-label="Settings and backup" title="Settings and backup">⚙<span class="dot" id="backup-dot" hidden></span></button></div>
 </nav></header>
   <section class="paybar" id="paybar" aria-label="Revenue and payout summary"></section>
 <dialog id="settings" aria-labelledby="set-title">
@@ -233,6 +249,69 @@ dialog#settings::backdrop{background:#000b;backdrop-filter:blur(3px)}
       <button class="pbtn" type="button" id="pod-skip">Skip proof</button>
       <button class="pbtn ghost" type="button" id="pod-cancel">Cancel</button>
     </div>
+  </div>
+</div>
+
+<div class="welwrap" id="welcome" hidden>
+  <div class="welcard">
+    <div id="w-home">
+      <div class="wel-logo"><svg width="84" height="84" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="s7Go logo"><rect width="64" height="64" rx="14" fill="#0D1626" stroke="#00E5FF" stroke-width="2"/><path d="M14 22H28L25 28H19L18 31H27L24 42H11L13 36H20L21 33H12L14 22Z" fill="#00E5FF"/><path d="M31 22H46L39 42H32L37 28H29L31 22Z" fill="#00E5FF"/><circle cx="51" cy="36" r="5" fill="#84CC16"/><path d="M51 27C47.7 27 45 29.7 45 33C45 37.5 51 44 51 44C51 44 57 37.5 57 33C57 29.7 54.3 27 51 27ZM51 35C49.9 35 49 34.1 49 33C49 31.9 49.9 31 51 31C52.1 31 53 31.9 53 33C53 34.1 52.1 35 51 35Z" fill="#FFFFFF"/></svg></div>
+      <p class="eyebrow">s7Go · East Point &amp; Metro Atlanta</p>
+      <h1 class="wel-h">Food, packages,<br>door to door.</h1>
+      <p class="muted">Create your free account to order food, book an express courier, drive and earn, or send deliveries for your store — the app opens set up for the service you pick.</p>
+      <div id="w-back" hidden>
+        <p style="text-align:center;margin:14px 0 0">Welcome back, <b id="w-back-name"></b></p>
+        <button class="pbtn primary" type="button" id="w-continue">Open the app</button>
+      </div>
+      <button class="pbtn primary" type="button" id="w-create-btn">Create account</button>
+      <button class="pbtn block" type="button" id="w-signin-btn">Sign in</button>
+      <p class="muted small" style="margin-top:14px">Your account lives on this device — no password, your phone number is your key.</p>
+    </div>
+    <form id="w-form" hidden>
+      <h2>Create your account</h2>
+      <label for="w-name">Full name</label>
+      <input id="w-name" autocomplete="name" placeholder="Your name">
+      <label for="w-phone">Mobile phone</label>
+      <input id="w-phone" inputmode="tel" autocomplete="tel" placeholder="(404) 555-0123">
+      <label for="w-email">Email (optional)</label>
+      <input id="w-email" inputmode="email" autocomplete="email" placeholder="you@email.com">
+      <label>What are you here to do?</label>
+      <div class="rolegrid" id="w-roles">
+        <label class="rolecard sel"><input type="radio" name="wrole" value="customer" checked><b>Order</b><span>Food &amp; express courier</span></label>
+        <label class="rolecard"><input type="radio" name="wrole" value="driver"><b>Drive</b><span>Deliver &amp; earn per trip</span></label>
+        <label class="rolecard"><input type="radio" name="wrole" value="store"><b>Store</b><span>Send deliveries for my business</span></label>
+      </div>
+      <p class="pmsg" id="w-msg" role="status"></p>
+      <button class="pbtn primary" type="submit">Create account &amp; open s7Go</button>
+      <button class="pbtn ghost block" type="button" id="w-back1">Back</button>
+    </form>
+    <form id="w-signin" hidden>
+      <h2>Sign in</h2>
+      <p class="muted small" style="text-align:left">Enter the phone number on your account.</p>
+      <label for="w-si-phone">Mobile phone</label>
+      <input id="w-si-phone" inputmode="tel" autocomplete="tel" placeholder="(404) 555-0123">
+      <p class="pmsg" id="w-si-msg" role="status"></p>
+      <button class="pbtn primary" type="submit">Sign in &amp; open s7Go</button>
+      <button class="pbtn ghost block" type="button" id="w-back2">Back</button>
+    </form>
+  </div>
+</div>
+
+<div class="podwrap" id="account" hidden>
+  <div class="podcard">
+  <div class="phead"><h2 id="acct-title">Your account</h2><button class="pbtn sm ghost" type="button" id="acct-close" aria-label="Close">✕</button></div>
+  <p class="small" id="acct-info" style="margin:0"></p>
+  <label>Your service — the app opens aligned to it</label>
+  <div class="rolegrid" id="acct-roles">
+    <label class="rolecard"><input type="radio" name="arole" value="customer"><b>Order</b><span>Food &amp; courier</span></label>
+    <label class="rolecard"><input type="radio" name="arole" value="driver"><b>Drive</b><span>Deliver &amp; earn</span></label>
+    <label class="rolecard"><input type="radio" name="arole" value="store"><b>Store</b><span>Store dispatch</span></label>
+  </div>
+  <div class="prow" style="margin-top:14px">
+    <button class="pbtn sm primary inline" type="button" id="acct-save-role">Save &amp; switch</button>
+    <button class="pbtn sm" type="button" id="acct-signout">Sign out</button>
+  </div>
+  <p class="muted small" style="margin:10px 0 0">Your account lives on this device. Signing out keeps it saved here — sign back in with your phone number.</p>
   </div>
 </div>
 
@@ -1723,6 +1802,93 @@ A small deposit gets you started today, and the $125 balance is due once you're 
   setInterval(() => { if (current === "track" || current === "dispatch") renderAll(); }, 5000);
   window.addEventListener("storage", e => { if (e.key === KEY || e.key === CKEY || e.key === PKEY) renderAll(); });
 
+  // ---------- Accounts: welcome screen, sign-up, service alignment ----------
+  const ACCT_KEY = "s7go_account_v1", SESS_KEY = "s7go_session_v1";
+  const ROLE_TAB = { customer: "order", driver: "driver", store: "dispatch" };
+  const ROLE_LABEL = { customer: "Order", driver: "Drive", store: "Store" };
+  const digitsOf = s => (s || "").replace(/\D/g, "");
+  const loadAcct = () => { try { return JSON.parse(localStorage.getItem(ACCT_KEY) || "null"); } catch { return null; } };
+  const saveAcct = a => { try { localStorage.setItem(ACCT_KEY, JSON.stringify(a)); } catch {} };
+  let acct = loadAcct();
+  const signedIn = () => !!acct && localStorage.getItem(SESS_KEY) === digitsOf(acct.phone);
+  function setChip() {
+    const b = $("#acct-btn");
+    if (!signedIn()) { b.hidden = true; return; }
+    b.hidden = false;
+    b.textContent = (acct.name.trim().split(/\s+/)[0] || "Account") + " · " + (ROLE_LABEL[acct.role] || "Order");
+  }
+  function prefillCheckout() {
+    if (!acct || acct.role !== "customer") return;
+    if (!$("#c-name").value) $("#c-name").value = acct.name;
+    if (!$("#c-phone").value) $("#c-phone").value = acct.phone;
+  }
+  function wStep(id) { ["w-home", "w-form", "w-signin"].forEach(x => { $("#" + x).hidden = x !== id; }); }
+  function openWelcome() {
+    const has = !!acct;
+    $("#w-back").hidden = !has;
+    if (has) $("#w-back-name").textContent = acct.name;
+    $("#w-create-btn").textContent = has ? "Create a new account" : "Create account";
+    wStep("w-home");
+    $("#welcome").hidden = false;
+  }
+  function enterApp() {
+    setChip(); prefillCheckout();
+    $("#welcome").hidden = true;
+    show(sharedOrder ? "track" : (ROLE_TAB[acct.role] || "order"));
+    toast("You're in, " + (acct.name.trim().split(/\s+/)[0] || "friend") + " — s7Go is set for " + (ROLE_LABEL[acct.role] || "Order") + ".");
+  }
+  function startSession(a) { acct = a; saveAcct(a); try { localStorage.setItem(SESS_KEY, digitsOf(a.phone)); } catch {} enterApp(); }
+  function wireRoleCards(wrapSel) {
+    const wrap = $(wrapSel);
+    wrap.addEventListener("change", () => {
+      wrap.querySelectorAll(".rolecard").forEach(c => c.classList.toggle("sel", c.querySelector("input").checked));
+    });
+  }
+  wireRoleCards("#w-roles"); wireRoleCards("#acct-roles");
+  $("#w-create-btn").addEventListener("click", () => wStep("w-form"));
+  $("#w-signin-btn").addEventListener("click", () => wStep("w-signin"));
+  $("#w-back1").addEventListener("click", () => wStep("w-home"));
+  $("#w-back2").addEventListener("click", () => wStep("w-home"));
+  $("#w-continue").addEventListener("click", () => { if (acct) startSession(acct); });
+  $("#w-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("#w-name").value.trim();
+    const phone = $("#w-phone").value.trim();
+    const email = $("#w-email").value.trim();
+    const role = (document.querySelector('input[name="wrole"]:checked') || {}).value || "customer";
+    const msg = $("#w-msg");
+    if (name.length < 2) { msg.textContent = "Please enter your name."; msg.className = "pmsg err"; return; }
+    if (digitsOf(phone).length < 10) { msg.textContent = "Please enter a valid 10-digit mobile number."; msg.className = "pmsg err"; return; }
+    msg.textContent = "";
+    startSession({ name, phone, email, role, createdAt: Date.now() });
+  });
+  $("#w-signin").addEventListener("submit", e => {
+    e.preventDefault();
+    const msg = $("#w-si-msg");
+    if (!acct) { msg.textContent = "No account on this device yet — go back and create one."; msg.className = "pmsg err"; return; }
+    if (digitsOf($("#w-si-phone").value) !== digitsOf(acct.phone)) { msg.textContent = "That number doesn't match the account on this device."; msg.className = "pmsg err"; return; }
+    msg.textContent = "";
+    startSession(acct);
+  });
+  $("#acct-btn").addEventListener("click", () => {
+    if (!acct) return;
+    $("#acct-info").textContent = acct.name + " · " + acct.phone + (acct.email ? " · " + acct.email : "");
+    document.querySelectorAll('input[name="arole"]').forEach(r => { r.checked = r.value === acct.role; });
+    $("#acct-roles").querySelectorAll(".rolecard").forEach(c => c.classList.toggle("sel", c.querySelector("input").checked));
+    $("#account").hidden = false;
+  });
+  $("#acct-close").addEventListener("click", () => { $("#account").hidden = true; });
+  $("#acct-save-role").addEventListener("click", () => {
+    const role = (document.querySelector('input[name="arole"]:checked') || {}).value;
+    if (acct && role) { acct.role = role; saveAcct(acct); }
+    $("#account").hidden = true; setChip(); prefillCheckout();
+    if (acct) { show(ROLE_TAB[acct.role] || "order"); toast("Service switched to " + (ROLE_LABEL[acct.role] || "Order") + "."); }
+  });
+  $("#acct-signout").addEventListener("click", () => {
+    try { localStorage.removeItem(SESS_KEY); } catch {}
+    $("#account").hidden = true; setChip(); openWelcome();
+  });
+
   renderStores(); renderCart(); renderPaybar(); setSyncBanner(false); syncFromCloud();
   // Deep links: ?order=S7-1234 opens that order's tracker; ?mode=driver /
   // ?mode=store (merchant) / ?mode=dispatch etc. open the matching tab.
@@ -1736,6 +1902,11 @@ A small deposit gets you started today, and the $125 balance is due once you're 
   else if (modeTab) show(modeTab);
   else if (h.startsWith("track=")) { trackId = decodeURIComponent(h.slice(6)); $("#t-id").value = trackId; show("track"); }
   else show(["order", "track", "driver", "dispatch", "clients", "pitch"].includes(h) ? h : "order");
+  // Account gate: a signed-in device skips the welcome screen and lands on
+  // its service tab (unless a deep link chose the tab); everyone else gets
+  // the welcome screen first.
+  if (signedIn()) { setChip(); prefillCheckout(); if (!(sharedOrder || modeTab || h)) show(ROLE_TAB[acct.role] || "order"); }
+  else openWelcome();
 })();
 </script>
 <script>
