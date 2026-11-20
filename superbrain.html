@@ -1365,7 +1365,7 @@
     </div>
 
     <div class="body-txt" style="padding:0 4px;margin-bottom:6px;"><strong style="color:var(--text);">Entry Read:</strong> Analysis only, from this tab's own live prices. It flags when the entry picture changes — the entry itself is always your tap, in Kalshi.</div>
-    <div class="body-txt" style="padding:0 4px;">If a price can't load, the card says so — a price is never shown as live when it isn't. A kept value is tagged "stale" with the time it was last seen.</div>
+    <div class="body-txt" style="padding:0 4px;">If a price can't load, the card says so — after a 20-second settle window once the tab or app opens, and never while a refresh is still loading, so the opening refresh gets its chance first. A kept value is then tagged "stale" with the time it was last seen.</div>
   </div>
 
   <!-- TAB 5: NIGHT PLAN -->
@@ -2140,6 +2140,30 @@
     return fetch(url, options).then(function (r) { clearTimeout(timer); return r; }, function (e) { clearTimeout(timer); throw e; });
   }
 
+  // ---- Warning discipline (same rule as EdgeBoard v2.51) ----
+  // A stale / couldn't-load / unavailable warning may only show when ALL are
+  // true: (1) the data really is stale or failed, (2) no load for it is in
+  // flight right now, and (3) 20 seconds have passed since the app opened
+  // (or came back to the front, or — for a tab's own feed — since that tab
+  // started loading), so the opening refresh has had its chance to land.
+  // Saved data still shows at once; a genuine failure shows after the
+  // window — delayed, never removed. Presentation only: no trading logic,
+  // gate or size reads any of this.
+  var APP_OPENED_AT = Date.now();
+  var SETTLE_MS = 20000;
+  function settleLeftMs(since) {
+    var start = Math.max(APP_OPENED_AT, Number(typeof lastResumeAt !== 'undefined' ? lastResumeAt : 0) || 0, Number(since) || 0);
+    return Math.max(0, SETTLE_MS - (Date.now() - start));
+  }
+  function mayWarn(isBad, inFlight, since) { return !!isBad && !inFlight && settleLeftMs(since) === 0; }
+  var settleTimers = {};
+  // Re-check a suppressed warning once the window ends (so it shows if the failure is still real).
+  function scheduleSettleRender(key, since, fn) {
+    var ms = settleLeftMs(since);
+    if (ms <= 0 || settleTimers[key]) return;
+    settleTimers[key] = setTimeout(function () { settleTimers[key] = null; try { fn(); } catch (e) {} }, ms + 60);
+  }
+
   // One JSON-RPC call, tried against each endpoint in turn (last-good first).
   // Resolves with the parsed `result`; rejects only when every endpoint fails.
   function rpcCall(method, params, timeoutMs) {
@@ -2277,24 +2301,29 @@
     var st = t15State[a.pair];
     if (!st) { st = t15State[a.pair] = { spot: null, spotAt: 0, strike: null, strikeWin: -1, stale: false, err: false }; }
     var winSec = Math.floor(Date.now() / 1000 / 900) * 900;
+    st.spotBusy = true;
     fetchWithTimeout('https://api.exchange.coinbase.com/products/' + a.pair + '/ticker', {}, 8000).then(function (r) {
       if (!r.ok) throw new Error('cb ticker');
       return r.json();
     }).then(function (j) {
+      st.spotBusy = false;
       var p = parseFloat(j && j.price);
       if (p > 0) { st.spot = p; st.spotAt = Date.now(); st.stale = false; st.err = false; erSample(a, p); }
       else { st.err = true; if (st.spot) st.stale = true; }
       renderTargets15();
     }).catch(function () {
+      st.spotBusy = false;
       st.err = true;
       if (st.spot) st.stale = true;
       renderTargets15();
     });
     if (st.strikeWin !== winSec) {
+      st.strikeBusy = true;
       fetchWithTimeout('https://api.exchange.coinbase.com/products/' + a.pair + '/candles?granularity=900', {}, 8000).then(function (r) {
         if (!r.ok) throw new Error('cb candles');
         return r.json();
       }).then(function (arr) {
+        st.strikeBusy = false;
         var c = null;
         (arr || []).forEach(function (x) { if (x && x[0] === winSec) c = x; });
         erRecordCbOpens(a, arr, winSec);
@@ -2302,6 +2331,7 @@
         else if (st.strikeWin !== winSec) { st.strike = null; }
         renderTargets15();
       }).catch(function () {
+        st.strikeBusy = false;
         if (st.strikeWin !== winSec) st.strike = null;
         renderTargets15();
       });
@@ -2324,7 +2354,7 @@
     var st = t15State[a.pair];
     if (st && st.strike != null && st.strikeWin * 1000 === winStart) {
       var kalDown = exp && kst && kst.winKey === exp.key && (kst.state === 'err' || kst.state === 'none');
-      return { value: st.strike, dec: a.dec, src: kalDown ? 'Coinbase candle open — Kalshi unavailable' : 'Coinbase candle open — Kalshi strike still loading' };
+      return { value: st.strike, dec: a.dec, src: (kalDown && kalWarnFor(a)) ? 'Coinbase candle open — Kalshi unavailable' : 'Coinbase candle open — Kalshi strike still loading' };
     }
     return null;
   }
@@ -2376,7 +2406,7 @@
     var tg = t15RoundTarget(a, winStart);
     if (!tg) {
       valEl.innerText = '—';
-      if (srcEl) srcEl.innerText = (st && st.err && st.strike == null) ? "Round target couldn't load — Coinbase candle and Kalshi strike both unavailable right now." : "Loading this round's strike…";
+      if (srcEl) srcEl.innerText = (st && st.strike == null && mayWarn(st.err, st.spotBusy || st.strikeBusy, t15OpenedAt)) ? "Round target couldn't load — Coinbase candle and Kalshi strike both unavailable right now." : "Loading this round's strike…";
       if (sideEl) { sideEl.innerText = ''; }
       return;
     }
@@ -2388,7 +2418,7 @@
         sideEl.innerText = 'Spot ' + t15Fmt(st.spot, a.dec) + ' is ' + (d >= 0 ? 'ABOVE' : 'BELOW') + ' the target by ' + t15Fmt(Math.abs(d), a.dec);
         sideEl.style.color = d >= 0 ? 'var(--green)' : 'var(--red)';
       } else {
-        sideEl.innerText = st && st.stale ? 'Spot is stale — no side shown until a live price lands' : 'Waiting for live spot…';
+        sideEl.innerText = (st && mayWarn(st.stale, st.spotBusy, t15OpenedAt)) ? 'Spot is stale — no side shown until a live price lands' : (st && st.stale ? 'Updating spot…' : 'Waiting for live spot…');
         sideEl.style.color = 'var(--muted)';
       }
     }
@@ -2409,7 +2439,7 @@
   // the target. After each settled LOSS the app names the mistake and
   // tightens one of its own call rules; after 10 straight wins on a coin it
   // loosens one step back. Win rates are shown rounded DOWN, never up.
-  var T15_GOAL_PCT = 99;
+  var T15_GOAL_PCT = 100;
   var T15_KEEP_ROWS = 2000;
   var t15SettleAt = {};
   function t15Rec() {
@@ -2652,7 +2682,7 @@
     } else {
       var gap = Math.ceil((T15_GOAL_PCT - exact) * 100) / 100;
       var lastChange = db.t15LearnLog.length ? db.t15LearnLog[0].coin + ': ' + db.t15LearnLog[0].text : 'no rule changes yet';
-      html += '<div class="warn-box" style="margin-bottom:8px;"><strong>Goal: ' + T15_GOAL_PCT + '% hit rate. Real win rate: ' + shown.toFixed(2) + '%</strong> (' + W + ' wins / ' + Lc + ' losses of ' + n + ' calls) — <strong>BELOW the goal by ' + gap.toFixed(2) + ' points.</strong>' + (n < 30 ? ' Only ' + n + ' settled calls so far — too few to trust this number yet.' : '') + '<br />Latest adjustment: ' + esc(lastChange) + '</div>';
+      html += '<div class="warn-box" style="margin-bottom:8px;"><strong>Goal: ' + T15_GOAL_PCT + '% hit rate. Real win rate: ' + shown.toFixed(2) + '%</strong> (' + W + ' wins / ' + Lc + ' losses of ' + n + ' calls) — <strong>BELOW the goal by ' + gap.toFixed(2) + ' points.</strong>' + (n < 50 ? ' Only ' + n + ' settled calls so far — too few to trust this number yet.' : '') + '<br />Latest adjustment: ' + esc(lastChange) + '</div>';
     }
     html += '<div class="body-txt" style="margin-bottom:8px;">The win rate counts only rounds where the app made a call. Rounds with no call are recorded as NO PLAY and never counted as wins. Shown to 2 decimals and always rounded down, never up. Tightening rules means fewer calls; it does not guarantee a higher hit rate.</div>';
     // Per coin
@@ -2714,12 +2744,12 @@
       var custom = t15Custom(a.pair);
       var ref = custom != null ? custom : st.strike;
       var strikeEl = document.getElementById('t15Strike-' + a.key);
-      strikeEl.innerText = st.strike != null ? t15Fmt(st.strike, a.dec) : (st.err ? "couldn't load" : 'loading…');
+      strikeEl.innerText = st.strike != null ? t15Fmt(st.strike, a.dec) : (mayWarn(st.err, st.strikeBusy || st.spotBusy, t15OpenedAt) ? "couldn't load" : 'loading…');
       var spotEl = document.getElementById('t15Spot-' + a.key);
       if (st.spot != null) {
-        spotEl.innerText = t15Fmt(st.spot, a.dec) + (st.stale ? ' — stale, last seen ' + new Date(st.spotAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '');
+        spotEl.innerText = t15Fmt(st.spot, a.dec) + (mayWarn(st.stale, st.spotBusy, t15OpenedAt) ? ' — stale, last seen ' + new Date(st.spotAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '');
       } else {
-        spotEl.innerText = st.err ? "price couldn't load" : 'loading…';
+        spotEl.innerText = mayWarn(st.err, st.spotBusy, t15OpenedAt) ? "price couldn't load" : 'loading…';
       }
       var distEl = document.getElementById('t15Dist-' + a.key);
       var pill = document.getElementById('t15Pill-' + a.key);
@@ -2746,8 +2776,10 @@
     renderEntryReads();
     t15KalOnTick();
   }
+  var t15OpenedAt = 0; // when the Targets tab's own feeds started loading (settle window)
   function t15Start() {
     if (!document.getElementById('targets')) return;
+    if (!t15SpotTimer) t15OpenedAt = Date.now();
     renderTargets15();
     t15FetchAll();
     renderKalshi();
@@ -2879,6 +2911,8 @@
       });
     };
     var hardErr = false;
+    st.inflight = (st.inflight || 0) + 1;
+    var kalDone = function () { st.inflight = Math.max(0, (st.inflight || 0) - 1); };
     fetchWithTimeout(KAL_BASE + '/markets/' + marketTicker, {}, 8000).then(function (r) {
       if (r.status === 404) return null; // bare market miss — try the event, which carries its markets
       if (!r.ok) { hardErr = true; return null; }
@@ -2887,11 +2921,13 @@
       if (m) return m;
       return viaEvents();
     }).then(function (m) {
+      kalDone();
       if (st.winKey !== exp.key) return; // window rolled while this was in flight
       if (m) kalApplyMarket(a, m, marketTicker);
       else st.state = hardErr ? 'err' : 'none';
       renderKalshi();
     }).catch(function () {
+      kalDone();
       if (st.winKey !== exp.key) return;
       st.state = 'err';
       renderKalshi();
@@ -2910,6 +2946,13 @@
       if (!st || st.winKey !== exp.key) { t15KalFetchAll(); return; }
     }
   }
+  // True only when Kalshi's failure for THIS round may be shown (EdgeBoard rule).
+  function kalWarnFor(a) {
+    var k = kalState[a.pair];
+    var exp = t15KalExpiry();
+    if (!k || !exp || k.winKey !== exp.key) return false;
+    return mayWarn(k.state === 'err' || k.state === 'none', (k.inflight || 0) > 0, t15OpenedAt);
+  }
   function renderKalshi() {
     var exp = t15KalExpiry();
     var curKey = exp ? exp.key : 0;
@@ -2920,6 +2963,9 @@
       var html = '<div class="body-txt" style="margin-bottom:4px;">Kalshi prices: public market data, no account connected — read-only, exactly as it should be.</div>';
       if (st.winKey !== curKey || st.state === 'idle' || st.state === 'loading') {
         html += '<div class="body-txt">Kalshi: loading…</div>';
+      } else if ((st.state === 'err' || st.state === 'none') && !kalWarnFor(a)) {
+        html += '<div class="body-txt">Kalshi: loading…</div>';
+        scheduleSettleRender('kal', t15OpenedAt, renderKalshi);
       } else if (st.state === 'err') {
         html += '<div class="body-txt">Kalshi: couldn\'t load</div>';
       } else if (st.state === 'none') {
@@ -3020,7 +3066,7 @@
     var kalSt = kalState[a.pair];
     if (kalSt && curKey && kalSt.winKey === curKey && (kalSt.state === 'err' || kalSt.state === 'none')) {
       // Kalshi strikes can't load — build the regime from the Coinbase candle opens instead.
-      return erRegimeClassify(erCbHist[a.pair] || [], a, a.dec, 'candle opens', 'Regime from Coinbase candle opens (Kalshi unavailable)');
+      return erRegimeClassify(erCbHist[a.pair] || [], a, a.dec, 'candle opens', 'Regime from Coinbase candle opens (' + (kalWarnFor(a) ? 'Kalshi unavailable' : 'Kalshi still loading') + ')');
     }
     var h = erHist[a.pair] || [];
     if (!h.length && !(kalSt && curKey && kalSt.winKey === curKey && (kalSt.state === 'live' || kalSt.state === 'settled'))) {
@@ -3064,11 +3110,13 @@
       else if (kalStrike != null) { ref = kalStrike; refName = 'the Kalshi strike'; }
       else if (kalFailed && cbOpen != null) {
         ref = cbOpen; refName = 'the Coinbase candle open'; refDec = a.dec;
-        fallbackNote = '<div class="body-txt" style="margin-bottom:4px;color:var(--amber);">Kalshi unavailable — Entry Read is measuring against the Coinbase candle open.</div>';
+        fallbackNote = kalWarnFor(a)
+          ? '<div class="body-txt" style="margin-bottom:4px;color:var(--amber);">Kalshi unavailable — Entry Read is measuring against the Coinbase candle open.</div>'
+          : '<div class="body-txt" style="margin-bottom:4px;color:var(--muted);">Kalshi strike still loading — Entry Read is measuring against the Coinbase candle open for now.</div>';
       }
       var head = '<div class="body-txt" style="margin-bottom:4px;"><strong style="color:var(--text);">Entry Read</strong> — defaults: distance builds at <strong style="color:var(--text);">' + erThreshFmt(a.build, a) + '</strong> or more on one side · hugging under <strong style="color:var(--text);">' + erThreshFmt(a.hug, a) + '</strong> past halfway.</div>';
       if (ref == null) {
-        var msg = kalFailed ? 'No read yet — Kalshi unavailable and the Coinbase candle open hasn\'t loaded for this window.' : 'Watching — no clean read yet.';
+        var msg = kalFailed ? (kalWarnFor(a) ? 'No read yet — Kalshi unavailable and the Coinbase candle open hasn\'t loaded for this window.' : 'Loading — waiting for this round\'s Kalshi strike or Coinbase candle open.') : 'Watching — no clean read yet.';
         erSetHtml(box, 'read-' + a.key, head + '<div class="er-flag er-watch">' + msg + '</div>');
         return;
       }
@@ -3128,6 +3176,7 @@
   var trendAuto = false;
   var trendTimer = null;
   var trendLoaded = false;
+  var trendBusy = false, trendOpenedAt = 0, trendOkAt = 0, trendFailedAt = 0;
   function fmtBigUsd(n) {
     n = Number(n);
     if (!isFinite(n) || n <= 0) return '—';
@@ -3174,6 +3223,8 @@
     var box = document.getElementById('trendBox');
     if (!box) return;
     if (!trendLoaded) box.innerHTML = '<div class="empty-note">Loading trending…</div>';
+    if (!trendOpenedAt) trendOpenedAt = Date.now();
+    trendBusy = true;
     fetchWithTimeout('https://api.dexscreener.com/token-boosts/top/v1', {}, 10000).then(function (r) {
       if (!r.ok) throw new Error('dex boosts');
       return r.json();
@@ -3184,7 +3235,7 @@
       });
       addrs = addrs.slice(0, 10);
       if (!addrs.length) {
-        trendLoaded = true;
+        trendLoaded = true; trendBusy = false; trendOkAt = Date.now();
         box.innerHTML = '<div class="empty-note">No Solana tokens in the trending list right now.</div>';
         return null;
       }
@@ -3200,7 +3251,7 @@
           var liq = (p.liquidity && p.liquidity.usd) || 0;
           if (!byMint[m] || liq > ((byMint[m].liquidity && byMint[m].liquidity.usd) || 0)) byMint[m] = p;
         });
-        trendLoaded = true;
+        trendLoaded = true; trendBusy = false; trendOkAt = Date.now();
         box.innerHTML = addrs.map(function (mint) {
           var p = byMint[mint];
           var sym = p ? (p.baseToken.symbol || 'UNK') : 'Unknown';
@@ -3218,11 +3269,15 @@
         }).join('') + '<div class="body-txt" style="margin-top:6px;">Discovery only — no buy button on these rows. Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '.</div>';
       });
     }).catch(function () {
-      if (!trendLoaded) {
-        box.innerHTML = '<div class="empty-note">Trending couldn\'t load — check your connection and tap Refresh.</div>';
-      } else if (manual) {
-        showToast('Trending refresh failed — showing the last list.');
-      }
+      trendBusy = false;
+      trendFailedAt = Date.now();
+      var showTrendFail = function () {
+        if (trendBusy || trendOkAt > trendFailedAt) return;
+        if (!trendLoaded) box.innerHTML = '<div class="empty-note">Trending couldn\'t load — check your connection and tap Refresh.</div>';
+        else if (manual) showToast('Trending refresh failed — showing the last list.');
+      };
+      if (mayWarn(true, false, trendOpenedAt)) showTrendFail();
+      else scheduleSettleRender('trend', trendOpenedAt, showTrendFail);
     });
   }
 
@@ -3346,6 +3401,8 @@
   var lastSolBalance = null;
   var lastBalanceAddr = '';   // the wallet the last balance line belongs to
   var balanceInFlight = '';   // the wallet a balance read is running for right now
+  var balanceFailAddr = '';   // wallet whose last balance read failed
+  var balanceWarnText = '';   // the failure line, once it is allowed to show
   function fetchSolUsd() {
     if (solUsdPrice && Date.now() - solUsdAt < 60000) return;
     fetchWithTimeout('https://api.dexscreener.com/latest/dex/tokens/So11111111111111111111111111111111111111112', {}, 8000).then(function (r) {
@@ -3390,7 +3447,9 @@
       if (balanceInFlight === addr) balanceInFlight = '';
       if (activeWallet() !== addr) return;
       var lamports = result && typeof result.value === 'number' ? result.value : null;
-      var balTxt = lamports === null ? "Balance: couldn't load" : 'Wallet balance: ' + (lamports / 1000000000).toFixed(4) + ' SOL';
+      if (lamports === null) { balanceShowFail(addr, "Balance: couldn't load"); return; }
+      balanceFailAddr = ''; balanceWarnText = '';
+      var balTxt = 'Wallet balance: ' + (lamports / 1000000000).toFixed(4) + ' SOL';
       lastBalanceText = balTxt;
       lastBalanceAddr = addr;
       lastSolBalance = lamports === null ? null : lamports / 1000000000;
@@ -3402,10 +3461,23 @@
       renderWalletUsd();
     }).catch(function () {
       if (balanceInFlight === addr) balanceInFlight = '';
+      balanceShowFail(addr, "Balance: couldn't load — tap Refresh to retry");
+    });
+  }
+  // A failed balance read shows its warning only after the settle window
+  // and when no other read is running; until then the line says loading.
+  function balanceShowFail(addr, text) {
+    balanceFailAddr = addr;
+    var put = function (t) {
       var el3 = document.getElementById('walletBalance');
-      if (el3 && activeWallet() === addr) el3.innerText = "Balance: couldn't load — tap Refresh to retry";
+      if (el3 && activeWallet() === addr) el3.innerText = t;
       var lc2 = document.getElementById('linkCardBalance');
-      if (lc2 && activeWallet() === addr) lc2.innerText = "Balance: couldn't load — tap Refresh to retry";
+      if (lc2 && activeWallet() === addr) lc2.innerText = t;
+    };
+    if (mayWarn(true, balanceInFlight === addr, 0)) { balanceWarnText = text; put(text); return; }
+    if (lastBalanceAddr !== addr) put('Balance: loading…');
+    scheduleSettleRender('bal', 0, function () {
+      if (balanceFailAddr === addr && balanceInFlight !== addr && activeWallet() === addr) { balanceWarnText = text; put(text); }
     });
   }
 
@@ -3856,7 +3928,7 @@
   }
 
   // ============ OBJECTIVES + SELF-CHECKING (rule numbers only, never code) ============
-  var OBJ_GOAL = 99;          // measured goal line; the aim is 100%
+  var OBJ_GOAL = 100;         // goal line = Marquez's 100% aim
   var OBJ_FEED_GOAL = 95;     // % of switched-on time the feed was live
   var OBJ_MIN_NEW = 5;        // new scored trades needed before a rule changes again
   function objState() {
@@ -7111,7 +7183,8 @@
     if (shown) {
       var short = shown.slice(0, 5) + '...' + shown.slice(-5);
       label.innerText = connectedPubkey ? 'Pump.fun linked: ' + short : 'Account linked: ' + short;
-      sub.innerText = connectedPubkey ? 'LINKED — SIGNING READY: the app builds the trade, your wallet signs it' : 'Watching only in this browser — it can see the account but can\'t sign trades';
+      var detectingW = !walletDetectDone && !connectedPubkey && !getWalletProvider();
+      sub.innerText = connectedPubkey ? 'LINKED — SIGNING READY: the app builds the trade, your wallet signs it' : (detectingW ? 'Checking for your wallet app in this browser…' : 'Watching only in this browser — it can see the account but can\'t sign trades');
       btn.innerText = connectedPubkey ? 'Connected' : 'Connect Phantom';
       var input = document.getElementById('manualWalletInput');
       if (input && document.activeElement !== input) input.value = db.linkedWallet || '';
@@ -7133,7 +7206,7 @@
     // Watching only and no wallet in this browser: the next step is one big
     // Open in Phantom button right under the bar (the small button hides).
     var nextBox = document.getElementById('walletNextStep');
-    var noWalletHere = !connectedPubkey && !getWalletProvider();
+    var noWalletHere = !connectedPubkey && !getWalletProvider() && walletDetectDone;
     if (nextBox) nextBox.innerHTML = (shown && noWalletHere) ? walletBigOpenHtml(true) : '';
     if (btn) btn.style.display = (shown && noWalletHere) ? 'none' : '';
     // Keep the Account & Rules tab's account card in sync with the wallet bar
@@ -7267,6 +7340,7 @@
     });
   }
   var linkCardMsgText = '';
+  var walletDetectDone = false; // true once the opening wallet check (up to 3s) has finished
   function linkCardSetMsg(t) {
     linkCardMsgText = t || '';
     var el = document.getElementById('linkCardMsg');
@@ -7287,7 +7361,7 @@
       body.innerHTML =
         '<div style="font-size:0.82rem;margin-bottom:6px;">Account linked: <strong>' + esc(short) + '</strong> — your wallet is connected; real trades are armed from this link and every one still needs your signature.</div>' +
         caBarHtml(connectedPubkey) +
-        '<div id="linkCardBalance" style="font-size:0.72rem;color:var(--muted);margin:6px 0;">' + esc(lastBalanceAddr === connectedPubkey ? lastBalanceText : 'Balance: loading…') + '</div>' +
+        '<div id="linkCardBalance" style="font-size:0.72rem;color:var(--muted);margin:6px 0;">' + esc((balanceFailAddr === connectedPubkey && balanceWarnText) ? balanceWarnText : (lastBalanceAddr === connectedPubkey ? lastBalanceText : 'Balance: loading…')) + '</div>' +
         '<div class="row-btns">' +
           '<button class="btn-blue sm-btn" onclick="openPumpProfile()">View on Pump.fun</button>' +
           '<button class="btn-toggle sm-btn" onclick="refreshMyPumpActivity()">Refresh My Activity</button>' +
@@ -7303,7 +7377,7 @@
     var saved = db.linkedWallet || '';
     var savedShort = saved ? saved.slice(0, 5) + '...' + saved.slice(-5) : '';
     if (saved) {
-      tag.innerText = 'LINKED — WATCHING ONLY';
+      tag.innerText = (!walletDetectDone && !hasProvider) ? 'LINKED — CHECKING WALLET…' : 'LINKED — WATCHING ONLY';
       tag.className = 'tag tag-no';
     } else {
       tag.innerText = 'NOT LINKED';
@@ -7311,11 +7385,15 @@
     }
     var head;
     if (saved && db.linkedViaWallet) {
-      head = '<div style="font-size:0.82rem;margin-bottom:6px;">Account linked: <strong>' + esc(savedShort) + '</strong> — saved from your wallet. ' + (hasProvider ? 'Tap Connect Wallet to sign trades in this browser.' : 'This browser has no wallet app, so here it can only watch this account — it can\'t sign. Open the app in Phantom to sign.') + '</div>';
+      head = '<div style="font-size:0.82rem;margin-bottom:6px;">Account linked: <strong>' + esc(savedShort) + '</strong> — saved from your wallet. ' + (hasProvider ? 'Tap Connect Wallet to sign trades in this browser.' : (walletDetectDone ? 'This browser has no wallet app, so here it can only watch this account — it can\'t sign. Open the app in Phantom to sign.' : 'Checking for your wallet app in this browser…')) + '</div>';
     } else if (saved) {
       head = '<div class="body-txt" style="margin-bottom:8px;">Account linked as <strong>watch-only</strong>: <strong>' + esc(savedShort) + '</strong> (pasted in the field below). It can watch but never sign — connect your wallet to trade.</div>';
     } else {
       head = '<div style="font-size:0.82rem;margin-bottom:6px;"><strong>No account linked yet.</strong></div>';
+    }
+    if (!hasProvider && !walletDetectDone) {
+      body.innerHTML = head + '<div class="body-txt" style="margin-top:6px;">Checking for a wallet app in this browser…</div>' + linkCardMsgHtml();
+      return;
     }
     body.innerHTML = head +
       (hasProvider
@@ -7331,6 +7409,7 @@
     linkCardSetMsg('Looking for a wallet app in this browser…');
     waitForWalletProvider(1500).then(function (prov) {
       if (!prov) {
+        walletDetectDone = true;
         linkCardSetMsg('No wallet app in this browser — nothing was linked. Tap Open in Phantom (or Open in Solflare) below: it opens this same page inside the wallet app, where Connect Wallet works.');
         renderLinkCard();
         return;
@@ -8270,6 +8349,8 @@
   // onlyIfTrusted connect), restore the Connected state so the top bar does
   // not claim "not connected" when the wallet is actually ready.
   waitForWalletProvider(3000).then(function (prov) {
+    walletDetectDone = true;
+    try { renderWalletBar(); } catch (e0) {}
     try {
       if (!prov || connectedPubkey) { renderLinkCard(); return; }
       var finishRestore = function (pk) {
