@@ -63,7 +63,7 @@
       --amber: #f59e0b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 12px; padding-bottom: calc(124px + env(safe-area-inset-bottom, 0px)); }
+    body { background: var(--bg); color: var(--text); padding: 12px; padding-top: calc(12px + env(safe-area-inset-top, 0px)); padding-bottom: calc(124px + env(safe-area-inset-bottom, 0px)); }
     header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 12px; gap: 10px; }
     .brand-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .logo { width: 46px; height: 46px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border); flex: 0 0 auto; background: #0a0f1d; }
@@ -236,6 +236,12 @@
     .setup-flash { outline: 2px solid var(--blue) !important; outline-offset: 2px; box-shadow: 0 0 0 4px rgba(56,189,248,0.25); }
     .god-banner { display: none; background: linear-gradient(90deg, rgba(147,51,234,0.22), rgba(245,158,11,0.18)); border: 1px solid #9333ea; color: var(--text); border-radius: 10px; padding: 9px 11px; margin-bottom: 10px; font-size: 0.74rem; font-weight: 700; line-height: 1.45; }
     .god-banner.show { display: block; }
+    .god-status { display: none; border: 1px solid #9333ea; background: rgba(147,51,234,0.10); border-radius: 10px; padding: 9px 10px; margin: -4px 0 10px; font-size: 0.74rem; color: var(--text); line-height: 1.5; }
+    .god-status.show { display: block; }
+    .god-status .gs-head { font-weight: 900; font-size: 0.78rem; margin-bottom: 4px; }
+    .god-status .gs-rej { color: var(--muted); font-size: 0.7rem; }
+    .acct-line { font-size: 0.72rem; color: var(--text); background: #0a1222; border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; line-height: 1.45; }
+    .streak-box { border: 1px solid var(--amber); background: rgba(245,158,11,0.08); border-radius: 10px; padding: 9px 10px; margin-bottom: 10px; font-size: 0.74rem; line-height: 1.5; color: var(--text); }
     .vault-line { font-size: 0.74rem; color: var(--muted); margin: -4px 0 12px; }
     .vault-line strong { color: #c084fc; }
     .hero-actions { display: flex; gap: 8px; justify-content: center; align-items: stretch; max-width: 470px; margin: 14px auto 0; flex-wrap: wrap; }
@@ -294,8 +300,9 @@
     </div>
     <button class="btn-blue sm-btn" style="flex:0 0 auto;padding:8px 12px;" id="connectBtn" onclick="connectPhantomWallet()">Connect Wallet</button>
   </div>
+  <div id="walletNextStep"></div>
   <div class="guard-box" id="mainWalletWarnBar" style="display:none;">
-    <strong>MAIN-WALLET GUARD:</strong> This is your <strong>MAIN</strong> wallet — <strong>quezskiiii</strong> (3AFq...apjaY). Real buys from it require the per-session acknowledgement in the confirmation card before anything is built or signed. A separate burner wallet is recommended for micro trades.
+    <strong>MAIN-WALLET GUARD:</strong> This is your <strong>MAIN</strong> wallet — <strong>quezskiiii</strong> (3AFq...apjaY). Real buys from it require a fresh acknowledgement in the confirmation card for every trade before anything is built or signed. A separate burner wallet is recommended for micro trades.
   </div>
   <!-- INLINE BROWSER HELPER CARD (REPLACES BLOCKING POPUPS) -->
   <div id="noWalletCard" class="helper-card">
@@ -339,7 +346,8 @@
     <button id="mirrorBtn" class="btn-toggle" style="color:var(--amber);border-color:var(--amber);" onclick="toggleMirrorSell()">Mirror-Sell: ON</button>
     <button id="godBtn" class="btn-toggle" onclick="toggleGodMode()">GOD MODE: OFF</button>
   </div>
-  <div class="god-banner" id="godBanner">GOD MODE ENGAGED: 7/8 Sniper Gate • Smart-Wallet Priority • Auto 2x Initials-Out • Mirror-Sell • 50% Profit-Sweep Vault Active.</div>
+  <div class="god-banner" id="godBanner">GOD MODE — top gear: 7/8 gate • no-chase entries • crowd rule • initials-out at 2x • Mirror-Sell • 50% profit sweep. Practice money only.</div>
+  <div class="god-status" id="godStatus"></div>
   <div class="btn-captions">
     <div><strong style="color:var(--text);">Auto-Copy</strong> buys PRACTICE copies by itself when a coin passes the checks. For wallet copies, it waits until <strong style="color:var(--text);">two different wallets you follow buy the same coin within 60 seconds</strong> — one wallet alone is not enough for an automatic copy (you can still tap Practice Copy yourself). It never spends real money.</div>
     <div><strong style="color:var(--text);">Mirror-Sell</strong> closes your practice copy when the wallet you copied sells. Practice only.</div>
@@ -525,6 +533,15 @@
       <div class="body-txt" style="margin-bottom:4px;">Every value below is read live from your saved settings each time this page renders — change a setting anywhere in the app and it shows here. Tap <strong>Change it</strong> on any group to jump to the control that edits it.</div>
       <div id="mySetupsBody"><div class="empty-note">Reading your saved setups…</div></div>
     </div>
+    <div class="card" id="objCard" style="border-color:var(--amber);">
+      <div class="card-top">
+        <span class="sym" style="font-size:0.88rem;">Objectives — what each engine is aiming for</span>
+        <span class="tag tag-no">SELF-CHECKING</span>
+      </div>
+      <div class="body-txt" style="margin-bottom:6px;">Your aim is 100% accuracy. Every engine is measured against it with the real numbers from its own records — rounded down, never up. While the app is open it checks itself every 5 minutes, says plainly where it falls short, and adjusts its own rule numbers.</div>
+      <div class="body-txt" style="margin-bottom:6px;"><strong>What "self-updating" means here:</strong> it changes the rule numbers listed below, inside this app. It <strong>cannot rewrite its own code</strong> — new features and code fixes still come as a new version of this file. It <strong>never touches the safety rules</strong>: no key or seed fields, the main-wallet guard, real trades only by your wallet signature, and every desk stays paper-only.</div>
+      <div id="objBody"><div class="empty-note">Reading the records…</div></div>
+    </div>
     <div class="card" style="border-color:var(--blue);">
       <div class="card-top">
         <span class="sym" style="font-size:0.82rem;">Your Saved Stuff — Backup &amp; Restore</span>
@@ -637,7 +654,7 @@
       </div>
       <div class="li-txt"><strong>Auto-Copy:</strong> Buys practice copies by itself when a coin passes enough checks. For wallet copies, two different wallets you follow must buy the same coin within 60 seconds before Auto-Copy opens one.</div>
       <div class="li-txt"><strong>Mirror-Sell:</strong> Closes your practice copy the moment the wallet you copied sells.</div>
-      <div class="li-txt"><strong>Daily safety cap:</strong> Auto-Copy pauses if your practice money drops below $3.50.</div>
+      <div class="li-txt"><strong>Drawdown floor:</strong> Auto-Copy pauses if your practice money drops to $3.50 or below (this is a floor, not a daily limit — it does not reset each day).</div>
       <div class="li-txt"><strong>Initials out at 2x:</strong> When a practice trade doubles, the app automatically sells half — that puts your starting money back into Practice Money, and the other half keeps riding as house money.</div>
       <div class="li-txt"><strong>Profit Ladder:</strong> On the way up, each practice trade sells a piece at your Step 1 multiple and another piece at your Step 2 multiple (shipped as 25% at 1.30x and 25% at 1.50x — change them in the settings above). Each step fires once, at the real price of the tick that reaches it, and the money goes back to Practice Money. What is left is the runner, and it stays under the normal rules — initials-out at 2x on what remains, then bag-lock, trailing stop, stop-loss, time exit, and the 45-minute max hold. Practice trades only — the ladder never touches a real position.</div>
       <div class="li-txt"><strong>Bag-lock:</strong> After initials are out, the half still riding is risk-free house money, so if it falls back to 1.1x or below the app closes it right away to lock in the win — that 1.1x floor replaces your normal stop-loss for that remainder only, and the trailing stop still protects it above that floor.</div>
@@ -680,7 +697,7 @@
       <div id="fundWalletBody"><div class="empty-note">Connect your wallet on the Link Pump.fun card above — your address will show here for copying.</div></div>
     </div>
     <div class="guard-box" id="mainWalletWarnAcct" style="display:none;">
-      <strong>MAIN-WALLET GUARD:</strong> This is your <strong>MAIN</strong> wallet — <strong>quezskiiii</strong> (3AFq...apjaY). Real buys from it require the per-session acknowledgement in the confirmation card before anything is built or signed. A separate burner wallet is recommended for micro trades.
+      <strong>MAIN-WALLET GUARD:</strong> This is your <strong>MAIN</strong> wallet — <strong>quezskiiii</strong> (3AFq...apjaY). Real buys from it require a fresh acknowledgement in the confirmation card for every trade before anything is built or signed. A separate burner wallet is recommended for micro trades.
     </div>
     <div class="card">
       <label>Your Pump.fun public wallet address — activity watching only</label>
@@ -962,7 +979,7 @@
     <div class="card">
       <div class="card-top">
         <span class="sym" style="font-size:0.84rem;">R1 · Pump.fun real trading (24h)</span>
-        <span class="tag tag-win">ON</span>
+        <span class="tag tag-win" id="routineR1Tag">ON</span>
       </div>
       <div class="body-txt" style="margin-bottom:6px;">Schedule: every hour around :10 and :40.</div>
       <div class="ticket-box" id="routineR1">DEADLINE: The owner approved real pump.fun trading for 24 hours, starting 2026-11-19 at 12:42 PM ET. If it is now after 2026-11-20 at 12:45 PM ET, open no new trades. Hand any open position to the parent to sell, then pause this routine. The owner approved REAL trades on their pump.fun account (signed in on the box browser) using only the account balance, which was $5.12 at the start. Never deposit, withdraw, or add money. This run can't use the browser, so every buy and sell is handed to the parent chat, which places it in the browser. Rules (updated 2026-11-19 12:58 PM ET): 1. Size: at most $1.00 per trade. Never more than 1 active trade at a time. 2. Entry filter, no blind sniping. Buy only if ALL are true: Token graduated to Raydium/PumpSwap, OR market cap $40,000-$150,000 with steady volume over at least last 2 hours. Token at least 2 hours old. Top 10 holders own less than 20%, dev wallet 0% remaining. Token profile has active X or Telegram link. Use only live data. Never invent. If any criterion can't be verified, skip. 3. Exits. Check open position FIRST on every run. Up +40% or more: sell 100% immediately. Hard stop: sell 100% at -25%. Drops 20% from peak after being in profit: sell 100%. 4. Always leave at least $1.50 untouched for fees. 5. Circuit breaker: if total wallet balance drops below $2.50, or 2 losing trades in a row, stop all trading. Hand parent a SELL for any open position and message 'PAUSED — CIRCUIT BREAKER TRIGGERED'. Then pause routine. 6. After every buy/sell, parent sends owner 3-line summary: Token Ticker | Entry/Exit Price | Current Wallet Balance. Position log: /cursor/stores/store-1ce963ad-280d-4040-b4f2-2152e303c290/virtual-10-desk/pumpfun-real.json — its contents were not visible in Grok and are not recorded here.</div>
@@ -995,7 +1012,7 @@
         <span class="tag tag-loss">PAUSED</span>
       </div>
       <div class="body-txt" style="margin-bottom:6px;">Schedule: every 15 minutes.</div>
-      <div class="warn-box" style="margin-bottom:8px;">⏰ This run's deadline is TODAY, Fri Nov 20 at 11:35 AM ET (routine already PAUSED).</div>
+      <div class="warn-box" style="margin-bottom:8px;" data-deadline="2026-11-20T11:35:00-05:00" data-deadline-label="This run's deadline">⏰ This run's deadline: Fri Nov 20, 2026 at 11:35 AM ET (routine already PAUSED).</div>
       <div class="ticket-box" id="routineR4">DEADLINE: Owner asked to run 24 hours starting 2026-11-19 11:34 AM ET. If after 2026-11-20 11:35 AM ET, place no new trades, pause routine, tell parent 24h run ended. Each round, check current Kalshi/Coinbase Predict 'BTC price up in next 15 mins?' round (series KXBTC15M). On 2026-11-19 owner approved REAL $1.00 trades on Coinbase Predict when rules give BUY. Run can't use browser, hands trade to parent chat to place. Never move money otherwise. 1. Find open KXBTC15M from Kalshi public API and orderbook. Read target (floor_strike), close time, Yes/No bid/ask. Prefer orderbook. 2. Get live BTC from Coinbase: spot + last ~10 one-minute candles. 3. Rules, $1.00 max per round: BUY YES only if Yes ask $0.35-$0.58 AND BTC clearly above target trending away. BUY NO mirror: No ask $0.35-$0.58 AND BTC clearly below target trending down. Otherwise WAIT — NO TRADE. 4. Exits: SELL NOW — LOCK PROFIT +25% to +35% vs entry, or under 2:30 left while in profit. SELL NOW — CUT LOSS if BTC reverses past target and position -20%. 5. Report: On BUY/SELL hand parent: ticker, side, max price (ask), $1.00, target, BTC price, time left, one-line reason. On WAIT send nothing. Never invent prices.</div>
       <button class="btn-toggle sm-btn" style="width:100%;" onclick="copyRoutineText('routineR4', 'Routine R4')">Copy Routine R4</button>
     </div>
@@ -1084,7 +1101,7 @@
         <span class="sym" style="font-size:0.86rem;">REAL MONEY — Grok lane rules, your tap only</span>
         <span class="tag tag-loss">REAL</span>
       </div>
-      <div class="warn-box">⏰ This real-trading approval EXPIRES TODAY, Fri Nov 20 at 12:45 PM ET. After that: no new real trades, any open position gets handed back to you to sell, routine paused.</div>
+      <div class="warn-box" data-deadline="2026-11-20T12:45:00-05:00" data-deadline-label="This real-trading approval">⏰ This real-trading approval expires Fri Nov 20, 2026 at 12:45 PM ET. After that: no new real trades, any open position gets handed back to you to sell, routine paused.</div>
       <div class="body-txt" style="margin-bottom:8px;">These are the real pump.fun lane rules from your Grok setup (Routine R1 above). They are written here as your checklist — the app does not run them for you. A real trade happens only when you tap a blue button in this app, check the confirmation card, and sign it yourself in your wallet.</div>
       <div class="li-txt"><strong>Entry filter — buy only if ALL are true:</strong> the token graduated to Raydium/PumpSwap, OR market cap <strong>$40,000–$150,000</strong> with steady volume over at least the last 2 hours.</div>
       <div class="li-txt"><strong>Token at least 2 hours old.</strong></div>
@@ -2050,12 +2067,22 @@
     return true;
   }
 
+  var saveFailedAt = 0;
+  var saveFailToastAt = 0;
   function persist() {
+    var s = null;
     try {
-      var s = JSON.stringify(db);
+      s = JSON.stringify(db);
       localStorage.setItem('s7_superbrain_v3', s);
-      localStorage.setItem('s7_superbrain_v2', s);
-    } catch (e) {}
+      saveFailedAt = 0;
+    } catch (e) {
+      saveFailedAt = Date.now();
+      if (Date.now() - saveFailToastAt > 300000) {
+        saveFailToastAt = Date.now();
+        try { showToast("Couldn't save — this phone's storage for the app is full or blocked. Tap Copy Full Backup in Settings & Safety now so nothing is lost."); } catch (e3) {}
+      }
+    }
+    if (s) { try { localStorage.setItem('s7_superbrain_v2', s); } catch (e2) {} }
     refreshSoon();
   }
 
@@ -3078,7 +3105,7 @@
       if (crossed) {
         if (es && es.crossWin !== winStart) { es.crossWin = winStart; es.crossAt = now; }
         var pulse = es && es.crossAt && (now - es.crossAt) < 1800;
-        flag = 'CHANGE UP — spot crossed ' + (refName === 'your target' ? 'your target' : (refName === 'the Coinbase candle open' ? 'the candle open' : 'the strike'));
+        flag = 'CHANGE ' + (curSide === 'DOWN' ? 'DOWN' : 'UP') + ' — spot crossed ' + (refName === 'your target' ? 'your target' : (refName === 'the Coinbase candle open' ? 'the candle open' : 'the strike'));
         cls = 'er-cross' + (pulse ? ' er-pulse' : '');
       } else if (curSide && streak >= 3 && Math.abs(curDist) >= a.build) {
         flag = 'DISTANCE BUILDING — ' + curSide + ' side is building';
@@ -3090,7 +3117,7 @@
         flag = 'Watching — no clean read yet.';
         cls = 'er-watch';
       }
-      var nums = '<div class="er-nums">Distance now <strong>' + erDistFmt(curDist, a) + '</strong> · at window open <strong>' + erDistFmt(openDist, a) + '</strong> · range so far <strong>' + erDistFmt(minDist, a) + '</strong> to <strong>' + erDistFmt(maxDist, a) + '</strong> · time left <strong>' + cdTxt + '</strong> · vs ' + refName + ' (' + t15Fmt(ref, refDec) + ')</div>';
+      var nums = '<div class="er-nums">Distance now <strong>' + erDistFmt(curDist, a) + '</strong> · at first check this round <strong>' + erDistFmt(openDist, a) + '</strong> · range so far <strong>' + erDistFmt(minDist, a) + '</strong> to <strong>' + erDistFmt(maxDist, a) + '</strong> · time left <strong>' + cdTxt + '</strong> · vs ' + refName + ' (' + t15Fmt(ref, refDec) + ')</div>';
       erSetHtml(box, 'read-' + a.key, head + fallbackNote + '<div class="er-flag ' + cls + '">' + flag + '</div>' + nums);
     });
   }
@@ -3444,7 +3471,7 @@
     t.textContent = msg;
     t.classList.add('show');
     if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, Math.min(8000, 2600 + String(msg || '').length * 35));
   }
 
   function refreshUI() {
@@ -3455,12 +3482,12 @@
     var watchTag = document.getElementById('watchCountTag');
     if (watchTag) watchTag.innerText = (db.smartWallets || []).length + ' WATCHING';
     var closed = db.trades.filter(function (t) { return t.status !== 'OPEN'; });
-    var greens = closed.filter(function (t) { return t.pnl > 0; }).length;
-    var reds = closed.filter(function (t) { return t.pnl <= 0; }).length;
-    var winPct = closed.length ? Math.round((greens / closed.length) * 100) : 0;
-    document.getElementById('kpiWin').innerText = winPct + '%';
+    var precK = practiceRecord(db.trades);
+    var greens = precK.w;
+    var reds = precK.l;
+    document.getElementById('kpiWin').innerText = floorPctTxt(precK.w, precK.scored, 0);
     var rec = document.getElementById('ledgerRecord');
-    if (rec) rec.innerText = 'Wins / Losses: ' + greens + ' / ' + reds;
+    if (rec) rec.innerText = 'Wins ' + precK.w + ' · Losses ' + precK.l + ' · Flat ' + precK.flat + ' · Stale (not scored) ' + precK.stale + ' — win rate ' + floorPctTxt(precK.w, precK.scored) + (precK.scored ? ' of ' + precK.scored + ' scored' : '');
     var banner = document.getElementById('tpSlBanner');
     if (banner) {
       var slPct = Math.round((1 - db.sl) * 100);
@@ -3477,6 +3504,7 @@
     renderSelfRunUI();
     renderWhileYouWereGone();
     renderMySetups();
+    renderObjectives();
     renderSaveStatus();
     renderFeedStatus();
     renderDesk();
@@ -3713,6 +3741,308 @@
     persist();
   }
 
+  // ---- Practice results, straight from the record ----
+  // WIN = made money · LOSS = lost money · FLAT = exactly back to even (the
+  // price never moved while the app watched) · STALE = closed on an old price
+  // after the app slept, so the real result is unknown. Win rate counts WIN
+  // and LOSS only, and every rate is rounded DOWN, never up. Flat and stale
+  // are always shown next to it, so nothing is hidden.
+  function practiceResult(t) {
+    if (!t || t.status === 'OPEN') return 'OPEN';
+    if (t.stalePrice) return 'STALE';
+    var p = Number(t.pnl) || 0;
+    if (Math.abs(p) < 0.000001) return 'FLAT';
+    return p > 0 ? 'WIN' : 'LOSS';
+  }
+  function practiceRecord(list) {
+    var r = { w: 0, l: 0, flat: 0, stale: 0, pnl: 0, stalePnl: 0, closed: 0 };
+    (list || []).forEach(function (t) {
+      var res = practiceResult(t);
+      if (res === 'OPEN') return;
+      r.closed++;
+      var p = Number(t.pnl) || 0;
+      if (res === 'STALE') { r.stale++; r.stalePnl += p; return; }
+      r.pnl += p;
+      if (res === 'WIN') r.w++; else if (res === 'LOSS') r.l++; else r.flat++;
+    });
+    r.scored = r.w + r.l;
+    return r;
+  }
+  function floorPctTxt(w, n, dec) {
+    if (!n) return '—';
+    var f = Math.pow(10, dec == null ? 2 : dec);
+    return (Math.floor(w / n * 100 * f) / f).toFixed(dec == null ? 2 : dec) + '%';
+  }
+  function tradeExitMult(t) {
+    if (typeof t.exitMult === 'number' && t.exitMult > 0) return t.exitMult;
+    var m = String(t.status || '').match(/\(([0-9.]+)x\)/);
+    return m ? parseFloat(m[1]) : ((t.curMc / t.entryMc) || 1);
+  }
+  function tradeReason(t) { return String(t.status || '').split(' (')[0]; }
+
+  // ---- God Mode stats for today (New York day) ----
+  function godStatsToday() {
+    var key = etDateStr(Date.now());
+    var g = db.godStats;
+    if (!g || typeof g !== 'object' || g.day !== key) g = db.godStats = { day: key, checked: 0, passed: 0, copies: 0, rejected: 0, recent: [] };
+    if (!Array.isArray(g.recent)) g.recent = [];
+    return g;
+  }
+  function godStatBump(k) { var g = godStatsToday(); g[k] = (Number(g[k]) || 0) + 1; }
+  function godReject(sym, reason) {
+    var g = godStatsToday();
+    g.rejected = (Number(g.rejected) || 0) + 1;
+    g.recent.unshift({ sym: sym, reason: reason, at: Date.now() });
+    if (g.recent.length > 8) g.recent.length = 8;
+  }
+  // Learned entry rules (changed only by the Objectives engine, each change
+  // logged and undoable). Used by God Mode's automatic entries.
+  function objRules() {
+    var r = db.objRules;
+    if (!r || typeof r !== 'object' || Array.isArray(r)) r = db.objRules = {};
+    if (!(r.chaseMaxPct >= 10 && r.chaseMaxPct <= 100)) r.chaseMaxPct = 40;
+    if (!(r.minCrowd >= 2 && r.minCrowd <= 5)) r.minCrowd = 2;
+    return r;
+  }
+  function failedCheckNames(checks) {
+    var names = ['SmartBuy', 'Crowd', 'Curve', 'Meta', 'Unique', 'Floor', 'Clean', 'Fast'];
+    var out = [];
+    (checks || []).forEach(function (ok, i) { if (!ok) out.push(names[i]); });
+    return out.join(', ') || 'none';
+  }
+  // One place decides every automatic practice entry, and records why a coin
+  // that passed the gate was NOT copied.
+  function lwTryAuto(lw, r, srcAddr) {
+    if (!r.consensus || lw.autoFired) return;
+    if (!lw.passCounted) { lw.passCounted = true; godStatBump('passed'); }
+    if (!sleepMode) { lw.blockReason = 'passed the ' + db.minVotes + '/8 gate, but Auto-Copy is OFF — no copy taken'; return; }
+    if (!(db.bankroll >= db.size && db.bankroll > 3.5)) { lw.blockReason = 'practice money is at the $3.50 floor — no copy taken'; return; }
+    var srcW = srcAddr ? (db.smartWallets || []).find(function (w) { return w.addr === srcAddr; }) : null;
+    if (srcW && Number(srcW.fastFlips || 0) >= 3) { lw.blockReason = 'the wallet it would copy is a fast flipper'; return; }
+    if (!(lw.mc > 0)) { lw.blockReason = 'no market size in the feed — no copy at an invented price'; return; }
+    var run = (lw.launchMc > 0) ? (lw.mc / lw.launchMc - 1) * 100 : null;
+    if (db.godMode) {
+      var rules = objRules();
+      if (run != null && run > rules.chaseMaxPct) { lw.blockReason = 'price had already run +' + run.toFixed(0) + '% from launch — God Mode will not chase past +' + rules.chaseMaxPct + '%'; return; }
+      if (lw.crowdWallets.length < rules.minCrowd) { lw.blockReason = 'only ' + lw.crowdWallets.length + ' outside wallets bought 0.5+ SOL — God Mode needs ' + rules.minCrowd; return; }
+    }
+    lw.autoFired = true;
+    var opened = openSimTrade(lw.sym, lw.mint, lw.mc, srcAddr, { src: 'auto', gateScore: r.score, gateNeed: db.minVotes, launchMc: lw.launchMc, crowd: lw.crowdWallets.length, runPct: run });
+    if (opened) { godStatBump('copies'); lw.blockReason = ''; }
+    else { lw.blockReason = 'the practice book refused the entry (already open or not enough practice money)'; }
+  }
+  function renderGodStatus() {
+    var box = document.getElementById('godStatus');
+    if (!box) return;
+    var on = !!db.godMode;
+    box.classList.toggle('show', on);
+    if (!on) return;
+    var g = godStatsToday();
+    var rules = objRules();
+    var rec = practiceRecord(db.trades);
+    var html = '<div class="gs-head">GOD MODE — what it is doing right now</div>';
+    html += '<div>' + (sleepMode
+      ? '<strong style="color:var(--green);">Auto-Copy ON</strong> — copies (practice money) only coins that clear every rule below.'
+      : '<strong style="color:var(--red);">Auto-Copy OFF</strong> — God Mode is screening coins but taking <strong>no copies</strong>. Turn Auto-Copy on to let it trade practice money.') + '</div>';
+    html += '<div>Today (New York time): <strong>' + (g.checked || 0) + '</strong> coins checked · <strong>' + (g.passed || 0) + '</strong> passed the ' + db.minVotes + '/8 gate · <strong>' + (g.copies || 0) + '</strong> copies taken · <strong>' + (g.rejected || 0) + '</strong> rejected.</div>';
+    html += '<div>Entry rules now: gate <strong>' + db.minVotes + '/8</strong> · no chasing — skip if the price already ran more than <strong>+' + rules.chaseMaxPct + '%</strong> from launch · crowd — at least <strong>' + rules.minCrowd + '</strong> outside wallets bought 0.5+ SOL.</div>';
+    html += '<div>Practice record: <strong>' + rec.w + '</strong> wins · <strong>' + rec.l + '</strong> losses · <strong>' + rec.flat + '</strong> flat · <strong>' + rec.stale + '</strong> stale (not scored) — win rate <strong>' + floorPctTxt(rec.w, rec.scored) + '</strong>' + (rec.scored ? ' of ' + rec.scored + ' scored' : '') + '. Explained trade by trade in My Practice Trades.</div>';
+    if (g.recent.length) {
+      html += '<div style="margin-top:4px;"><strong>Why the last coins were rejected:</strong></div>' + g.recent.slice(0, 5).map(function (x) {
+        return '<div class="gs-rej">$' + esc(x.sym) + ' — ' + esc(x.reason) + ' (' + esc(new Date(x.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })) + ')</div>';
+      }).join('');
+    }
+    box.innerHTML = html;
+  }
+
+  // ============ OBJECTIVES + SELF-CHECKING (rule numbers only, never code) ============
+  var OBJ_GOAL = 99;          // measured goal line; the aim is 100%
+  var OBJ_FEED_GOAL = 95;     // % of switched-on time the feed was live
+  var OBJ_MIN_NEW = 5;        // new scored trades needed before a rule changes again
+  function objState() {
+    if (!Array.isArray(db.objLog)) db.objLog = [];
+    if (!db.objMarks || typeof db.objMarks !== 'object') db.objMarks = { practice: 0, desk: 0 };
+    if (!db.objNotes || typeof db.objNotes !== 'object') db.objNotes = {};
+    if (!db.feedUp || typeof db.feedUp !== 'object') db.feedUp = { want: 0, live: 0 };
+    if (typeof db.objOn !== 'boolean') db.objOn = true;
+    objRules();
+    return db;
+  }
+  function objMetrics() {
+    objState();
+    var pr = practiceRecord(db.trades);
+    var closedP = db.trades.filter(function (t) { return t.status !== 'OPEN'; });
+    var noLive = closedP.filter(function (t) { var r = practiceResult(t); return r === 'STALE' || (r === 'FLAT' && Math.abs(tradeExitMult(t) - 1) < 0.0005); }).length;
+    var deskClosed = (db.deskTrades || []).filter(function (t) { return t.status === 'CLOSED' && !t.imported; });
+    var dw = deskClosed.filter(function (t) { return t.pnl > 0.000001; }).length;
+    var dl = deskClosed.filter(function (t) { return t.pnl < -0.000001; }).length;
+    var dpnl = deskClosed.reduce(function (s0, t) { return s0 + (Number(t.pnl) || 0); }, 0);
+    var rw = 0, rl = 0;
+    if (db.t15Stats && typeof db.t15Stats === 'object') Object.keys(db.t15Stats).forEach(function (k) { var x = db.t15Stats[k] || {}; rw += Number(x.w) || 0; rl += Number(x.l) || 0; });
+    return {
+      practice: { w: pr.w, l: pr.l, n: pr.scored, flat: pr.flat, stale: pr.stale, pnl: pr.pnl, closed: closedP.length, noLive: noLive },
+      desk: { w: dw, l: dl, n: dw + dl, pnl: dpnl, closed: deskClosed.length },
+      rounds: { w: rw, l: rl, n: rw + rl },
+      feed: { want: db.feedUp.want, live: db.feedUp.live }
+    };
+  }
+  function objGap(w, n, goal) { return n ? Math.ceil((goal - w / n * 100) * 100) / 100 : null; }
+  function objLogAdd(area, text, change) {
+    var e = { at: Date.now(), area: area, text: text };
+    if (change) { e.key = change.key; e.from = change.from; e.to = change.to; e.undone = false; }
+    db.objLog.unshift(e);
+    if (db.objLog.length > 100) db.objLog.length = 100;
+  }
+  function objNote(key, text) {
+    var prev = db.objNotes[key];
+    if (prev && prev.text === text && Date.now() - prev.at < 3600000) return;
+    db.objNotes[key] = { text: text, at: Date.now() };
+    objLogAdd(key, text, null);
+  }
+  function objSetRule(key, val) {
+    if (key === 'deskFloor') db.deskFloor = val;
+    else objRules()[key] = val;
+  }
+  function objGetRule(key) { return key === 'deskFloor' ? deskFloor() : objRules()[key]; }
+  function objCheck() {
+    objState();
+    var m = objMetrics();
+    var p = m.practice;
+    // ---- practice book ----
+    if (p.n && p.w / p.n * 100 < OBJ_GOAL) objNote('practice', 'Practice win rate is ' + floorPctTxt(p.w, p.n) + ' (' + p.w + ' of ' + p.n + ' scored) — below the ' + OBJ_GOAL + '% goal by ' + objGap(p.w, p.n, OBJ_GOAL).toFixed(2) + ' points. P&L ' + fmtUsdSigned(p.pnl) + '.');
+    if (p.noLive) objNote('coverage', p.noLive + ' of ' + p.closed + ' closed practice trades never got a live price (flat at 1.00x or stale). That is a feed / phone-asleep problem, not a pick problem — no rule change fixes it. Keep START on and the app open while trades are open.');
+    if (db.objOn) {
+      var since = db.objMarks.practice || 0;
+      var autoScored = db.trades.filter(function (t) { var r = practiceResult(t); return t.src === 'auto' && t.closedAt && t.closedAt > since && (r === 'WIN' || r === 'LOSS'); });
+      if (autoScored.length >= OBJ_MIN_NEW) {
+        var aw = autoScored.filter(function (t) { return practiceResult(t) === 'WIN'; }).length;
+        if (aw / autoScored.length * 100 < OBJ_GOAL) {
+          var losses = autoScored.filter(function (t) { return practiceResult(t) === 'LOSS'; });
+          var chased = losses.filter(function (t) { return typeof t.runPct === 'number' && t.runPct > 25; }).length;
+          var rules = objRules();
+          var why = 'Automatic entries won ' + aw + ' of the last ' + autoScored.length + ' scored (' + floorPctTxt(aw, autoScored.length) + ') — below ' + OBJ_GOAL + '%. ';
+          var did = false;
+          if (chased * 2 >= losses.length && rules.chaseMaxPct > 10) {
+            var o = rules.chaseMaxPct; rules.chaseMaxPct = Math.max(10, o - 10);
+            objLogAdd('practice', why + chased + ' of ' + losses.length + ' losses were bought after the price had already run. Changed: God Mode no-chase limit from +' + o + '% to +' + rules.chaseMaxPct + '%.', { key: 'chaseMaxPct', from: o, to: rules.chaseMaxPct });
+            did = true;
+          } else if (rules.minCrowd < 5) {
+            var oc = rules.minCrowd; rules.minCrowd = oc + 1;
+            objLogAdd('practice', why + 'Most losses were not chased entries, so the app now asks for more real buyers first. Changed: God Mode crowd rule from ' + oc + ' to ' + rules.minCrowd + ' outside wallets buying 0.5+ SOL.', { key: 'minCrowd', from: oc, to: rules.minCrowd });
+            did = true;
+          } else if (rules.chaseMaxPct > 10) {
+            var o2 = rules.chaseMaxPct; rules.chaseMaxPct = Math.max(10, o2 - 10);
+            objLogAdd('practice', why + 'Changed: God Mode no-chase limit from +' + o2 + '% to +' + rules.chaseMaxPct + '%.', { key: 'chaseMaxPct', from: o2, to: rules.chaseMaxPct });
+            did = true;
+          }
+          if (!did) objNote('practice-cap', 'Both God Mode entry rules are already at their tightest (no-chase +10%, crowd 5). The app will not tighten further — the remaining gap needs a code change or a different strategy, not a rule number.');
+        }
+        db.objMarks.practice = Date.now();
+      }
+    }
+    // ---- Virtual $10 Desk ----
+    var d = m.desk;
+    if (d.n && d.w / d.n * 100 < OBJ_GOAL) objNote('desk', 'Desk win rate is ' + floorPctTxt(d.w, d.n) + ' (' + d.w + ' of ' + d.n + ' scored) — below the ' + OBJ_GOAL + '% goal. Desk P&L ' + fmtUsdSigned(d.pnl) + '.');
+    if (db.objOn) {
+      var sinceD = db.objMarks.desk || 0;
+      var dRecent = (db.deskTrades || []).filter(function (t) { return t.status === 'CLOSED' && !t.imported && t.closedAt > sinceD && Math.abs(Number(t.pnl) || 0) > 0.000001; });
+      if (dRecent.length >= OBJ_MIN_NEW) {
+        var dw2 = dRecent.filter(function (t) { return t.pnl > 0; }).length;
+        if (dw2 / dRecent.length * 100 < OBJ_GOAL && deskFloor() < 95) {
+          var of = deskFloor(); var nf = Math.min(95, of + 5);
+          db.deskFloor = nf;
+          objLogAdd('desk', 'Desk won ' + dw2 + ' of its last ' + dRecent.length + ' scored trades (' + floorPctTxt(dw2, dRecent.length) + ') — below ' + OBJ_GOAL + '%. Changed: Analyst floor from ' + of + ' to ' + nf + ' — only higher-scoring coins get bought.', { key: 'deskFloor', from: of, to: nf });
+        }
+        db.objMarks.desk = Date.now();
+      }
+    }
+    // ---- 15-minute rounds (their own learning changes their rules) ----
+    var r0 = m.rounds;
+    if (r0.n && r0.w / r0.n * 100 < OBJ_GOAL) objNote('rounds', 'Round-record win rate is ' + floorPctTxt(r0.w, r0.n) + ' (' + r0.w + ' of ' + r0.n + ') — below ' + OBJ_GOAL + '%. The round engine changes its own call rules after each loss — see the 15-Min Targets tab.');
+    // ---- feed uptime ----
+    if (m.feed.want >= 600 && m.feed.live / m.feed.want * 100 < OBJ_FEED_GOAL) objNote('feed', 'The live feed was up ' + floorPctTxt(m.feed.live, m.feed.want) + ' of the time it was switched on with the app open — below the ' + OBJ_FEED_GOAL + '% goal. No rule fixes this: weak signal or the phone locking are the usual causes.');
+    persist();
+    renderObjectives();
+  }
+  function objUndo(i) {
+    objState();
+    var e = db.objLog[i];
+    if (!e || !e.key || e.undone) return;
+    objSetRule(e.key, e.from);
+    e.undone = true;
+    objLogAdd(e.area, 'Undone by you: ' + e.key + ' back to ' + e.from + '. The app waits for ' + OBJ_MIN_NEW + ' new scored trades before changing this area again.', null);
+    if (e.area === 'desk') db.objMarks.desk = Date.now(); else db.objMarks.practice = Date.now();
+    persist();
+    renderObjectives();
+    showToast('Undone — ' + e.key + ' is back to ' + e.from + '.');
+  }
+  var objResetArmed = false;
+  function objResetRules() {
+    if (!objResetArmed) {
+      objResetArmed = true;
+      renderObjectives();
+      setTimeout(function () { objResetArmed = false; renderObjectives(); }, 5000);
+      return;
+    }
+    objResetArmed = false;
+    var r = objRules();
+    r.chaseMaxPct = 40; r.minCrowd = 2; db.deskFloor = 70;
+    db.objMarks = { practice: Date.now(), desk: Date.now() };
+    objLogAdd('all', 'Reset by you: every learned rule is back to its default (no-chase +40%, crowd 2, desk floor 70).', null);
+    persist();
+    renderObjectives();
+    showToast('Learned rules reset to their defaults.');
+  }
+  function objToggle() {
+    objState();
+    db.objOn = !db.objOn;
+    objLogAdd('all', db.objOn ? 'Self-updating turned ON by you.' : 'Self-updating turned OFF by you — the app keeps checking and reporting, but changes no rules.', null);
+    persist();
+    renderObjectives();
+  }
+  function renderObjectives() {
+    var box = document.getElementById('objBody');
+    if (!box) return;
+    objState();
+    var m = objMetrics();
+    var rules = objRules();
+    function row(name, aim, w, n, extra, goal) {
+      var status;
+      if (!n) status = '<span style="color:var(--muted);font-weight:800;">NO DATA YET</span>';
+      else if (w / n * 100 >= goal) status = '<span style="color:var(--green);font-weight:800;">MEETS</span>';
+      else status = '<span style="color:var(--red);font-weight:800;">BELOW by ' + objGap(w, n, goal).toFixed(2) + ' pts</span>';
+      return '<div style="padding:6px 0;border-bottom:1px dashed #24314d;"><div style="font-size:0.8rem;"><strong>' + name + '</strong> — ' + status + '</div><div class="body-txt">' + aim + '</div><div style="font-size:0.74rem;">Measured: <strong>' + floorPctTxt(w, n) + '</strong>' + (n ? ' (' + w + ' of ' + n + ')' : '') + ' · goal ' + goal + '%' + (extra ? ' · ' + extra : '') + '</div></div>';
+    }
+    var p = m.practice;
+    var html = '';
+    html += row('Practice book', 'Pick coins that go up and exit them in profit. Win rate counts wins and losses only; flat and stale are shown beside it.', p.w, p.n, 'P&L ' + fmtUsdSigned(p.pnl) + ' · ' + p.flat + ' flat · ' + p.stale + ' stale', OBJ_GOAL);
+    html += row('Price coverage', 'Every open practice trade should get live prices until it closes, so it can actually win or lose.', p.closed - p.noLive, p.closed, p.noLive + ' closed without a live price', 100);
+    html += row('Virtual $10 Desk', 'Buy only coins that clear the desk pipeline, and close them in profit.', m.desk.w, m.desk.n, 'desk P&L ' + fmtUsdSigned(m.desk.pnl), OBJ_GOAL);
+    html += row('15-Min round record', 'Call each 15-minute round right. Its own learning tightens its call rules after each loss.', m.rounds.w, m.rounds.n, '', OBJ_GOAL);
+    html += row('Feed uptime', 'Keep the live coin feed connected while it is switched on and the app is open.', m.feed.live, m.feed.want, 'seconds live ' + m.feed.live + ' of ' + m.feed.want, OBJ_FEED_GOAL);
+    html += '<div style="margin-top:8px;font-size:0.8rem;"><strong>Rules the app may change by itself</strong> (only these):</div>';
+    html += '<div class="body-txt">God Mode no-chase limit: <strong>+' + rules.chaseMaxPct + '%</strong> from launch (default +40%, tightest +10%) · God Mode crowd rule: <strong>' + rules.minCrowd + '</strong> outside wallets (default 2, max 5) · Desk Analyst floor: <strong>' + deskFloor() + '</strong> (default 70, max 95) · 15-Min call rules: changed by the round record itself.</div>';
+    html += '<div class="row-btns" style="margin-top:6px;"><button type="button" class="btn-toggle sm-btn" onclick="objToggle()">Self-updating: ' + (db.objOn ? 'ON' : 'OFF') + '</button>' +
+      '<button type="button" class="' + (objResetArmed ? 'btn-halt' : 'btn-toggle') + ' sm-btn" onclick="objResetRules()">' + (objResetArmed ? 'Tap again to reset all learned rules' : 'Reset learned rules') + '</button>' +
+      '<button type="button" class="btn-blue sm-btn" onclick="objCheck()">Check now</button></div>';
+    html += '<div style="margin-top:8px;font-size:0.8rem;"><strong>Where it is falling short, and what it changed</strong> (newest first)</div>';
+    if (!db.objLog.length) html += '<div class="empty-note">Nothing logged yet — the first check runs a few seconds after the app opens, then every 5 minutes.</div>';
+    else html += db.objLog.slice(0, 15).map(function (e, i) {
+      return '<div class="combo-leg" style="border-bottom:1px dashed #24314d;padding:4px 0;"><span style="color:var(--amber);">' + esc(new Date(e.at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })) + '</span> — ' + esc(e.text) +
+        (e.key ? (e.undone ? ' <strong>(undone)</strong>' : ' <button type="button" class="copy-pill" onclick="objUndo(' + i + ')">Undo</button>') : '') + '</div>';
+    }).join('');
+    box.innerHTML = html;
+  }
+  // Feed uptime: counted every 10 seconds while the app is open.
+  setInterval(function () {
+    objState();
+    if (!wantActive) return;
+    db.feedUp.want += 10;
+    if (active && ws && ws.readyState === WebSocket.OPEN && lastMsgAt && Date.now() - lastMsgAt < 45000) db.feedUp.live += 10;
+  }, 10000);
+  setInterval(function () { try { objCheck(); } catch (e) {} }, 300000);
+  setTimeout(function () { try { objCheck(); } catch (e) {} }, 20000);
+
   function renderGodUI() {
     var on = !!db.godMode;
     if (document.body) document.body.classList.toggle('god-active', on);
@@ -3723,6 +4053,7 @@
     }
     var banner = document.getElementById('godBanner');
     if (banner) banner.classList.toggle('show', on);
+    renderGodStatus();
   }
 
   function renderSelfRunUI() {
@@ -3782,13 +4113,13 @@
       html += '<div class="wyg-line">Practice trades still open: <strong>none</strong>.</div>';
     }
     if (closed.length) {
-      html += '<div class="wyg-line">Trades closed at the last session (on record in your ledger): <strong>' + closed.length + ' closed</strong> in total.</div>';
+      html += '<div class="wyg-line">Practice trades closed so far (all-time, in your ledger): <strong>' + closed.length + ' closed</strong> in total.</div>';
       closed.slice(0, 5).forEach(function (t) {
         html += '<div class="wyg-line">&bull; $' + esc(t.sym) + ' — ' + esc(t.status) + ' &bull; Net: ' + (Number(t.pnl || 0) >= 0 ? '+' : '') + '$' + Number(t.pnl || 0).toFixed(2) + '</div>';
       });
       if (closed.length > 5) html += '<div class="wyg-line">&bull; …and ' + (closed.length - 5) + ' more closed in My Practice Trades.</div>';
     } else {
-      html += '<div class="wyg-line">Trades closed at the last session: <strong>none on record</strong> — no practice trade in your ledger has closed yet.</div>';
+      html += '<div class="wyg-line">Practice trades closed so far: <strong>none on record</strong> — no practice trade in your ledger has closed yet.</div>';
     }
     if (dropped.length) {
       html += '<div class="wyg-line"><strong>Followed wallets auto-dropped:</strong></div>';
@@ -3846,6 +4177,7 @@
   function toggleGodMode() {
     if (!db.godMode) {
       db.godMode = true;
+      db.minVotesBeforeGod = parseInt(db.minVotes, 10) || 6;
       db.minVotes = 7;
       var sel = document.getElementById('cfgVotes');
       if (sel) sel.value = '7';
@@ -3857,12 +4189,13 @@
       if (!wantActive) toggleCore();
     } else {
       db.godMode = false;
-      db.minVotes = 6;
+      var backTo = (db.minVotesBeforeGod >= 5 && db.minVotesBeforeGod <= 7) ? db.minVotesBeforeGod : 6;
+      db.minVotes = backTo;
       var sel2 = document.getElementById('cfgVotes');
-      if (sel2) sel2.value = '6';
+      if (sel2) sel2.value = String(backTo);
       persist();
       renderGodUI();
-      showToast('GOD MODE OFF — gate back to 6 of 8. Auto-Copy and Mirror-Sell stay as you set them.');
+      showToast('GOD MODE OFF — gate back to your ' + backTo + ' of 8. Auto-Copy and Mirror-Sell stay as you set them.');
     }
   }
 
@@ -4061,6 +4394,7 @@
   // the background. It starts at page load — a price seen before this page
   // opened was seen while the app was closed. Never reset by a reconnect.
   var lastBackgroundAt = Date.now();
+  var lastResumeAt = Date.now(); // page load counts as a wake-up
   var lastSweepAt = 0;
   function staleTimeTxt(ts) { return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
   // Returns '' when the price is live, or the label 'STALE PRICE — last seen
@@ -4217,7 +4551,7 @@
             type: msg.txType.toUpperCase(),
             mint: msg.mint,
             sol: parseFloat(msg.solAmount || 0),
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            time: new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
           });
           if (db.myActivity.length > 25) db.myActivity.pop();
           persist();
@@ -4367,6 +4701,11 @@
     if (!lw) return;
     launchWatch.delete(mint);
     lw.closed = true;
+    // Every coin that was not copied gets one plain-words reason in God Mode's log.
+    if (!lw.autoFired) {
+      var rr = lwScore(lw);
+      godReject(lw.sym, rr.consensus ? (lw.blockReason || 'passed the gate but was not copied') : ('only ' + rr.score + ' of 8 checks (gate ' + db.minVotes + ') — failed: ' + failedCheckNames(rr.checks)));
+    }
     lwRenderCard(lw);
     if (!mintStillNeeded(mint) && ws && ws.readyState === WebSocket.OPEN) {
       try { ws.send(JSON.stringify({ method: 'unsubscribeTokenTrade', keys: [mint] })); } catch (e) {}
@@ -4389,18 +4728,23 @@
     lwRenderCard(lw);
     deskRescoreCandidate(lw.mint, r.score);
     // Auto-Copy (practice only) when the live score reaches the gate — once per coin.
-    if (r.consensus && !lw.autoFired && sleepMode && db.bankroll >= db.size && db.bankroll > 3.5) {
-      var srcAddr = lw.followedOutsideAddr || (lw.watchedSmart ? lw.watchedSmart.addr : null);
-      var srcW = srcAddr ? (db.smartWallets || []).find(function (w) { return w.addr === srcAddr; }) : null;
-      if (!(srcW && Number(srcW.fastFlips || 0) >= 3)) {
-        lw.autoFired = true;
-        openSimTrade(lw.sym, lw.mint, lw.mc, srcAddr);
-      }
-    }
+    lwTryAuto(lw, r, lw.followedOutsideAddr || (lw.watchedSmart ? lw.watchedSmart.addr : null));
+  }
+
+  // Check #4 (Meta): keywords of 3 letters or fewer must match a whole word
+  // (so "AI" no longer matches RAINBOW or CHAIN); longer keywords may match
+  // inside a word.
+  function metaMatch(k, text) {
+    k = String(k || '').toUpperCase(); text = String(text || '').toUpperCase();
+    if (!k || !text) return false;
+    if (k.length > 3) return text.indexOf(k) !== -1;
+    var words = text.split(/[^A-Z0-9]+/);
+    return words.indexOf(k) !== -1;
   }
 
   function runEightAgents(tok) {
     db.scanned++;
+    godStatBump('checked');
     var sym = (tok.symbol || 'UNK').toUpperCase().trim();
     var name = (tok.name || '').toUpperCase();
     var mint = tok.mint;
@@ -4419,7 +4763,7 @@
     var watchedSmart = (db.smartWallets || []).find(function (w) { return w.addr === trader; }) || null;
 
     var a3_curve = mc != null && mc >= 28 && mc <= 48;
-    var a4_meta = keywords.some(function (k) { return sym.indexOf(k) !== -1 || name.indexOf(k) !== -1; });
+    var a4_meta = keywords.some(function (k) { return metaMatch(k, sym) || metaMatch(k, name); });
     var a5_antiClone = !recentTickers.has(sym) || (Date.now() - recentTickers.get(sym) > 600000);
     var a6_floor = sol >= 0.15;
     var a7_clean = /^[A-Z0-9]{2,10}$/.test(sym);
@@ -4429,7 +4773,7 @@
     recentTickers.set(sym, Date.now());
 
     var lw = {
-      mint: mint, sym: sym, creator: trader, createdAt: Date.now(), mc: mc,
+      mint: mint, sym: sym, creator: trader, createdAt: Date.now(), mc: mc, launchMc: mc, blockReason: '', passCounted: false,
       base: [a3_curve, a4_meta, a5_antiClone, a6_floor, a7_clean],
       maxOutsideSol: 0, crowdWallets: [], firstOutsideAt: null, outsideBuys: 0,
       followedOutsideAddr: null, followedOutsideName: null,
@@ -4454,14 +4798,9 @@
     }
     if (mint) setTimeout(function () { lwClose(mint); }, LAUNCH_WATCH_MS + 1000);
 
-    // Daily Drawdown Cap: auto-entries pause if the simulated bankroll drops below $3.50.
-    // Fast-flipper guard: Auto-Copy also skips a followed wallet with 3+ fast flips here.
-    if (consensus && sleepMode && db.bankroll >= db.size && db.bankroll > 3.5) {
-      if (!(watchedSmart && Number(watchedSmart.fastFlips || 0) >= 3)) {
-        lw.autoFired = true;
-        openSimTrade(sym, mint, mc, watchedSmart ? watchedSmart.addr : null);
-      }
-    }
+    // Automatic practice entry (drawdown floor, fast-flipper guard and God
+    // Mode's no-chase + crowd rules all live in lwTryAuto).
+    lwTryAuto(lw, r, watchedSmart ? watchedSmart.addr : null);
 
     if (db.scanned % 5 === 0) persist(); else refreshCountersOnly();
 
@@ -4489,7 +4828,18 @@
         '<button class="btn-toggle sm-btn" data-action="deskadd">Add to $10 Desk (paper — Sizer sizes it by score)</button>' +
         (trader ? '<button class="btn-toggle sm-btn" data-action="blockdev">Block Creator</button>' : '') +
       '</div>';
-    el.querySelector('[data-action="simbuy"]').addEventListener('click', function () { openSimTrade(sym, mint, lw.mc, lw.followedOutsideAddr || (watchedSmart ? watchedSmart.addr : null)); });
+    el.querySelector('[data-action="simbuy"]').addEventListener('click', function () {
+      var btnS = el.querySelector('[data-action="simbuy"]');
+      var rS = lwScore(lw);
+      if (db.godMode && rS.score < db.minVotes && btnS && btnS.getAttribute('data-armed') !== '1') {
+        btnS.setAttribute('data-armed', '1');
+        btnS.innerText = 'Below the ' + db.minVotes + '/8 gate (' + rS.score + '/8) — tap again to buy anyway';
+        setTimeout(function () { btnS.removeAttribute('data-armed'); btnS.innerText = 'Practice Buy ($' + db.size.toFixed(2) + ' fake)'; }, 5000);
+        return;
+      }
+      if (btnS) btnS.removeAttribute('data-armed');
+      openSimTrade(sym, mint, lw.mc, lw.followedOutsideAddr || (watchedSmart ? watchedSmart.addr : null), { src: 'manual', gateScore: rS.score, gateNeed: db.minVotes, launchMc: lw.launchMc, crowd: lw.crowdWallets.length, runPct: (lw.launchMc > 0 && lw.mc > 0) ? (lw.mc / lw.launchMc - 1) * 100 : null });
+    });
     el.querySelector('[data-action="deskadd"]').addEventListener('click', function () { openDeskTrade(sym, mint, lw.mc, 'Added from Live Coins', lwScore(lw).score * 12.5); });
     var blockBtn = el.querySelector('[data-action="blockdev"]');
     if (blockBtn) blockBtn.addEventListener('click', function () { addDeskBlacklistAddr(trader, sym); });
@@ -4523,24 +4873,33 @@
       setTimeout(function () { btnEl.innerText = btnEl.getAttribute('data-label') || 'Copy CA'; btnEl.style.color = ''; }, 1200);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(mint).then(flash).catch(function () { fallbackCopy(mint); flash(); });
+      navigator.clipboard.writeText(mint).then(flash).catch(function () { if (fallbackCopy(mint)) flash(); else copyToastResult(false, ''); });
     } else {
-      fallbackCopy(mint);
-      flash();
+      if (fallbackCopy(mint)) flash(); else copyToastResult(false, '');
     }
   }
 
+  // Returns true only when the copy really happened — iPhone often refuses.
   function fallbackCopy(text) {
+    var ok = false;
     try {
       var temp = document.createElement('textarea');
       temp.value = text;
+      temp.setAttribute('readonly', '');
       temp.style.position = 'fixed';
       temp.style.opacity = '0';
+      temp.style.fontSize = '16px';
       document.body.appendChild(temp);
+      temp.focus();
       temp.select();
-      document.execCommand('copy');
+      try { temp.setSelectionRange(0, String(text).length); } catch (e2) {}
+      ok = !!document.execCommand('copy');
       document.body.removeChild(temp);
-    } catch (e) {}
+    } catch (e) { ok = false; }
+    return ok;
+  }
+  function copyToastResult(ok, msg) {
+    showToast(ok ? msg : "Couldn't copy on this phone — press and hold the text to copy it by hand.");
   }
 
   function caBarHtml(mint) {
@@ -4548,12 +4907,27 @@
       '<button class="copy-pill" onclick="copyCA(\'' + esc(mint) + '\', this)">Copy CA</button></div>';
   }
 
+  var sharedAudioCtx = null;
+  function getAudioCtx() {
+    if (sharedAudioCtx) return sharedAudioCtx;
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    try { sharedAudioCtx = new Ctx(); } catch (e) { sharedAudioCtx = null; }
+    return sharedAudioCtx;
+  }
+  function unlockAudioOnce() {
+    var c = getAudioCtx();
+    if (c && c.state === 'suspended') { try { c.resume(); } catch (e) {} }
+    document.removeEventListener('touchend', unlockAudioOnce);
+    document.removeEventListener('click', unlockAudioOnce);
+  }
+  document.addEventListener('touchend', unlockAudioOnce);
+  document.addEventListener('click', unlockAudioOnce);
   function pingAlert() {
     try {
       if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
-      var ctx = new Ctx();
+      var ctx = getAudioCtx();
+      if (!ctx) return;
       if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
       var osc = ctx.createOscillator();
       var gain = ctx.createGain();
@@ -4643,10 +5017,9 @@
     var ta = document.getElementById('backupText');
     if (!ta.value) { showToast('Nothing to copy yet — tap Copy Backup first.'); return; }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(ta.value).then(function () { showToast('Backup copied.'); }).catch(function () { fallbackCopy(ta.value); showToast('Backup copied.'); });
+      navigator.clipboard.writeText(ta.value).then(function () { showToast('Backup copied.'); }).catch(function () { copyToastResult(fallbackCopy(ta.value), 'Backup copied.'); });
     } else {
-      fallbackCopy(ta.value);
-      showToast('Backup copied.');
+      copyToastResult(fallbackCopy(ta.value), 'Backup copied.');
     }
   }
 
@@ -4676,6 +5049,7 @@
     var el = document.getElementById('saveStatusLine');
     if (!el) return;
     var open = (db.trades || []).filter(function (t) { return t.status === 'OPEN'; }).length;
+    if (saveFailedAt) { el.innerHTML = '<strong style="color:var(--red);">SAVE FAILED at ' + esc(new Date(saveFailedAt).toLocaleTimeString()) + '</strong> — phone storage for the app is full or blocked. Copy Full Backup below now.'; return; }
     el.innerHTML = 'Saved right now: <strong>$' + Number(db.bankroll || 0).toFixed(2) + '</strong> practice money &bull; <strong>' + (db.trades || []).length + '</strong> practice trades (' + open + ' open) &bull; <strong>' + (db.smartWallets || []).length + '</strong> wallets followed &bull; Safe Vault <strong>$' + Number(db.vault || 0).toFixed(2) + '</strong> &bull; account ' + (db.linkedWallet ? '<strong>linked</strong> (' + esc(db.linkedWallet.slice(0, 5)) + '...' + esc(db.linkedWallet.slice(-5)) + ')' : '<strong>not linked</strong>') + '.';
   }
 
@@ -4700,10 +5074,9 @@
     var ta = document.getElementById('fullBackupText');
     if (!ta || !ta.value) { showToast('Nothing to copy yet — tap Copy Full Backup first.'); return; }
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(ta.value).then(function () { showToast('Full backup copied.'); }).catch(function () { fallbackCopy(ta.value); showToast('Full backup copied.'); });
+      navigator.clipboard.writeText(ta.value).then(function () { showToast('Full backup copied.'); }).catch(function () { copyToastResult(fallbackCopy(ta.value), 'Full backup copied.'); });
     } else {
-      fallbackCopy(ta.value);
-      showToast('Full backup copied.');
+      copyToastResult(fallbackCopy(ta.value), 'Full backup copied.');
     }
   }
 
@@ -4725,6 +5098,8 @@
     if (!Array.isArray(merged.droppedWallets)) merged.droppedWallets = [];
     if (!Array.isArray(merged.pdCombos)) merged.pdCombos = [];
     normalizeDesk(merged);
+    normalizePerps(merged);
+    normalizeTargets(merged);
     merged.uiTab = currentTabId;
     merged.wasLive = !!wantActive;
     db = merged;
@@ -4924,10 +5299,11 @@
     while (box.children.length > 30) box.removeChild(box.lastChild);
   }
 
-  function openSimTrade(sym, mint, entryMc, copiedFrom) {
-    if (db.trades.some(function (t) { return t.mint === mint && t.status === 'OPEN'; })) return;
-    if (!(entryMc > 0)) { showToast('Practice buy for $' + sym + ' skipped — no market size in feed. No trade opens at an invented price.'); return; }
-    if (db.bankroll < db.size) { showToast('Not enough practice money for a $' + db.size.toFixed(2) + ' practice buy.'); return; }
+  function openSimTrade(sym, mint, entryMc, copiedFrom, meta) {
+    meta = meta || {};
+    if (db.trades.some(function (t) { return t.mint === mint && t.status === 'OPEN'; })) return false;
+    if (!(entryMc > 0)) { showToast('Practice buy for $' + sym + ' skipped — no market size in feed. No trade opens at an invented price.'); return false; }
+    if (db.bankroll < db.size) { showToast('Not enough practice money for a $' + db.size.toFixed(2) + ' practice buy.'); return false; }
     db.bankroll -= db.size;
     db.trades.unshift({
       id: nextTradeId(),
@@ -4939,6 +5315,13 @@
       curMc: entryMc,
       peakMc: entryMc,
       copiedFrom: copiedFrom || null,
+      src: meta.src || 'manual',
+      gateScore: (typeof meta.gateScore === 'number') ? meta.gateScore : null,
+      gateNeed: (typeof meta.gateNeed === 'number') ? meta.gateNeed : null,
+      launchMc: (meta.launchMc > 0) ? meta.launchMc : null,
+      crowd: (typeof meta.crowd === 'number') ? meta.crowd : null,
+      runPct: (typeof meta.runPct === 'number' && isFinite(meta.runPct)) ? meta.runPct : null,
+      godAtOpen: !!db.godMode,
       slAtOpen: (typeof db.sl === 'number' && db.sl) ? db.sl : 0.85,
       status: 'OPEN',
       pnl: 0,
@@ -4961,12 +5344,14 @@
     }
     persist();
     showToast('Practice buy opened: $' + sym + ' at ' + entryMc.toFixed(1) + ' SOL market size');
+    return true;
   }
 
   function checkLivePositionTick(msg) {
     var trade = db.trades.find(function (t) { return t.mint === msg.mint && t.status === 'OPEN'; });
-    if (!trade || !msg.marketCapSol) return;
-    trade.curMc = parseFloat(msg.marketCapSol);
+    var tickMc = deriveMcSol(msg);
+    if (!trade || !(tickMc > 0)) return;
+    trade.curMc = tickMc;
     trade.priceAt = Date.now();
     if (!trade.peakMc || trade.curMc > trade.peakMc) trade.peakMc = trade.curMc;
     if (!trade.origSize) trade.origSize = trade.size;
@@ -5058,6 +5443,7 @@
     // was asleep / the app was frozen in the background: any price seen
     // before that gap is stale.
     var nowSweep = Date.now();
+    var inWakeGrace = wantActive && (nowSweep - lastResumeAt < 60000);
     if (lastSweepAt && nowSweep - lastSweepAt > 90000 && lastSweepAt > lastBackgroundAt) lastBackgroundAt = lastSweepAt;
     lastSweepAt = nowSweep;
     var open = db.trades.filter(function (t) { return t.status === 'OPEN'; });
@@ -5065,6 +5451,7 @@
       var t = open[i];
       if (!t.openedAt) continue;
       var mult = (t.curMc / t.entryMc) || 1;
+      if (inWakeGrace && stalePriceLabel(t.priceAt)) continue; // just woke up: wait up to 60s for a live tick
       if (Date.now() - t.openedAt >= 45 * 60 * 1000) {
         closeTrade(t.id, mult, 'MAX HOLD — 45-minute cap', stalePriceLabel(t.priceAt));
         continue;
@@ -5079,7 +5466,7 @@
     var deskOpen = (db.deskTrades || []).filter(function (t) { return t.status === 'OPEN' && !t.imported; });
     for (var j = 0; j < deskOpen.length; j++) {
       var dt = deskOpen[j];
-      if (dt.openedAt && Date.now() - dt.openedAt >= 45 * 60 * 1000) {
+      if (dt.openedAt && Date.now() - dt.openedAt >= 45 * 60 * 1000 && !(inWakeGrace && stalePriceLabel(dt.priceAt))) {
         var dStale = stalePriceLabel(dt.priceAt);
         closeDeskTrade(dt.id, (dt.entryMc ? (dt.curMc / dt.entryMc) : 1) || 1, 'MAX HOLD — 45-minute cap' + (dStale ? ' · ' + dStale : ''), !!dStale);
       }
@@ -5125,6 +5512,8 @@
     // A time exit on an old price is recorded as such — never as a clean live exit.
     t.stalePrice = !!staleLabel;
     t.staleLabel = staleLabel || '';
+    t.exitMult = mult;
+    t.closedAt = Date.now();
     // God Mode profit-sweep vault: 50% of net profit goes to the protected vault,
     // the rest of the payout (stake + other 50% of profit) lands in Practice Money.
     // Vault money is separate — auto-copy entries and the $3.50 check only use db.bankroll.
@@ -5140,7 +5529,8 @@
     }
     // Auto-drop losing wallets: record this copy's win/loss on its source wallet
     var droppedName = null;
-    if (t.copiedFrom) {
+    var resForWallet = practiceResult(t);
+    if (t.copiedFrom && (resForWallet === 'WIN' || resForWallet === 'LOSS')) {
       var src = (db.smartWallets || []).find(function (w) { return w.addr === t.copiedFrom; });
       if (src) {
         if (t.pnl > 0) { src.copyWins = Number(src.copyWins || 0) + 1; src.lossStreak = 0; }
@@ -5179,6 +5569,51 @@
     openPumpCoin(mint);
   }
 
+  // One plain line per closed trade: entry, exit, reason, result, and how it
+  // was opened — so a streak explains itself.
+  function tradeAccountHtml(t) {
+    if (t.status === 'OPEN') return '';
+    var res = practiceResult(t);
+    var xm = tradeExitMult(t);
+    var who = t.src === 'auto' ? ('Auto-Copy' + (t.godAtOpen ? ' (God Mode)' : '')) : (t.src === 'manual' ? 'your manual Practice Buy' : 'opened before this version recorded who opened it');
+    var gate = (typeof t.gateScore === 'number') ? (' · gate score at entry ' + t.gateScore + '/8' + (typeof t.gateNeed === 'number' && t.gateScore < t.gateNeed ? ' — BELOW the ' + t.gateNeed + '/8 gate' : '')) : '';
+    var run = (typeof t.runPct === 'number') ? (' · bought ' + (t.runPct >= 0 ? '+' : '') + t.runPct.toFixed(0) + '% from launch') : '';
+    var resTxt = res === 'WIN' ? '<strong style="color:var(--green);">WIN</strong>' : (res === 'LOSS' ? '<strong style="color:var(--red);">LOSS</strong>' : (res === 'FLAT' ? '<strong>FLAT</strong> (back to even — not a win, not a loss)' : '<strong style="color:var(--amber);">STALE</strong> (closed on an old price — real result unknown, not scored)'));
+    return '<div class="acct-line">Entry ' + Number(t.entryMc || 0).toFixed(1) + ' SOL market size → exit ' + (Number(t.entryMc || 0) * xm).toFixed(1) + ' SOL (' + xm.toFixed(2) + 'x) · ' + esc(tradeReason(t)) + ' · ' + resTxt + ' · ' + (Number(t.pnl) >= 0 ? '+' : '') + '$' + Number(t.pnl || 0).toFixed(2) + '<br />Opened by ' + esc(who) + esc(gate) + esc(run) + '.</div>';
+  }
+  // Explains the recent run of closed trades in plain words, from the record.
+  function streakExplainHtml() {
+    var closed = db.trades.filter(function (t) { return t.status !== 'OPEN'; }).slice(0, 20);
+    if (!closed.length) return '';
+    var rec = practiceRecord(closed);
+    var reasons = {};
+    var lossReasons = {};
+    var manual = 0, manualBelow = 0, autoChased = 0, unknownSrc = 0, flatNoMove = 0;
+    closed.forEach(function (t) {
+      var rs = tradeReason(t);
+      reasons[rs] = (reasons[rs] || 0) + 1;
+      var res = practiceResult(t);
+      if (res === 'LOSS') lossReasons[rs] = (lossReasons[rs] || 0) + 1;
+      if (res === 'FLAT' && Math.abs(tradeExitMult(t) - 1) < 0.0005) flatNoMove++;
+      if (t.src === 'manual') { manual++; if (typeof t.gateScore === 'number' && typeof t.gateNeed === 'number' && t.gateScore < t.gateNeed) manualBelow++; }
+      else if (t.src === 'auto') { if (typeof t.runPct === 'number' && t.runPct > 25) autoChased++; }
+      else unknownSrc++;
+    });
+    var lines = [];
+    lines.push('<strong>Last ' + closed.length + ' closed practice trades:</strong> ' + rec.w + ' wins · ' + rec.l + ' losses · ' + rec.flat + ' flat · ' + rec.stale + ' stale — win rate ' + floorPctTxt(rec.w, rec.scored) + (rec.scored ? ' of ' + rec.scored + ' scored' : ' (none scored)') + ' · P&L ' + fmtUsdSigned(rec.pnl) + (rec.stale ? ' (+ ' + fmtUsdSigned(rec.stalePnl) + ' on stale exits)' : '') + '.');
+    if (flatNoMove) lines.push('• <strong>' + flatNoMove + ' closed at exactly 1.00x</strong> — the price never moved while the app watched. That usually means no live price reached the app for that coin (feed off, phone asleep, or nobody traded it), and a time rule closed it at the entry price. Flat is not a loss; it means the trade never got a live price.');
+    if (rec.stale) lines.push('• <strong>' + rec.stale + ' closed on a stale price</strong> after the app slept — the real result is unknown, so they are not scored.');
+    var lr = Object.keys(lossReasons);
+    if (lr.length) lines.push('• Losses came from: ' + lr.map(function (k) { return lossReasons[k] + '× ' + esc(k); }).join(', ') + '.');
+    if (manual) lines.push('• <strong>' + manual + ' were manual Practice Buys</strong> — the gate only screens Auto-Copy, so manual buys skip it' + (manualBelow ? '; ' + manualBelow + ' were below the gate when bought' : '') + '.');
+    if (autoChased) lines.push('• ' + autoChased + ' automatic entries were bought after the price had already run more than +25% from launch (chasing).');
+    if (unknownSrc) lines.push('• ' + unknownSrc + ' were opened before this version recorded who opened them or at what gate score.');
+    var exitList = Object.keys(reasons).map(function (k) { return reasons[k] + '× ' + esc(k); }).join(', ');
+    lines.push('• Exits: ' + exitList + '.');
+    if (rec.scored === 0 && rec.flat + rec.stale === closed.length) lines.push('<strong>Nothing here says the coin picks were wrong — these trades never got a live price to win or lose on.</strong> Keep the feed running (START) and the app open while trades are open.');
+    return '<div class="streak-box">' + lines.join('<br />') + '</div>';
+  }
+
   function renderLedger() {
     var box = document.getElementById('ledgerBox');
     if (!box) return;
@@ -5186,9 +5621,10 @@
       box.innerHTML = '<div class="empty-note">No practice trades yet — tap Practice Buy on any coin in Live Coins.</div>';
       return;
     }
-    box.innerHTML = db.trades.map(function (t) {
+    box.innerHTML = streakExplainHtml() + db.trades.map(function (t) {
       var mult = (t.curMc / t.entryMc) || 1;
-      var tagClass = t.status === 'OPEN' ? 'tag-no' : (t.pnl > 0 ? 'tag-win' : 'tag-loss');
+      var resL = practiceResult(t);
+      var tagClass = resL === 'OPEN' ? 'tag-no' : (resL === 'WIN' ? 'tag-win' : (resL === 'LOSS' ? 'tag-loss' : 'tag-no'));
       var netHtml = t.status !== 'OPEN'
         ? ' &bull; Net: <strong style="color:' + (t.pnl >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (t.pnl >= 0 ? '+' : '') + '$' + t.pnl.toFixed(2) + '</strong>'
         : '';
@@ -5231,6 +5667,7 @@
           '<span class="tag ' + tagClass + '">' + esc(t.status) + '</span>' +
         '</div>' +
         '<div style="font-size:0.73rem;color:var(--muted);margin-bottom:6px;">You put in: ' + stakeLabel + ' &bull; Price move: <strong style="color:var(--text);">' + mult.toFixed(2) + 'x</strong>' + netHtml + '</div>' +
+        tradeAccountHtml(t) +
         initialsHtml +
         ladderHtml +
         maxHoldHtml +
@@ -5263,7 +5700,8 @@
       var m = (Number(t.curMc) || Number(t.entryMc)) / Number(t.entryMc);
       return s + (Number(t.size) || 0) * m;
     }, 0);
-    var wins = closed.filter(function (t) { return t.pnl > 0; }).length;
+    var wins = closed.filter(function (t) { return t.pnl > 0.000001; }).length;
+    var deskLosses = closed.filter(function (t) { return t.pnl < -0.000001; }).length;
     return {
       total: book.length,
       closed: closed,
@@ -5272,8 +5710,9 @@
       cash: 10 + closedPnl - openCost + openLadder,
       equity: 10 + closedPnl - openCost + openLadder + openMark,
       wins: wins,
-      losses: closed.length - wins,
-      winRate: closed.length ? Math.round((wins / closed.length) * 100) : 0
+      losses: deskLosses,
+      flat: closed.length - wins - deskLosses,
+      winRate: (wins + deskLosses) ? Math.floor((wins / (wins + deskLosses)) * 100) : 0
     };
   }
 
@@ -5472,8 +5911,8 @@
 
   function deskCandidateTick(msg) {
     var c = deskCandidates.get(msg.mint);
-    if (!c || !msg.marketCapSol) return;
-    var mc = parseFloat(msg.marketCapSol);
+    var mc = deriveMcSol(msg);
+    if (!c || !(mc > 0)) return;
     if (!(mc > 0)) return;
     c.curMc = mc;
     if (mc > c.peakMc) c.peakMc = mc;
@@ -5635,6 +6074,7 @@
         if (c.killed || c.bought) continue;
         if (c.rpcStatus === 'checking') continue; // FILTER's on-chain checks still running — no entry until they land
         if (c.rugStatus === 'checking') continue; // RugCheck gate still running — no entry until it lands either
+        if (c.rpcStatus === 'unverified' || c.rugStatus === 'unverified') continue; // couldn't verify = no buy
         if (c.score100 < deskFloor()) continue;
         if (c.seen < 2 || !(c.peakMc > 0) || !(c.curMc > 0)) continue;
         var dipNow = (1 - c.curMc / c.peakMc) * 100;
@@ -5697,11 +6137,11 @@
       if (!c.killed && c.score100 >= deskFloor()) {
         if (c.rpcStatus === 'checking') flags += ' · <span style="color:var(--amber);">on-chain checks running…</span>';
         else if (c.rpcStatus === 'verified') flags += ' · <span style="color:var(--green);">on-chain verified: mint/freeze revoked' + (typeof c.top10Pct === 'number' ? ', top 10 hold ' + c.top10Pct.toFixed(1) + '%' : '') + '</span>';
-        else if (c.rpcStatus === 'unverified') flags += ' · <span style="color:var(--amber);">couldn\'t verify on-chain — flagged, not passed and not killed</span>';
+        else if (c.rpcStatus === 'unverified') flags += ' · <span style="color:var(--amber);">couldn\'t verify on-chain — the Executor won\'t buy it</span>';
         if (c.vSol > 0 && c.vSol < 85) flags += ' · <span style="color:var(--amber);">thin curve (proxy: ' + c.vSol.toFixed(1) + ' SOL virtual reserves, under the ~85 SOL ≈ $15k line — a flag, not a kill)</span>';
         if (c.rugStatus === 'checking') flags += ' · <span style="color:var(--amber);">RugCheck running…</span>';
         else if (c.rugStatus === 'verified') flags += ' · <span style="color:var(--green);">RugCheck: score ' + (c.rugScore != null ? Math.round(c.rugScore) : '—') + (c.rugWorst ? ', worst risk: ' + esc(c.rugWorst) : ', no risks listed') + '</span>';
-        else if (c.rugStatus === 'unverified') flags += ' · <span style="color:var(--amber);">RugCheck couldn\'t verify — flagged, not passed and not killed</span>';
+        else if (c.rugStatus === 'unverified') flags += ' · <span style="color:var(--amber);">RugCheck couldn\'t verify — the Executor won\'t buy it</span>';
       }
       return '<div style="padding:6px 0;border-bottom:1px dashed #24314d;"><div style="display:flex;justify-content:space-between;gap:8px;font-size:0.78rem;"><strong>$' + esc(c.sym) + '</strong><span>Score <strong>' + c.score100 + '</strong>/100 (' + c.passed + ' of 8 checks)</span></div>' +
         '<div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Market size now ' + c.curMc.toFixed(1) + ' SOL · high seen ' + c.peakMc.toFixed(1) + ' SOL · ' + status + (c.devChecked ? '' : ' · <span style="color:var(--amber);">no creator wallet in its stream data — blacklist not checked</span>') + flags + '</div></div>';
@@ -5730,7 +6170,7 @@
     var st = deskStats();
     var openLines = st.open.filter(function (t) { return !t.imported; }).map(function (t) {
       var m = t.entryMc ? (t.curMc / t.entryMc) : 1;
-      return '$' + esc(t.sym) + ' at ' + m.toFixed(2) + 'x (' + fmtUsdSigned((Number(t.size) || 0) * (m - 1) + (Number(t.ladderPayout) || 0)) + ')';
+      return '$' + esc(t.sym) + ' at ' + m.toFixed(2) + 'x (' + fmtUsdSigned((Number(t.size) || 0) * m + (Number(t.ladderPayout) || 0) - (Number(t.origSize || t.size) || 0)) + ')';
     });
     var yLabel = new Date(Date.now() - 24 * 60 * 60 * 1000).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
     if (!closedY.length && !openedY.length) {
@@ -5873,8 +6313,9 @@
 
   function checkDeskTick(msg) {
     var t = (db.deskTrades || []).find(function (x) { return x.mint === msg.mint && x.status === 'OPEN' && !x.imported; });
-    if (!t || !msg.marketCapSol) return;
-    t.curMc = parseFloat(msg.marketCapSol);
+    var dTickMc = deriveMcSol(msg);
+    if (!t || !(dTickMc > 0)) return;
+    t.curMc = dTickMc;
     t.priceAt = Date.now();
     if (!t.peakMc || t.curMc > t.peakMc) t.peakMc = t.curMc;
     var mult = t.curMc / t.entryMc;
@@ -5947,7 +6388,7 @@
     lines.push('Reason: ' + (t.reason || 'Added from the terminal'));
     if (t.status === 'OPEN') {
       var m = t.entryMc ? (t.curMc / t.entryMc) : 1;
-      lines.push('Status: OPEN — now ' + m.toFixed(2) + 'x (' + fmtUsdSigned(t.size * (m - 1)) + ')');
+      lines.push('Status: OPEN — now ' + m.toFixed(2) + 'x (' + fmtUsdSigned((Number(t.size) || 0) * m + (Number(t.ladderPayout) || 0) - (Number(t.origSize || t.size) || 0)) + ')');
     } else {
       lines.push('Status: CLOSED — ' + (t.closeReason || '') + ' at ' + Number(t.exitMult || 1).toFixed(2) + 'x');
       lines.push('P&L: ' + fmtUsdSigned(t.pnl));
@@ -5960,8 +6401,8 @@
     if (!t || t.imported) return;
     var text = deskTicketText(t);
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { showToast('Desk ticket ' + t.ticket + ' copied.'); }).catch(function () { fallbackCopy(text); showToast('Desk ticket ' + t.ticket + ' copied.'); });
-    } else { fallbackCopy(text); showToast('Desk ticket ' + t.ticket + ' copied.'); }
+      navigator.clipboard.writeText(text).then(function () { showToast('Desk ticket ' + t.ticket + ' copied.'); }).catch(function () { copyToastResult(fallbackCopy(text), 'Desk ticket ' + t.ticket + ' copied.'); });
+    } else { copyToastResult(fallbackCopy(text), 'Desk ticket ' + t.ticket + ' copied.'); }
   }
 
   function deskEodText() {
@@ -5969,15 +6410,17 @@
     var now = new Date();
     var start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     var fresh = (db.deskTrades || []).filter(function (t) { return !t.imported; });
-    var openedToday = fresh.filter(function (t) { return t.openedAt && t.openedAt >= start; }).length;
-    var closedToday = fresh.filter(function (t) { return t.closedAt && t.closedAt >= start; });
-    var w = closedToday.filter(function (t) { return t.pnl > 0; }).length;
+    var dayKeyET = etDateStr(Date.now());
+    var openedToday = fresh.filter(function (t) { return t.openedAt && etDateStr(t.openedAt) === dayKeyET; }).length;
+    var closedToday = fresh.filter(function (t) { return t.closedAt && etDateStr(t.closedAt) === dayKeyET; });
+    var w = closedToday.filter(function (t) { return t.pnl > 0.000001; }).length;
+    var lToday = closedToday.filter(function (t) { return t.pnl < -0.000001; }).length;
     var net = closedToday.reduce(function (s, t) { return s + (Number(t.pnl) || 0); }, 0);
     var staleToday = closedToday.filter(function (t) { return t.stalePrice; }).length;
     var dateStr = now.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
     return 'VIRTUAL $10 DESK — END OF DAY (' + dateStr + ')\n' +
       'Opened today: ' + openedToday + ' · Closed today: ' + closedToday.length + '\n' +
-      'Wins / Losses today: ' + w + ' / ' + (closedToday.length - w) + '\n' +
+      'Wins / Losses today: ' + w + ' / ' + lToday + (closedToday.length - w - lToday ? ' (+ ' + (closedToday.length - w - lToday) + ' flat)' : '') + '\n' +
       'Net desk P&L today: ' + fmtUsdSigned(net) + '\n' +
       (staleToday ? 'STALE PRICE exits today: ' + staleToday + ' (closed at the last price seen, not a live price)\n' : '') +
       'Desk equity: $' + st.equity.toFixed(2) + ' · Desk cash: $' + st.cash.toFixed(2) + ' · Open: ' + st.open.length + ' / 4\n' +
@@ -5989,15 +6432,15 @@
     if (!el) return;
     var text = el.innerText || el.textContent || '';
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { showToast(label + ' copied.'); }).catch(function () { fallbackCopy(text); showToast(label + ' copied.'); });
-    } else { fallbackCopy(text); showToast(label + ' copied.'); }
+      navigator.clipboard.writeText(text).then(function () { showToast(label + ' copied.'); }).catch(function () { copyToastResult(fallbackCopy(text), label + ' copied.'); });
+    } else { copyToastResult(fallbackCopy(text), label + ' copied.'); }
   }
 
   function copyDeskEod() {
     var text = deskEodText();
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { showToast('End of Day Summary copied.'); }).catch(function () { fallbackCopy(text); showToast('End of Day Summary copied.'); });
-    } else { fallbackCopy(text); showToast('End of Day Summary copied.'); }
+      navigator.clipboard.writeText(text).then(function () { showToast('End of Day Summary copied.'); }).catch(function () { copyToastResult(fallbackCopy(text), 'End of Day Summary copied.'); });
+    } else { copyToastResult(fallbackCopy(text), 'End of Day Summary copied.'); }
   }
 
   function deskCardHtml(t) {
@@ -6059,7 +6502,25 @@
     return html;
   }
 
+  // Deadlines in the recorded Grok routines: say EXPIRED once they pass,
+  // instead of a "today" banner that stays frozen.
+  function renderDeadlines() {
+    var now = Date.now();
+    var list = document.querySelectorAll ? document.querySelectorAll('[data-deadline]') : [];
+    for (var i = 0; i < list.length; i++) {
+      var elD = list[i];
+      var t = Date.parse(elD.getAttribute('data-deadline'));
+      if (!isNaN(t) && now > t && !elD.getAttribute('data-expired-shown')) {
+        elD.setAttribute('data-expired-shown', '1');
+        elD.innerHTML = '⏰ <strong>EXPIRED</strong> — ' + esc(elD.getAttribute('data-deadline-label') || 'This deadline') + ' ended ' + esc(new Date(t).toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })) + '. Nothing runs under it any more; real trades stay your tap and signature only.';
+      }
+    }
+    var r1 = document.getElementById('routineR1Tag');
+    if (r1 && now > Date.parse('2026-11-20T12:45:00-05:00')) { r1.innerText = 'ENDED'; r1.className = 'tag tag-loss'; }
+  }
+
   function renderDesk() {
+    renderDeadlines();
     var statsEl = document.getElementById('deskStats');
     var bookEl = document.getElementById('deskBook');
     if (!statsEl || !bookEl) return;
@@ -6070,7 +6531,7 @@
       '<div style="display:flex;justify-content:space-between;gap:8px;font-size:0.78rem;padding:4px 0;border-bottom:1px dashed #24314d;"><span style="color:var(--muted);">Open positions</span><strong>' + st.open.length + ' / 4</strong></div>' +
       '<div style="display:flex;justify-content:space-between;gap:8px;font-size:0.78rem;padding:4px 0;border-bottom:1px dashed #24314d;"><span style="color:var(--muted);">Trades in the book</span><strong>' + st.total + '</strong></div>' +
       '<div style="display:flex;justify-content:space-between;gap:8px;font-size:0.78rem;padding:4px 0;border-bottom:1px dashed #24314d;"><span style="color:var(--muted);">Closed desk P&amp;L (running)</span><strong style="color:' + (st.closedPnl >= 0 ? 'var(--green)' : 'var(--red)') + '">' + fmtUsdSigned(st.closedPnl) + '</strong></div>' +
-      '<div style="display:flex;justify-content:space-between;gap:8px;font-size:0.78rem;padding:4px 0;"><span style="color:var(--muted);">Win rate (closed desk trades only)</span><strong>' + (st.closed.length ? st.winRate + '% (' + st.wins + 'W / ' + st.losses + 'L)' : '—') + '</strong></div>' +
+      '<div style="display:flex;justify-content:space-between;gap:8px;font-size:0.78rem;padding:4px 0;"><span style="color:var(--muted);">Win rate (closed desk trades only)</span><strong>' + ((st.wins + st.losses) ? floorPctTxt(st.wins, st.wins + st.losses) + ' (' + st.wins + 'W / ' + st.losses + 'L' + (st.flat ? ' / ' + st.flat + ' flat' : '') + ')' : '—') + '</strong></div>' +
       '<div class="body-txt" style="margin-top:6px;">Computed live: $10.00 start + closed P&amp;L + open marks where live prices exist. The six Grok-log tickets/lines total +$0.87 — the desk app showed +$0.88 (its own rounding).</div>' +
       '<div class="body-txt" style="margin-top:4px;">Last recorded (Nov 20, 7:39 AM): <strong>Equity $10.88 · Cash $10.88 · 0 open</strong>.</div>';
     fillDeskSettings();
@@ -6264,7 +6725,7 @@
     }
     var stopped = pos.direction === 'LONG' ? (mark <= pos.stopPrice) : (mark >= pos.stopPrice);
     if (stopped) {
-      closePerpsPosition(pos.beMoved ? 'BREAKEVEN STOP' : 'STOPPED', pos.stopPrice);
+      closePerpsPosition(pos.beMoved ? 'BREAKEVEN STOP' : 'STOPPED', mark);
       return;
     }
     persist();
@@ -6457,6 +6918,18 @@
         return;
       }
     }
+    var vSize = parseFloat(document.getElementById('cfgSize').value);
+    var vTp = parseFloat(document.getElementById('cfgTp').value);
+    var vSl = parseFloat(document.getElementById('cfgSl').value);
+    var vSol = parseFloat(document.getElementById('cfgSolSize').value);
+    var vSlip = parseInt(document.getElementById('cfgSlippage').value, 10);
+    var setProblem = '';
+    if (!(vSize >= 0.01 && vSize <= 1000)) setProblem = 'practice buy size must be at least $0.01';
+    else if (!(vTp > 1.0 && vTp <= 100)) setProblem = 'take profit must be above 1.0 (2.0 means double)';
+    else if (!(vSl > 0 && vSl < 1)) setProblem = 'stop loss must be between 0 and 1 (0.85 means down 15%)';
+    else if (!(vSol > 0 && vSol <= 100)) setProblem = 'real buy size must be above 0 SOL';
+    else if (!(vSlip >= 1 && vSlip <= 90)) setProblem = 'slippage must be between 1% and 90%';
+    if (setProblem) { showToast('Settings not saved: ' + setProblem + '. Nothing was saved.'); hydrateForms(); return; }
     db.minVotes = parseInt(document.getElementById('cfgVotes').value, 10) || 6;
     db.size = parseFloat(document.getElementById('cfgSize').value) || 1.00;
     db.tp = parseFloat(document.getElementById('cfgTp').value) || 2.0;
@@ -6583,11 +7056,12 @@
       var closed = db.trades.filter(function (t) { return t.status !== 'OPEN'; });
       var streak = 0;
       for (var i = 0; i < closed.length; i++) {
-        if (closed[i].pnl <= 0) streak++; else break;
+        var resS = practiceResult(closed[i]);
+        if (resS === 'LOSS') streak++; else if (resS === 'WIN') break;
       }
       var aboveHalt = Math.max(0, db.bankroll - 3.5);
       warn.innerHTML =
-        '<div class="body-txt">Current loss streak: <strong>' + streak + ' straight</strong>' + (streak >= 3 ? ' — that hits Shield\'s hard stop (3 straight losses). Slow down before the next practice buy.' : '.') + '</div>' +
+        '<div class="body-txt">Current loss streak: <strong>' + streak + ' straight</strong>' + (streak >= 3 ? ' — that matches Shield\'s 3-straight-losses stop from the overnight plan. In this app it is a warning, not an automatic stop — slow down before the next practice buy.' : '.') + '</div>' +
         '<div class="body-txt">Practice money is <strong>$' + aboveHalt.toFixed(2) + '</strong> above the $3.50 drawdown halt — auto-entries pause if practice money reaches $3.50.</div>' +
         '<div class="body-txt">Safe Vault: <strong>$' + Number(db.vault || 0).toFixed(2) + '</strong> in protected profits.</div>';
     }
@@ -6596,10 +7070,9 @@
   function copyNcPracticeTable() {
     var text = ncPracticeTableText();
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { showToast('24-hour practice table copied.'); }).catch(function () { fallbackCopy(text); showToast('24-hour practice table copied.'); });
+      navigator.clipboard.writeText(text).then(function () { showToast('24-hour practice table copied.'); }).catch(function () { copyToastResult(fallbackCopy(text), '24-hour practice table copied.'); });
     } else {
-      fallbackCopy(text);
-      showToast('24-hour practice table copied.');
+      copyToastResult(fallbackCopy(text), '24-hour practice table copied.');
     }
   }
 
@@ -6638,7 +7111,7 @@
     if (shown) {
       var short = shown.slice(0, 5) + '...' + shown.slice(-5);
       label.innerText = connectedPubkey ? 'Pump.fun linked: ' + short : 'Account linked: ' + short;
-      sub.innerText = connectedPubkey ? 'LINKED — SIGNING READY: the app builds the trade, your wallet signs it' : 'Watching only — not a trading link. Connect your wallet in My Account to trade';
+      sub.innerText = connectedPubkey ? 'LINKED — SIGNING READY: the app builds the trade, your wallet signs it' : 'Watching only in this browser — it can see the account but can\'t sign trades';
       btn.innerText = connectedPubkey ? 'Connected' : 'Connect Phantom';
       var input = document.getElementById('manualWalletInput');
       if (input && document.activeElement !== input) input.value = db.linkedWallet || '';
@@ -6657,6 +7130,12 @@
       if (balEl0) balEl0.innerText = '';
     }
     if (shown && !balanceTimer) { ensureBalanceTimer(); refreshWalletBalance(); }
+    // Watching only and no wallet in this browser: the next step is one big
+    // Open in Phantom button right under the bar (the small button hides).
+    var nextBox = document.getElementById('walletNextStep');
+    var noWalletHere = !connectedPubkey && !getWalletProvider();
+    if (nextBox) nextBox.innerHTML = (shown && noWalletHere) ? walletBigOpenHtml(true) : '';
+    if (btn) btn.style.display = (shown && noWalletHere) ? 'none' : '';
     // Keep the Account & Rules tab's account card in sync with the wallet bar
     var rTag = document.getElementById('rulesWalletTag');
     var rStatus = document.getElementById('rulesWalletStatus');
@@ -6744,6 +7223,21 @@
       solflare: 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(url) + '?ref=' + encodeURIComponent(ref)
     };
   }
+  // The big next step for a watching-only account: one large Open in Phantom
+  // button and one plain line. (compact = the version under the top bar.)
+  function walletBigOpenHtml(compact) {
+    var d = walletDeepLinks();
+    if (!d.ok) return walletDeepLinkHtml();
+    var tgt = d.framed ? ' target="_blank" rel="noopener"' : '';
+    var big = 'display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;width:100%;min-height:52px;font-size:1rem;font-weight:900;border-radius:12px;margin-top:8px;';
+    var html = '<a class="btn-go" style="' + big + '" href="' + esc(d.phantom) + '"' + tgt + '>Open in Phantom</a>' +
+      '<div style="font-size:0.8rem;font-weight:800;color:var(--text);text-align:center;margin:6px 0 4px;">Open in Phantom to turn this into a trading link.</div>';
+    if (compact) {
+      return '<div class="card" style="border-color:var(--green);padding:10px;margin-bottom:10px;">' + html +
+        '<div class="body-txt" style="text-align:center;">Use Solflare instead? <a href="' + esc(d.solflare) + '"' + tgt + ' style="color:var(--blue);font-weight:700;">Open in Solflare</a></div></div>';
+    }
+    return html + walletDeepLinkHtml();
+  }
   function walletDeepLinkHtml() {
     var d = walletDeepLinks();
     if (!d.ok) {
@@ -6824,10 +7318,12 @@
       head = '<div style="font-size:0.82rem;margin-bottom:6px;"><strong>No account linked yet.</strong></div>';
     }
     body.innerHTML = head +
-      '<button class="btn-blue" style="width:100%;" onclick="linkCardConnect()">Connect Wallet — Link to Trade</button>' +
       (hasProvider
-        ? '<div class="body-txt" style="margin-top:6px;">A wallet app is available in this browser — tap Connect Wallet and approve in it.</div>'
-        : '<div class="body-txt" style="margin-top:8px;"><strong>No wallet app in this browser.</strong> Safari, Chrome and the Google app can\'t reach Phantom or Solflare, so Connect can\'t link from here. Open this page inside your wallet app instead:</div>' + walletDeepLinkHtml()) +
+        ? '<button class="btn-blue" style="width:100%;" onclick="linkCardConnect()">Connect Wallet — Link to Trade</button>' +
+          '<div class="body-txt" style="margin-top:6px;">A wallet app is available in this browser — tap Connect Wallet and approve in it.</div>'
+        : walletBigOpenHtml(false) +
+          '<div class="body-txt" style="margin-top:8px;"><strong>No wallet app in this browser.</strong> Safari, Chrome and the Google app can\'t reach Phantom or Solflare, so Connect can\'t link from here — open this page inside your wallet app instead (the button above).</div>' +
+          '<button class="btn-toggle sm-btn" style="width:100%;margin-top:8px;" onclick="linkCardConnect()">Already inside Phantom or Solflare? Tap to connect</button>') +
       linkCardMsgHtml();
   }
 
@@ -7160,6 +7656,26 @@
     });
   }
 
+  // After a real trade is sent, check the chain a few times and say plainly
+  // whether it confirmed, failed, or is still unconfirmed. Read-only.
+  function confirmRealTx(sig, action, sym) {
+    var tries = 0;
+    var check = function () {
+      tries++;
+      rpcCall('getSignatureStatuses', [[sig], { searchTransactionHistory: true }], 8000).then(function (res) {
+        var st = res && res.value && res.value[0];
+        if (st && st.err) { showToast('Real ' + action + ' for $' + sym + ' FAILED on-chain — nothing was filled. Tx ' + sig.slice(0, 12) + '…'); return; }
+        if (st && (st.confirmationStatus === 'confirmed' || st.confirmationStatus === 'finalized')) { showToast('Real ' + action + ' for $' + sym + ' CONFIRMED on-chain. Tx ' + sig.slice(0, 12) + '…'); return; }
+        if (tries < 8) setTimeout(check, 2500);
+        else showToast('Real ' + action + ' for $' + sym + ' is still NOT confirmed after 20 seconds — check your wallet before trying again. Tx ' + sig.slice(0, 12) + '…');
+      }).catch(function () {
+        if (tries < 8) setTimeout(check, 2500);
+        else showToast("Couldn't check the chain for $" + sym + ' — open your wallet to see whether it filled. Tx ' + sig.slice(0, 12) + '…');
+      });
+    };
+    setTimeout(check, 2000);
+  }
+
   function sendRealTradeReady(action, mint, sym, amountVal, provider) {
     showToast('Building real ' + action + ' for $' + sym + ' — your wallet will ask you to sign.');
     // 25s timeout: the old bare fetch could hang forever on a network switch,
@@ -7176,7 +7692,7 @@
         amount: amountVal,
         slippage: db.slippage,
         priorityFee: 0.0005,
-        pool: 'pump'
+        pool: 'auto'
       })
     }, 25000).then(function (response) {
       if (response.status !== 200) throw new Error('Could not build Pump.fun transaction. Check wallet SOL/token balance.');
@@ -7199,7 +7715,8 @@
     }).then(function (sig) {
       realTradeBusy = false;
       setRealTradeButtonsDisabled(false);
-      showToast('Pump.fun ' + String(action).toUpperCase() + ' Sent for $' + sym + '! Tx: ' + sig.slice(0, 12) + '...');
+      showToast('Pump.fun ' + String(action).toUpperCase() + ' sent for $' + sym + ' — Tx ' + sig.slice(0, 12) + '… Waiting for on-chain confirmation (sent is not the same as filled).');
+      confirmRealTx(sig, action, sym);
     }).catch(function (e) {
       realTradeBusy = false;
       setRealTradeButtonsDisabled(false);
@@ -7284,9 +7801,10 @@
     // Edge in cents, computed from the numbers as typed (your probability in %
     // minus the price in cents) — no fraction round-trip, so an exact 8c edge
     // can never be lost to floating-point drift at the Quant's gate.
-    var edgeC = Math.round(probPct - priceC);
-    if (edgeC <= 0) { reject('No edge: your probability (' + probPct + '%) is not above the market price (' + priceC + 'c). The desk passes.'); return; }
-    if (edgeC < 8) { reject('Edge is only +' + edgeC + 'c — the Quant passes only markets with 8c+ edge.'); return; }
+    var edgeExact = probPct - priceC;
+    var edgeC = Math.floor(edgeExact * 10) / 10;
+    if (edgeExact <= 0) { reject('No edge: your probability (' + probPct + '%) is not above the market price (' + priceC + 'c). The desk passes.'); return; }
+    if (edgeExact < 8) { reject('Edge is only +' + edgeC + 'c — the Quant passes only markets with 8c+ edge.'); return; }
     // Quarter Kelly: f = (b·p − q) / b, where b = (1 − price) / price
     var b = (1 - price) / price;
     var kelly = (b * prob - (1 - prob)) / b;
@@ -7568,8 +8086,9 @@
     var averaging = document.getElementById('tkAveraging').value;
     var category = document.getElementById('tkCategory').value;
     if (isNaN(priceC) || isNaN(probPct)) { box.innerHTML = 'Desk math: type the market price and your probability — the edge and stake appear here as you type.'; return; }
-    var edgeC = Math.round(probPct - priceC);
-    if (edgeC <= 0) { box.innerHTML = 'Desk math: edge <strong>' + edgeC + 'c</strong> — your probability is not above the price, so the desk passes.'; return; }
+    var edgeExact = probPct - priceC;
+    var edgeC = Math.floor(edgeExact * 10) / 10;
+    if (edgeExact <= 0) { box.innerHTML = 'Desk math: edge <strong>' + edgeC + 'c</strong> — your probability is not above the price, so the desk passes.'; return; }
     if (!bankroll) { box.innerHTML = 'Desk math: edge <strong>+' + edgeC + 'c</strong> — add a usable bankroll in Intake above to size the stake.'; return; }
     var price = priceC / 100;
     var prob = probPct / 100;
@@ -7579,7 +8098,7 @@
     if (intakeMax > 0) stake = Math.min(stake, intakeMax);
     stake = Math.round(stake * 100) / 100;
     var verdict;
-    if (edgeC < 8) verdict = 'below the 8c minimum — the Quant passes.';
+    if (edgeExact < 8) verdict = 'below the 8c minimum — the Quant passes.';
     else if (!isNaN(hours) && hours < 2) verdict = 'closes in under 2 hours — the desk never trades those.';
     else if (averaging === 'yes') verdict = 'averaging down — the desk never adds to a held position.';
     else {
@@ -7733,7 +8252,7 @@
   startWatchdog();
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'hidden') { hiddenAt = Date.now(); lastBackgroundAt = Date.now(); }
-    else if (document.visibilityState === 'visible') { healConnection(); applyWakeLock(); }
+    else if (document.visibilityState === 'visible') { lastResumeAt = Date.now(); healConnection(); applyWakeLock(); }
   });
   // Lock/unlock and app-switch returns don't always deliver visibilitychange
   // in in-app browsers, so the other wake signals heal the feed the same way:
@@ -7741,7 +8260,7 @@
   // and the page-lifecycle resume event. healConnection itself decides
   // whether the socket is genuinely alive, so extra signals are harmless.
   window.addEventListener('pagehide', function () { hiddenAt = Date.now(); lastBackgroundAt = Date.now(); });
-  window.addEventListener('pageshow', function () { healConnection(); });
+  window.addEventListener('pageshow', function () { lastResumeAt = Date.now(); healConnection(); });
   window.addEventListener('focus', function () { healConnection(); });
   document.addEventListener('resume', function () { healConnection(); });
   window.addEventListener('online', function () { healConnection(); });
