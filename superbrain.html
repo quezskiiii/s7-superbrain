@@ -1555,7 +1555,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
       <span>Trades</span>
     </button>
-    <a class="bottom-item" href="https://pump.fun" target="_blank" rel="noopener noreferrer" aria-label="Open Pump.fun in a new tab">
+    <a class="bottom-item" href="https://pump.fun" target="_blank" rel="noopener noreferrer" onclick="openPump(pumpHomeUrl()); return false;" aria-label="Open Pump.fun">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
       <span>Pump.fun &#8599;</span>
     </a>
@@ -3186,7 +3186,7 @@
             '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:3px;"><strong>$' + esc(sym) + '</strong>' + (isPump ? '<span class="tag tag-smart">PUMP</span>' : '') + '</div>' +
             '<div style="font-size:0.72rem;color:var(--muted);margin-bottom:5px;">' + stats + '</div>' +
             caBarHtml(mint) +
-            '<div class="row-btns"><button class="btn-toggle sm-btn" onclick="window.open(\'https://pump.fun/coin/\' + encodeURIComponent(\'' + mint + '\'), \'_blank\')">View on Pump.fun</button></div>' +
+            (isValidSolanaAddress(mint) ? '<div class="row-btns"><button class="btn-toggle sm-btn" onclick="openPumpCoin(\'' + esc(mint) + '\')">View on Pump.fun</button></div>' : '') +
           '</div>';
         }).join('') + '<div class="body-txt" style="margin-top:6px;">Discovery only — no buy button on these rows. Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '.</div>';
       });
@@ -4494,7 +4494,7 @@
     var blockBtn = el.querySelector('[data-action="blockdev"]');
     if (blockBtn) blockBtn.addEventListener('click', function () { addDeskBlacklistAddr(trader, sym); });
     el.querySelector('[data-action="realbuy"]').addEventListener('click', function () { executePumpTrade('buy', mint, sym, db.solSize); });
-    el.querySelector('[data-action="viewcoin"]').addEventListener('click', function () { window.open('https://pump.fun/coin/' + encodeURIComponent(mint), '_blank'); });
+    el.querySelector('[data-action="viewcoin"]').addEventListener('click', function () { openPumpCoin(mint); });
     var rugBtn = el.querySelector('[data-rugcheck]');
     if (rugBtn) rugBtn.addEventListener('click', function () {
       var line = el.querySelector('[data-rugline]');
@@ -4619,7 +4619,7 @@
   }
 
   function openSmartProfile(addr) {
-    window.open('https://pump.fun/profile/' + encodeURIComponent(addr), '_blank');
+    openPumpProfileAddr(addr);
   }
 
   function toggleBackupPanel() {
@@ -4919,7 +4919,7 @@
     if (rs50) rs50.addEventListener('click', function () { executePumpTrade('sell', mint, sym, '50%'); });
     var rs100 = el.querySelector('[data-action="realsell100"]');
     if (rs100) rs100.addEventListener('click', function () { executePumpTrade('sell', mint, sym, '100%'); });
-    el.querySelector('[data-action="viewcoin"]').addEventListener('click', function () { window.open('https://pump.fun/coin/' + encodeURIComponent(mint), '_blank'); });
+    el.querySelector('[data-action="viewcoin"]').addEventListener('click', function () { openPumpCoin(mint); });
     box.prepend(el);
     while (box.children.length > 30) box.removeChild(box.lastChild);
   }
@@ -5176,7 +5176,7 @@
   }
 
   function viewCoin(mint) {
-    window.open('https://pump.fun/coin/' + encodeURIComponent(mint), '_blank');
+    openPumpCoin(mint);
   }
 
   function renderLedger() {
@@ -6695,13 +6695,49 @@
   // can't reach Phantom there. These links open this same page inside the
   // wallet app's own browser, where Connect Wallet works. They need the page
   // to have a web address (https://…) — a page opened from a file has none.
+  // ---- The hosted page's own address (e.g. GitHub Pages) ----
+  // Every link that has to come back to THIS app is built from the address
+  // the page was actually opened at — never a hard-coded one. The #part is
+  // dropped (it only marks a spot in the page).
+  function pageAddress() {
+    var href = String((window.location && location.href) || '');
+    return href.split('#')[0];
+  }
+  function pageOrigin() {
+    var o = String((window.location && location.origin) || '');
+    if (o && o !== 'null') return o;
+    var m = pageAddress().match(/^(https?:\/\/[^\/?#]+)/i);
+    return m ? m[1] : '';
+  }
+  function pageIsGithubPages() {
+    var h = String((window.location && location.hostname) || '').toLowerCase();
+    return /\.github\.io$/.test(h);
+  }
+  // ---- Pump.fun links ----
+  // Built in one place, from a checked Solana address. openPump opens them in
+  // a new tab; if the browser blocks that (wallet in-app browsers and
+  // home-screen mode often do), it opens Pump.fun right here instead —
+  // your saved data stays, and the feed reconnects when you come back.
+  function pumpHomeUrl() { return 'https://pump.fun'; }
+  function pumpCoinUrl(mint) { return isValidSolanaAddress(String(mint || '').trim()) ? 'https://pump.fun/coin/' + encodeURIComponent(String(mint).trim()) : ''; }
+  function pumpProfileUrl(addr) { return isValidSolanaAddress(String(addr || '').trim()) ? 'https://pump.fun/profile/' + encodeURIComponent(String(addr).trim()) : ''; }
+  function openPump(url) {
+    if (!url || url.indexOf('https://pump.fun') !== 0) { showToast('That Pump.fun link could not be built — the address did not check out.'); return; }
+    var w = null;
+    try { w = window.open(url, '_blank'); } catch (e) { w = null; }
+    if (w) { try { w.opener = null; } catch (e) {} return; }
+    try { window.location.assign(url); } catch (e2) { window.location.href = url; }
+  }
+  function openPumpCoin(mint) { openPump(pumpCoinUrl(mint)); }
+  function openPumpProfileAddr(addr) { openPump(pumpProfileUrl(addr)); }
+
   function walletDeepLinks() {
     var proto = String((window.location && location.protocol) || '');
-    var url = String((window.location && location.href) || '').split('#')[0];
+    var url = pageAddress();
     var webOk = (proto === 'https:' || proto === 'http:') && !!url;
     var framed = false;
     try { framed = window.self !== window.top; } catch (e) { framed = true; }
-    var ref = webOk ? String(location.origin || '') : '';
+    var ref = webOk ? pageOrigin() : '';
     return {
       ok: webOk, framed: framed, proto: proto, url: url,
       phantom: 'https://phantom.app/ul/browse/' + encodeURIComponent(url) + '?ref=' + encodeURIComponent(ref),
@@ -6719,6 +6755,7 @@
         '<a class="btn-blue sm-btn" style="' + btnStyle + '" href="' + esc(d.phantom) + '"' + tgt + '>Open in Phantom</a>' +
         '<a class="btn-toggle sm-btn" style="' + btnStyle + '" href="' + esc(d.solflare) + '"' + tgt + '>Open in Solflare</a>' +
       '</div>' +
+      '<div class="body-txt" style="margin-top:6px;">These open: <strong style="word-break:break-all;">' + esc(d.url) + '</strong>' + (pageIsGithubPages() ? ' (your GitHub Pages address)' : '') + '.</div>' +
       (d.framed ? '<div class="body-txt" style="margin-top:6px;color:var(--amber);">This app is showing inside another page, so the wallet may open that page\'s address instead. If it does, open the app\'s own link directly and try again.</div>' : '') +
       '<div class="body-txt" style="margin-top:6px;">This opens this same page inside the wallet app\'s browser — tap <strong>Connect Wallet</strong> there and approve. The wallet app\'s browser keeps its own saved data: to bring your trades and settings along, tap <strong>Copy Full Backup</strong> in Settings &amp; Safety here, then <strong>Paste Backup</strong> inside the wallet app.</div>';
   }
@@ -6946,7 +6983,7 @@
 
   function openPumpProfile() {
     if (!activeWallet()) { showToast('Link your Solana address first.'); return; }
-    window.open('https://pump.fun/profile/' + encodeURIComponent(activeWallet()), '_blank');
+    openPumpProfileAddr(activeWallet());
   }
 
   function renderMyAccountFeed() {
