@@ -542,7 +542,7 @@
       <div class="hero-logo-wrap"><img class="hero-logo" id="heroLogo" src="data:," alt="S7 Global logo" /><script>/* v14: logo stored once — reuse the home-screen icon's image */(function () { var l = document.querySelector('link[rel="apple-touch-icon"]'), i = document.getElementById('heroLogo'); if (l && i) i.src = l.getAttribute('href'); })();</script></div>
       <div class="hero-id">
         <div class="hero-brand">S7 Superbrain</div>
-        <span class="ver-stamp" id="verStamp">v32 · Nov 21, 2026 · GOAL 100%</span>
+        <span class="ver-stamp" id="verStamp">v34 · Nov 21, 2026 · GOAL 100%</span>
       </div>
       <div class="hero-num sb-only" id="kalshiBalBox" role="button" tabindex="0" aria-label="Kalshi balance — tap to update" onclick="openKalshiBalPanel()"><div class="kpi-lbl">Kalshi Balance</div><div class="kpi-num" id="kpiKalshi">$15.52</div></div>
     </div>
@@ -568,7 +568,7 @@
     <details class="fold mini" id="autoRunLanesFold"><summary><span id="autoRunHonest">Runs only while the app is open — full details in Lanes</span></summary><div class="body-txt" style="margin:2px 0 6px;">Auto-Run: <strong>Runs only while this app is open on screen.</strong> A fully closed app — or a locked phone — runs nothing; it picks back up the moment you reopen it. Practice and paper only: real money still needs your tap and your wallet signature.</div><div id="autoRunLanes"></div>
       <div class="ar-extra">
         <div class="start-caption" id="startCaption">Auto-Run runs the $10 Desk pipeline, the Targets reads and the Parlay Bot while the app is open.</div>
-        <div class="feed-status" id="feedStatus">Feed: <strong>off</strong> — the $10 Desk pipeline waits for the feed (Auto-Run starts it).</div>
+        <div class="feed-status" id="feedStatus">Feed: <strong>removed</strong> — the PumpPortal live feed was taken out of this app (v34).</div>
       </div></details>
   </div>
 
@@ -610,8 +610,19 @@
   <!-- ===================== AREA 1: SUPERBRAIN — PUMP.FUN TERMINAL ===================== -->
   <div id="areaSB">
   <!-- WHAT'S NEW (front screen) — one tappable line, collapsed by default -->
-  <details class="fold front-card" id="whatsNewCard"><summary>What's new in v32 — tap to read</summary>
+  <details class="fold front-card" id="whatsNewCard"><summary>What's new in v34 — tap to read</summary>
     <ul class="front-list" style="margin-bottom:4px;">
+      <li><strong>Round calls got their lock guard, and the last stale feed lines are cleaned up</strong> — a round call now never locks inside the final 3:00 of a window (the same no-entry line the decision engine already used): a setup that only completes after 3:00 left makes no call at all instead of a late, low-quality lock. When a call does lock and Kalshi has loaded, the round now records the real Kalshi ask for the called side at that moment — shown on the round as "Kalshi ask at lock NN¢", never estimated. The Auto-Run lane list no longer says the desk is waiting on the live feed, and the old Feed uptime objective is retired — the feed is gone, so nothing is scored against keeping it connected. And the "Open in Phantom" buttons are gone: they were built from the app's own address, so instead the wallet card now tells you plainly how to open the app inside Phantom or Solflare's own browser and connect there.</li>
+      <li><strong>The PumpPortal live feed is removed — for real this time</strong> — you ordered pump.fun out of the app earlier, and the screens went in v20, but the live feed underneath was still connecting. Now it's deleted from the app itself: no WebSocket to pumpportal.fun, no new-coin subscription, no token-trade subscriptions, and Connection Check no longer reaches out to that host. Your follow list was already staying on this phone (since v20) and still does.</li>
+      <li><strong>What that changes on the $10 Desk</strong> — SCOUT no longer receives new pairs as they launch, and the Executor's automatic dip-buys — which keyed off the stream — stay off. Everything else about the desk is untouched: its records, balance, Decision Log and Morning Brief stay, candidates can still be added by hand, and the desk still re-checks them every 20 seconds while the app is open. The feed status line and the desk's SCOUT stage say "removed" plainly instead of pretending to reconnect.</li>
+      <li><strong>Real pump.fun trades are removed too</strong> — the removal is complete now: the trade builder that used to assemble real buys and sells is deleted, along with every "Buy with Real SOL" / "Sell (Real)" button and the real-trade confirm card. Nothing in this app can build, sign or send a real pump.fun trade anymore — practice and paper trades are untouched. What remains is only links out: a coin or profile link opens pump.fun in your browser when you tap it, and nothing is sent anywhere. Targets, Best Decision, Signals, Kalshi Lab, EdgeBoard, the relay and every record on both sides work exactly as before.</li>
+      <li><strong>The hit-rate fix pack is in</strong> — an inspection of the prediction model found real drag costing points, and all six fixes are now live. Straight line first: no fix makes a market read 100% — prices move and some windows are coin flips. What changed is the app no longer manufactures false confidence or grades itself unfairly.</li>
+      <li><strong>Pace is measured over ~45 seconds now, and the projection is damped</strong> — the model used to stretch the last ~4 seconds of motion across the whole 15 minutes, so a tiny early wiggle could read as 95% confidence. Pace now comes from a ~45-second window, and the projected finish assumes the pace fades (a 60-second decay) instead of running flat-out to the close. Momentum and the early warnings read the same steadier pace.</li>
+      <li><strong>Confidence is capped until the record earns more</strong> — 75% while fewer than 30 predictions have settled, 85% until 100 have, and 95% only when the 80%+ band itself has 20+ settled calls that actually hit 80%+. A short pace read (under 30 seconds of motion) also pulls confidence toward a coin flip.</li>
+      <li><strong>The accuracy table now feeds back</strong> — Win Rate → Predictions has always shown how often each confidence band was really right; the model now uses it. A new prediction's confidence is pulled toward what its band actually earned, once that band has 10+ settled calls — if "80%" calls have really been hitting 60%, the app stops saying 80%.</li>
+      <li><strong>Hit rates are split by lock type, with counts</strong> — Predictions no longer blends its two kinds of lock into one number: PLACE locks (locked when the decision said PLACE) and late locks (locked at 3:00 left when no PLACE fired) each show their own hit rate with their win/loss counts, next to the overall rate.</li>
+      <li><strong>Exact ties are pushes now</strong> — a prediction that finishes exactly on the line is graded a push: neither a win nor a loss, and out of the hit rate — the same way the Round Record already treats its ties. Predictions settled before this update keep the result they were given. And when a prediction's line was Kalshi's strike, its settled note now says plainly that it was graded on the Coinbase close, a proxy for Kalshi's own settlement index.</li>
+      <li><strong>The self-learner is slower</strong> — the round-call learner used to tighten a coin's rules after a single loss, which mostly made it call less, not read better. Now the same kind of miss has to happen twice in a row on a coin before any rule moves (a win in between resets the count). The first miss is still named in plain words and logged — it just doesn't move a threshold by itself.</li>
       <li><strong>Best Decision and Signals are Superbrain's own</strong> — they run off the Kalshi board and spot reads only, nothing to do with EdgeBoard. The Best Decision call, the BEST AVAILABLE strip and every signal and early warning are worked out purely from Superbrain's own reads — Coinbase spot and candles, the Kalshi 15-minute board strips and the Targets state. No EdgeBoard data, scan, gate value or timing feeds them, holds them up or labels them.</li>
       <li><strong>They run even if EdgeBoard was never opened</strong> — Best Decision and Signals render and update on Superbrain's own read cycle with EdgeBoard untouched, empty or never visited. You'll see it labeled right on the front screen: a line under the Best Decision card — "Superbrain's own read — not tied to EdgeBoard" — and the same note at the top of the Signals panel.</li>
       <li><strong>The front screen no longer runs EdgeBoard</strong> — Auto-Run is Superbrain-only now: the master switch runs the $10 Desk pipeline, the Targets reads and the Parlay Bot rebuild, and that's it. The EdgeBoard scans lane is gone from the switch and its Lanes list — nothing on the front screen drives, gates or waits on EdgeBoard anymore.</li>
@@ -715,7 +726,7 @@
         <span class="sym" style="font-size:0.88rem;">Objectives — what each engine is aiming for</span>
         <span class="tag tag-no">SELF-CHECKING</span>
       </div>
-      <div class="body-txt" style="margin-bottom:6px;">The goal line is 100% — that is the aim for every trading engine (the feed-uptime row below keeps its own 95% line, since no feed is up literally all the time). Each one is measured against it with the real numbers from its own records — rounded down, never up. While the app is open it checks itself every 5 minutes, says plainly where it falls short, and adjusts its own rule numbers. It cannot rewrite its own code, and it never touches the safety rules.</div>
+      <div class="body-txt" style="margin-bottom:6px;">The goal line is 100% — that is the aim for every trading engine. (The old feed-uptime row is retired: the live feed was removed in v34, so it carries no goal anymore.) Each one is measured against it with the real numbers from its own records — rounded down, never up. While the app is open it checks itself every 5 minutes, says plainly where it falls short, and adjusts its own rule numbers. It cannot rewrite its own code, and it never touches the safety rules.</div>
       <div id="objBody"><div class="empty-note">Reading the records…</div></div>
     </div>
     <div class="card" style="border-color:var(--blue);">
@@ -751,11 +762,11 @@
         <span class="sym" style="font-size:0.82rem;">Connection Check</span>
         <span class="tag tag-win">DIAGNOSTICS</span>
       </div>
-      <div class="body-txt" style="margin-bottom:8px;">If the feed, balance, or a real trade looks stuck, run this — it tests each connection separately and says in plain words which one is failing, so you fix the right thing.</div>
+      <div class="body-txt" style="margin-bottom:8px;">If the balance or a real trade looks stuck, run this — it tests each connection separately and says in plain words which one is failing, so you fix the right thing.</div>
       <div id="diagBody"><div class="empty-note">Not run yet — tap Test Connections.</div></div>
       <div class="row-btns" style="margin-top:8px;">
         <button class="btn-blue sm-btn" id="diagBtn" onclick="runConnectionCheck()">Test Connections</button>
-        <button class="btn-toggle sm-btn" onclick="smartRefresh()">Reconnect Feed</button>
+        <button class="btn-toggle sm-btn" onclick="smartRefresh()">Refresh app</button>
       </div>
     </div>
     <details class="fold" id="kalshiRelayFold">
@@ -1034,7 +1045,7 @@
         <span class="sym" style="font-size:0.88rem;">Desk Pipeline — your new desk rules</span>
         <span class="tag tag-win">LIVE RULES · NOV 20</span>
       </div>
-      <div id="deskCycleLine" class="body-txt" style="margin-bottom:8px;">The desk hasn’t run a cycle yet — it starts when the feed is live.</div>
+      <div id="deskCycleLine" class="body-txt" style="margin-bottom:8px;">The desk hasn’t run a cycle yet — it scans every 20 seconds while the app is open. Its live stream was removed in v34.</div>
       <div id="deskPipeline"><div class="empty-note">Reading the pipeline…</div></div>
       <div class="body-txt" style="margin-top:8px;">These are your new desk rules (Nov 20). They replace the Grok desk's −8/−15% stops, 30% size cap, and single +30% target for NEW trades. The Grok history above/below is untouched.</div>
     </div>
@@ -1501,8 +1512,6 @@
   </div>
   </div><!-- /areaEB -->
 
-  <!-- REAL BUY CONFIRMATION -->
-
   <div class="modal-bg" id="kalshiBalModal">
     <div class="modal-card">
       <div class="card-top"><span class="sym">Your Kalshi balance</span><span class="tag tag-no">YOU SET IT</span></div>
@@ -1516,32 +1525,6 @@
       </div>
     </div>
   </div>
-  <div class="modal-bg" id="confirmModal">
-    <div class="modal-card">
-      <div class="gate-title" id="confirmTitle">Confirm Real Trade</div>
-      <div class="body-txt" id="confirmText"></div>
-      <div class="body-txt" id="confirmRugLine" style="margin-top:8px;">RugCheck: not checked</div>
-      <div class="warn-box" id="confirmRealMoney" style="margin-top:10px;">
-        <strong>REAL MONEY:</strong> this trade uses real SOL from your wallet — this is not practice money.
-      </div>
-      <div class="warn-box" id="confirmBigWarn" style="display:none;margin-top:10px;">
-        <strong>BIG TRADE WARNING:</strong> <span id="confirmBigText"></span>
-      </div>
-      <div class="warn-box" id="confirmMainWarn" style="display:none;margin-top:10px;">
-        <strong>MAIN-WALLET GUARD:</strong> this trade would use your main wallet <strong>quezskiiii</strong>, which your standing rule says is never used in the Terminal lanes.
-        <label style="display:flex;gap:8px;align-items:flex-start;margin-top:8px;color:var(--text);font-size:0.76rem;font-weight:600;">
-          <input type="checkbox" id="confirmMainAck" style="width:auto;min-height:0;margin:2px 0 0;flex:0 0 auto;" onchange="confirmAckChanged()" />
-          <span>I acknowledge this uses my main wallet and I want to proceed anyway. (You are asked fresh for every trade.)</span>
-        </label>
-      </div>
-      <div class="warn-box" id="confirmMsg" style="display:none;margin-top:10px;" role="alert"></div>
-      <div class="row-btns" style="margin-top:12px;">
-        <button class="btn-toggle sm-btn" id="confirmCancelBtn" onclick="cancelRealBuy()">Cancel</button>
-        <button class="btn-blue sm-btn" id="confirmGoBtn" onclick="confirmRealBuy()">Confirm — Sign in Wallet</button>
-      </div>
-    </div>
-  </div>
-
   <div id="toast" role="status"></div>
 
 <script>
@@ -2547,9 +2530,10 @@
   // pays back stake ÷ 0.55, a loss loses the stake, and the balance never
   // drops below $0.01. Settlement uses the round's Coinbase 15-minute
   // candle close vs the target; rounds that end while the app slept settle
-  // on next open. After each settled LOSS the app names the mistake in
-  // plain words and adjusts that coin's learned call rules; after 10
-  // straight wins on a coin it loosens one rule back a step. Learned rules
+  // on next open. After a settled LOSS the app names the mistake in plain
+  // words; since v33 it adjusts that coin's learned call rules only when
+  // the SAME kind of miss happens twice in a row (the slower learner);
+  // after 10 straight wins on a coin it loosens one rule back a step. Learned rules
   // apply ONLY to these round calls — the Entry Read card keeps its
   // default thresholds. Win rates are shown rounded DOWN, never up.
   var T15_GOAL_PCT = 100;
@@ -2568,10 +2552,14 @@
   }
   function t15LearnFor(pair) {
     var L = db.t15Learn[pair];
-    if (!L || typeof L !== 'object') L = db.t15Learn[pair] = { buildMult: 1, hugMult: 1, winStreak: 0 };
+    if (!L || typeof L !== 'object') L = db.t15Learn[pair] = { buildMult: 1, hugMult: 1, winStreak: 0, pendKind: '', pendCount: 0 };
     if (!(L.buildMult >= 1 && L.buildMult <= 2)) L.buildMult = 1;
     if (!(L.hugMult >= 1 && L.hugMult <= 3)) L.hugMult = 1;
     if (!(L.winStreak >= 0)) L.winStreak = 0;
+    // v33 slower learner: the pending same-kind loss streak (see
+    // t15LearnFromLoss) — older saved learners simply gain the fields.
+    if (typeof L.pendKind !== 'string') L.pendKind = '';
+    if (!(L.pendCount >= 0)) L.pendCount = 0;
     return L;
   }
   function t15Money(v) { return Math.round(v * 10000) / 10000; }
@@ -2597,7 +2585,7 @@
       row = {
         id: a.pair + '|' + winStart, pair: a.pair, win: winStart,
         target: tg.value, targetSrc: tg.src, dec: tg.dec, joinedMid: leftSec < 870,
-        call: null, callAt: 0, callLeftSec: null, callDist: null, callSampleT: 0,
+        call: null, callAt: 0, callLeftSec: null, callDist: null, callAsk: null, callSampleT: 0,
         crossedAfter: false, crossLeftSec: null, hugAfter: false, bestFavDist: null,
         stake: 0, priceC: null, bookNote: '',
         status: 'open', result: '', close: null, wonSide: '', pnl: 0,
@@ -2631,11 +2619,20 @@
           var sd = last3[q] > 0 ? 'UP' : (last3[q] < 0 ? 'DOWN' : '');
           if (sd !== side || Math.abs(last3[q]) < needBuild || Math.abs(last3[q]) < needHug) { ok = false; break; }
         }
+        // v34 lock guard (fix pack): a round call never locks inside the
+        // final 3:00 — the same no-entry line the decision engine uses.
+        // A setup that only completes after 3:00 left makes no call at
+        // all (the round settles NO PLAY) instead of a late lock.
+        if (ok && leftSec < 180) ok = false;
         if (ok) {
           row.call = side;
           row.callAt = Date.now();
           row.callLeftSec = leftSec;
           row.callDist = last3[2];
+          // v34: the real Kalshi ask for the called side at the lock,
+          // recorded when Kalshi actually loaded — never estimated.
+          var kalL = kalState[a.pair]; var expL = t15KalExpiry();
+          row.callAsk = (kalL && expL && kalL.winKey === expL.key && kalL.state === 'live') ? (side === 'UP' ? (typeof kalL.yesAsk === 'number' ? kalL.yesAsk : null) : (typeof kalL.noAsk === 'number' ? kalL.noAsk : null)) : null;
           row.callSampleT = samples[samples.length - 1].t;
           row.bestFavDist = Math.abs(last3[2]);
           // Paper stake: 10% of the virtual balance, booked at a 55¢ entry
@@ -2687,39 +2684,46 @@
     var fmt = function (v) { return t15Fmt(v, row.dec); };
     var miss = Math.abs(row.close - row.target);
     var callTxt = 'called ' + row.call + ' with ' + t15Left(row.callLeftSec) + ' left, ' + fmt(Math.abs(row.callDist)) + ' ' + (row.call === 'UP' ? 'above' : 'below') + ' the target ' + fmt(row.target);
-    var kind, what, change, learnChg = null;
+    // First: name the mistake and PLAN the tightening (same kinds, same
+    // step sizes and caps as before v33) — without applying it yet.
+    var kind, what, plan = null;
     if (row.crossedAfter && row.crossLeftSec != null && row.crossLeftSec > 180) {
       kind = 'MID-ROUND FLIP';
       what = 'spot crossed back over the target with ' + t15Left(row.crossLeftSec) + ' left and finished ' + fmt(miss) + ' on the other side';
-      var ob = L.buildMult;
-      L.buildMult = Math.min(2, Math.round(L.buildMult * 1.25 * 1000) / 1000);
-      learnChg = { key: 'buildMult', from: ob, to: L.buildMult };
-      change = (ob === L.buildMult) ? 'Build distance is already at its cap (2× its start value) — no change.' : 'Raised the build distance a call needs by 25%, from ' + erThreshFmt(a.build * ob, a) + ' to ' + erThreshFmt(a.build * L.buildMult, a) + ' — after a flip, calls need a bigger cushion before they lock.';
+      plan = { key: 'buildMult', factor: 1.25, cap: 2, base: a.build, capTxt: 'Build distance is already at its cap (2\u00d7 its start value) \u2014 no change.', mk: function (o, n) { return 'Raised the build distance a call needs by 25%, from ' + erThreshFmt(a.build * o, a) + ' to ' + erThreshFmt(a.build * n, a) + ' \u2014 after a flip, calls need a bigger cushion before they lock.'; } };
     } else if (row.hugAfter && miss < a.hug * L.hugMult) {
       kind = 'LINE HUG';
       what = 'spot came back and hugged the line, finishing only ' + fmt(miss) + ' from the target, on the wrong side';
-      var oh = L.hugMult;
-      L.hugMult = Math.min(3, Math.round(L.hugMult * 1.2 * 1000) / 1000);
-      learnChg = { key: 'hugMult', from: oh, to: L.hugMult };
-      change = (oh === L.hugMult) ? 'Line-hug zone is already at its cap (3× its start value) — no change.' : 'Widened the line-hug zone a call must clear by 20%, from ' + erThreshFmt(a.hug * oh, a) + ' to ' + erThreshFmt(a.hug * L.hugMult, a) + ' — calls now stay further off the line.';
+      plan = { key: 'hugMult', factor: 1.2, cap: 3, base: a.hug, capTxt: 'Line-hug zone is already at its cap (3\u00d7 its start value) \u2014 no change.', mk: function (o, n) { return 'Widened the line-hug zone a call must clear by 20%, from ' + erThreshFmt(a.hug * o, a) + ' to ' + erThreshFmt(a.hug * n, a) + ' \u2014 calls now stay further off the line.'; } };
     } else if (miss < a.hug) {
       kind = 'CLOSE FINISH';
       what = 'it never flipped or hugged, but still finished only ' + fmt(miss) + ' from the target, on the wrong side';
-      var ob2 = L.buildMult;
-      L.buildMult = Math.min(2, Math.round(L.buildMult * 1.1 * 1000) / 1000);
-      learnChg = { key: 'buildMult', from: ob2, to: L.buildMult };
-      change = (ob2 === L.buildMult) ? 'Build distance is already at its cap (2× its start value) — no change.' : 'Raised the build distance a call needs by 10%, from ' + erThreshFmt(a.build * ob2, a) + ' to ' + erThreshFmt(a.build * L.buildMult, a) + ' — a small step: close finishes need a little more cushion, not a new rule.';
+      plan = { key: 'buildMult', factor: 1.1, cap: 2, base: a.build, capTxt: 'Build distance is already at its cap (2\u00d7 its start value) \u2014 no change.', mk: function (o, n) { return 'Raised the build distance a call needs by 10%, from ' + erThreshFmt(a.build * o, a) + ' to ' + erThreshFmt(a.build * n, a) + ' \u2014 a small step: close finishes need a little more cushion, not a new rule.'; } };
     } else {
       kind = 'DISTANCE FAKE-OUT';
       what = 'the distance reached ' + fmt(Math.max(row.bestFavDist || 0, Math.abs(row.callDist))) + ' on the ' + row.call + ' side, then reversed and finished ' + fmt(miss) + ' on the other side';
-      var ob3 = L.buildMult;
-      L.buildMult = Math.min(2, Math.round(L.buildMult * 1.2 * 1000) / 1000);
-      learnChg = { key: 'buildMult', from: ob3, to: L.buildMult };
-      change = (ob3 === L.buildMult) ? 'Build distance is already at its cap (2× its start value) — no change.' : 'Raised the build distance a call needs by 20%, from ' + erThreshFmt(a.build * ob3, a) + ' to ' + erThreshFmt(a.build * L.buildMult, a) + ' — a distance that faked out once has to build bigger before it counts.';
+      plan = { key: 'buildMult', factor: 1.2, cap: 2, base: a.build, capTxt: 'Build distance is already at its cap (2\u00d7 its start value) \u2014 no change.', mk: function (o, n) { return 'Raised the build distance a call needs by 20%, from ' + erThreshFmt(a.build * o, a) + ' to ' + erThreshFmt(a.build * n, a) + ' \u2014 a distance that faked out has to build bigger before it counts.'; } };
     }
-    row.mistake = kind + ' — ' + callTxt + '; ' + what + '.';
-    row.learned = change;
-    t15LearnLogAdd(a.pair, row.mistake + ' Change: ' + change, learnChg);
+    row.mistake = kind + ' \u2014 ' + callTxt + '; ' + what + '.';
+    // v33 SLOWER LEARNER — the inspection found tightening after a SINGLE
+    // loss mostly made the app call less, not read better. A rule now
+    // moves only when the SAME kind of miss happens twice in a row on
+    // this coin (a win in between resets the count — see t15SettleRow).
+    // The first miss is named and logged, and nothing tightens.
+    if (L.pendKind === kind) L.pendCount = (L.pendCount || 0) + 1;
+    else { L.pendKind = kind; L.pendCount = 1; }
+    if (L.pendCount < 2) {
+      row.learned = 'Noted, no rule change yet \u2014 since v33 the learner waits for the same kind of miss (' + kind + ') twice in a row on this coin before it tightens anything. One loss alone no longer moves the thresholds.';
+      t15LearnLogAdd(a.pair, row.mistake + ' Change: ' + row.learned, null);
+      return;
+    }
+    L.pendKind = ''; L.pendCount = 0;
+    var oldV = L[plan.key];
+    L[plan.key] = Math.min(plan.cap, Math.round(L[plan.key] * plan.factor * 1000) / 1000);
+    var learnChg = { key: plan.key, from: oldV, to: L[plan.key] };
+    var change = (oldV === L[plan.key]) ? plan.capTxt : plan.mk(oldV, L[plan.key]);
+    row.learned = change + ' (Applied on the second ' + kind + ' in a row \u2014 the v33 slower-learner rule.)';
+    t15LearnLogAdd(a.pair, row.mistake + ' Change: ' + row.learned, learnChg);
   }
 
   function t15SettleRow(a, row, close) {
@@ -2749,6 +2753,9 @@
         db.t15PnlAll = t15Money(db.t15PnlAll + row.pnl);
       }
       L.winStreak++;
+      // v33: a win breaks any pending same-kind loss streak, so the
+      // slower learner needs two of the same miss truly in a row.
+      L.pendKind = ''; L.pendCount = 0;
       if (L.winStreak >= 10) { t15Relax(a, L); L.winStreak = 0; }
     } else {
       row.result = 'LOSS';
@@ -3162,7 +3169,7 @@
       '<div class="field-line"><span class="field-k">Virtual balance (started at $1.00)</span><span class="field-v" style="font-style:normal;"><strong>$' + db.t15Bal.toFixed(2) + '</strong>' + (openStake ? ' + $' + openStake.toFixed(2) + ' in open paper stakes' : '') + '</span></div>' +
       '<div class="field-line"><span class="field-k">P&amp;L today (ET)</span><span class="field-v" style="font-style:normal;color:' + (dayPnl >= 0 ? 'var(--green)' : 'var(--red)') + ';">' + fmtUsdSigned(dayPnl) + '</span></div>' +
       '<div class="field-line"><span class="field-k">P&amp;L all-time</span><span class="field-v" style="font-style:normal;color:' + (db.t15PnlAll >= 0 ? 'var(--green)' : 'var(--red)') + ';">' + fmtUsdSigned(db.t15PnlAll) + '</span></div>' +
-      '<div class="body-txt">Paper stake = 10% of the balance, booked only when a call locks (3 straight checks at/above the learned build distance), at a 55¢ entry assumption. A win pays back stake ÷ 0.55; a loss loses the stake. The balance never drops below $0.01. Every stake is written into the round results below. Paper only — no real money.</div>' +
+      '<div class="body-txt">Paper stake = 10% of the balance, booked only when a call locks (3 straight checks at/above the learned build distance, and never inside the final 3:00 — the v34 lock guard), at a 55¢ entry assumption. When Kalshi has loaded, the real ask for the called side at the lock is written on the round. A win pays back stake ÷ 0.55; a loss loses the stake. The balance never drops below $0.01. Every stake is written into the round results below. Paper only — no real money.</div>' +
       '<div class="body-txt" style="margin-top:4px;">Rows marked <strong>YOUR CALL — mirrored</strong> are your Trade Watch trades, booked at your typed entry with the same 10% stake. They move this balance but never count as the app\u2019s calls: not in the win rate, never reviewed as an app mistake, never change a call rule.</div></div>';
     html += '<button type="button" class="btn-blue sm-btn" style="width:100%;margin-top:8px;min-height:44px;" onclick="matchKalshiBalance()">Match my Kalshi balance' + (db.kalshiBalance ? ' ($' + Number(db.kalshiBalance.amount).toFixed(2) + ')' : '') + '</button>';
     if (Array.isArray(db.t15Adj) && db.t15Adj.length) {
@@ -3182,7 +3189,7 @@
     html += '<div class="body-txt" style="margin-top:8px;">Prediction record: ' + (prAll.length ? '<strong>' + prAll.length + ' locked</strong>' + (prSet.length ? ' \u00b7 hit rate ' + Math.floor(prW / prSet.length * 100) + '% (' + prW + 'W / ' + (prSet.length - prW) + 'L)' : ' \u00b7 none settled yet') : 'no predictions locked yet') + ' \u2014 <a href="#" onclick="openTab(\'winrate\', null); return false;" style="color:var(--blue);font-weight:700;">see Predictions on Win Rate</a></div>';
     // What it changed and why
     html += '<div class="body-txt" style="margin:8px 0 4px;"><strong style="color:var(--text);">Mistakes and what the app changed</strong> (newest first)</div>';
-    if (!db.t15LearnLog.length) html += '<div class="empty-note">No losses reviewed yet — each settled loss gets a plain-words review and one rule change here.</div>';
+    if (!db.t15LearnLog.length) html += '<div class="empty-note">No losses reviewed yet — each settled loss gets a plain-words review here; a rule changes only when the same kind of miss repeats twice in a row (v33).</div>';
     else html += db.t15LearnLog.slice(0, 10).map(function (e, i) {
       return '<div class="combo-leg" style="border-bottom:1px dashed #24314d;padding:4px 0;"><span style="color:var(--amber);">' + new Date(e.at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' · ' + esc(e.coin) + '</span> — ' + esc(e.text) +
         (e.key ? (e.undone ? ' <strong>(undone)</strong>' : ' <button type="button" class="copy-pill" onclick="t15LearnUndo(' + i + ')">Undo</button>') : '') + '</div>';
@@ -3201,6 +3208,7 @@
       else if (r.status === 'open') res = r.call ? 'open — called ' + r.call + (r.stake ? ' ($' + r.stake.toFixed(2) + ' staked @ 55¢)' : ' (nothing booked)') : 'open — no call yet';
       else if (r.result === 'NO PLAY') res = 'NO PLAY — round went ' + r.wonSide;
       else res = r.result + (r.call ? ' (called ' + r.call + ')' : '') + (r.stake ? ' ' + fmtUsdSigned(r.pnl) + ' on a $' + r.stake.toFixed(2) + ' stake' : '');
+      if (r.kind !== 'mirror' && r.call && typeof r.callAsk === 'number') res += ' \u00b7 Kalshi ask at lock ' + r.callAsk + '\u00a2';
       res = who + res;
       var col = r.result === 'WIN' ? 'var(--green)' : (r.result === 'LOSS' ? 'var(--red)' : 'var(--muted)');
       return '<div class="combo-leg" style="border-bottom:1px dashed #24314d;padding:4px 0;">' + winTxt + ' ' + coin + ' · target ' + (r.target != null ? t15Fmt(r.target, r.dec) : '—') + (r.close != null ? ' · close ' + t15Fmt(r.close, r.dec) : '') + ' · <strong style="color:' + col + ';">' + esc(res) + '</strong>' + (r.joinedMid ? ' · joined mid-round' : '') + '</div>';
@@ -3260,7 +3268,23 @@
       var pW = pSet.filter(function (p) { return p.result === 'WIN'; }).length;
       var pL = pSet.length - pW;
       var pIn = wrLine('Hit rate', pSet.length ? '<strong>' + Math.floor(pW / pSet.length * 100) + '%</strong> (' + pW + 'W / ' + pL + 'L of ' + pSet.length + ' settled)' : 'nothing settled yet');
-      pIn += wrLine('Total locked', '<strong>' + predsAll.length + '</strong>' + (predsAll.length - pSet.length > 0 ? ' (' + (predsAll.length - pSet.length) + ' still open)' : ''));
+      // v33 fix pack: the hit rate is SPLIT by lock type — an early PLACE
+      // lock and a last-3-minutes fallback lock are different kinds of
+      // call and no longer hide inside one blended number. Each line
+      // carries its own counts. Pushes (exact ties, v33) are shown and
+      // counted in neither rate.
+      function pViaLine(label, via) {
+        var vs = pSet.filter(function (p) { return p.via === via; });
+        var vw = vs.filter(function (p) { return p.result === 'WIN'; }).length;
+        return wrLine(label, vs.length ? Math.floor(vw / vs.length * 100) + '% (' + vw + 'W / ' + (vs.length - vw) + 'L of ' + vs.length + ' settled)' : 'no settled locks of this kind yet');
+      }
+      pIn += pViaLine('PLACE locks', 'place');
+      pIn += pViaLine('Late locks (3:00 left)', 't180');
+      var pLegacy = pSet.filter(function (p) { return p.via !== 'place' && p.via !== 't180'; });
+      if (pLegacy.length) { var lw = pLegacy.filter(function (p) { return p.result === 'WIN'; }).length; pIn += wrLine('Locks before types were kept', Math.floor(lw / pLegacy.length * 100) + '% (' + lw + 'W / ' + (pLegacy.length - lw) + 'L of ' + pLegacy.length + ' settled)'); }
+      var pPush = predsAll.filter(function (p) { return p.status === 'settled' && p.result === 'PUSH'; }).length;
+      if (pPush) pIn += wrLine('Pushes (exact ties)', '<strong>' + pPush + '</strong> — counted as neither a win nor a loss');
+      pIn += wrLine('Total locked', '<strong>' + predsAll.length + '</strong>' + (predsAll.length - pSet.length - pPush > 0 ? ' (' + (predsAll.length - pSet.length - pPush) + ' still open)' : ''));
       T15_ASSETS.forEach(function (a) {
         var cs = pSet.filter(function (p) { return p.pair === a.pair; });
         var cw = cs.filter(function (p) { return p.result === 'WIN'; }).length;
@@ -3273,6 +3297,7 @@
         var bw = bs.filter(function (p) { return p.result === 'WIN'; }).length;
         pIn += wrLine('Said ' + bl + '%', bs.length ? bs.length + ' calls \u2014 when it said ' + bl + '%, it was right ' + Math.floor(bw / bs.length * 100) + '% of the time' : 'no settled calls in this band yet');
       });
+      pIn += '<div class="body-txt" style="margin-top:4px;">This table now feeds back (v33): a new prediction\u2019s confidence is pulled toward the hit rate its band actually earned (once the band has 10+ settled calls), and confidence is capped \u2014 75% until 30 predictions settle, 85% until 100, more only when the top band has proven itself.</div>';
       if (predsAll.length < 30) pIn += '<div class="body-txt" style="margin-top:4px;">Small sample \u2014 under 30 locked predictions, so treat these rates as early reads, not proof.</div>';
       html += wrSection('Predictions', pIn);
     }
@@ -4017,10 +4042,12 @@
     var winStart = Math.floor(now / 900000) * 900000;
     var s = (es && es.winStart === winStart) ? es.samples : [];
     if (!st || st.stale || now - st.spotAt > 15000 || s.length < 3 || line == null) return { txt: 'Momentum: not enough fresh price checks yet', cls: 'muted' };
-    var p = s[s.length - 1], o = s[s.length - 3];
-    var dt = (p.t - o.t) / 1000;
-    if (!(dt > 0) || dt > 30) return { txt: 'Momentum: not enough fresh price checks yet', cls: 'muted' };
-    var v = (p.spot - o.spot) / dt;                // $ per second, + = up
+    // v33: momentum reads the shared ~45-second pace (bdPace), not the
+    // last ~4 seconds — same yardsticks below, steadier speed.
+    var pace = bdPace(s);
+    if (!pace) return { txt: 'Momentum: not enough fresh price checks yet', cls: 'muted' };
+    var p = s[s.length - 1];
+    var v = pace.v;                // $ per second, + = up
     var d = p.spot - line;
     var thr = TW_SUDDEN[a.pair];
     var fastV = thr / 15, flatV = thr / 120;
@@ -4117,9 +4144,9 @@
   // the raw pieces the front-screen Market Board renders.
   // =====================================================================
   // EXPECT + HOLD CHANCE (v23 addition 2) — display only, never a gate.
-  // Velocity is v18's smoothed read (last 3 checks, same freshness gates
-  // as tsMomentum: spot <=15s old, checks <=30s apart). The projection is
-  // distance + velocity x time left. Hold chance is a random-walk
+  // Velocity was v18's smoothed read (last 3 checks); v33 replaced it
+  // with the shared ~45-second pace (bdPace) and a damped projection
+  // (bdProjFinish) — see the v33 block below. Hold chance is a random-walk
   // estimate: Phi( |distance| / (sigma x sqrt(seconds left)) ), sigma =
   // per-second spot volatility from this window's reads (session sigma
   // when the window has <6 reads). Stale reads -> no projection at all.
@@ -4149,6 +4176,85 @@
     if (winSamples && winSamples.length >= 6) { var w = bdSigmaFrom(winSamples); if (w) return w; }
     return bdSigmaFrom(sessSamples[a.pair]);
   }
+  // =====================================================================
+  // PACE + DAMPED PROJECTION (v33 fix pack) — the hit-rate inspection
+  // found the model was stretching the last ~4 seconds of motion (the
+  // old last-3-checks read) across the whole 15 minutes, so confidence
+  // rocketed to 90%+ early in a window on almost nothing. Now ONE pace
+  // read serves every projection: velocity is measured between the
+  // newest sample and the sample closest to 45 seconds before it (the
+  // anchor must span 20–65s; with less history the widest span of at
+  // least 8s is used and flagged short). The projection is DAMPED: pace
+  // is treated as decaying with a 60-second time constant, so the extra
+  // distance pace can add is v x 60 x (1 - e^(-t/60)) — never v x the
+  // whole time left. A short pace span also shrinks confidence toward
+  // 50% in predCompute: a read built on 10 seconds of motion is not
+  // allowed to speak like one built on 45.
+  // =====================================================================
+  function bdPace(sm) {
+    if (!sm || sm.length < 3) return null;
+    var last = sm[sm.length - 1];
+    var best = null, bestErr = Infinity;
+    for (var i = 0; i < sm.length - 1; i++) {
+      var span = (last.t - sm[i].t) / 1000;
+      if (span < 20 || span > 65) continue;
+      var err = Math.abs(span - 45);
+      if (err < bestErr) { bestErr = err; best = sm[i]; }
+    }
+    if (!best) {
+      // Early in a window there may not be 20s of history yet: use the
+      // widest span available, but never less than 8s of motion.
+      var oldest = sm[0];
+      var span0 = (last.t - oldest.t) / 1000;
+      if (!(span0 >= 8)) return null;
+      best = oldest;
+    }
+    var dt = (last.t - best.t) / 1000;
+    if (!(dt > 0)) return null;
+    return { v: (last.spot - best.spot) / dt, spanSec: dt, short: dt < 30 };
+  }
+  function bdDampedReach(leftSec) {
+    var tau = 60;
+    var t = Math.max(0, Number(leftSec) || 0);
+    return tau * (1 - Math.exp(-t / tau));
+  }
+  function bdProjFinish(dist, v, leftSec) { return dist + v * bdDampedReach(leftSec); }
+  // =====================================================================
+  // CONFIDENCE CALIBRATION (v33 fix pack) — the app already MEASURED its
+  // accuracy by confidence band on the Win Rate screen but never fed it
+  // back. Now it does: a raw confidence is shrunk toward the OBSERVED
+  // hit rate of its own band (bands 50–59 / 60–69 / 70–79 / 80+, settled
+  // WIN/LOSS predictions only — pushes excluded), with weight
+  // n/(n+20) once that band has 10+ settled calls. And confidence is
+  // CAPPED until the record backs more: 75% under 30 settled
+  // predictions, 85% under 100, 90% at 100+ — 95% only when the 80+
+  // band itself has 20+ settled calls that actually hit 80%+.
+  // =====================================================================
+  function predSettledHist() {
+    return (db.predictions || []).filter(function (p) { return p && p.status === 'settled' && (p.result === 'WIN' || p.result === 'LOSS') && typeof p.conf === 'number'; });
+  }
+  function predBandRange(confPct) {
+    if (confPct >= 80) return [80, 100];
+    if (confPct >= 70) return [70, 79];
+    if (confPct >= 60) return [60, 69];
+    return [50, 59];
+  }
+  function predCalibrate(rawF) {
+    var hist = predSettledHist();
+    var rawPct = rawF * 100;
+    var br = predBandRange(rawPct);
+    var bs = hist.filter(function (p) { return p.conf >= br[0] && p.conf <= br[1]; });
+    var n = bs.length;
+    var obs = n ? bs.filter(function (p) { return p.result === 'WIN'; }).length / n : null;
+    var f = rawF;
+    if (n >= 10 && obs != null) { var w = n / (n + 20); f = rawF * (1 - w) + obs * w; }
+    var cap = hist.length >= 100 ? 90 : (hist.length >= 30 ? 85 : 75);
+    var b80 = hist.filter(function (p) { return p.conf >= 80; });
+    if (b80.length >= 20 && b80.filter(function (p) { return p.result === 'WIN'; }).length / b80.length >= 0.8) cap = 95;
+    if (f > cap / 100) f = cap / 100;
+    if (f < 0.5) f = 0.5;
+    return { f: f, cap: cap, bandN: n, bandObs: obs, settledN: hist.length };
+  }
   function bdExpect(a, st, tg, leftSec) {
     var now = Date.now();
     if (!st || st.spot == null || st.stale || now - st.spotAt > 15000 || !tg) return null;
@@ -4156,19 +4262,20 @@
     var es = erState[a.pair];
     var sm = (es && es.winStart === winStart) ? es.samples : [];
     if (sm.length < 3) return null;
-    var p = sm[sm.length - 1], o = sm[sm.length - 3];
-    var dt = (p.t - o.t) / 1000;
-    if (!(dt > 0) || dt > 30) return null;
-    var v = (p.spot - o.spot) / dt;
+    // v33: pace over ~45s (bdPace), projected with damping (bdProjFinish)
+    // — no longer the last ~4 seconds stretched across the whole window.
+    var pace = bdPace(sm);
+    if (!pace) return null;
+    var v = pace.v;
     var dist = st.spot - tg.value;
-    var proj = dist + v * leftSec;
+    var proj = bdProjFinish(dist, v, leftSec);
     var txt = 'EXPECT: at this pace, finishes ~' + t15Fmt(Math.abs(proj), a.dec) + (proj > 0 ? ' above' : (proj < 0 ? ' below' : ' right on')) + ' the line';
     var toward = (dist > 0 && v < 0) || (dist < 0 && v > 0);
     if (toward && v !== 0) {
       var eta = Math.abs(dist) / Math.abs(v);
       if (eta <= leftSec) txt += ' \u00b7 reaches the line in ~' + Math.max(1, Math.round(eta)) + 's at this pace';
     }
-    txt += ' \u00b7 pace projection \u2014 not a prediction';
+    txt += ' \u00b7 pace over ~' + Math.round(pace.spanSec) + 's, damped projection \u2014 not a prediction';
     var hold = null;
     var sig = bdSigmaPerSec(a, sm);
     if (sig) {
@@ -4178,17 +4285,20 @@
     return { txt: txt, hold: hold, vel: v };
   }
   // =====================================================================
-  // PREDICTION ENGINE (v24) — display + record only, never a gate: the 10
-  // decision rules above are untouched. Built ONLY from reads the app
-  // already computes: spot, the line the decision used, distance, the
-  // v18/v23 smoothed pace (last 3 checks, same freshness gates as
-  // bdExpect) and this window's realized volatility sigma (bdSigmaPerSec,
-  // the v23 hold-chance sigma). Projected finish = distance + pace x
-  // seconds left; its sign picks the side (UP above the line, DOWN
-  // below). Confidence = Phi( |projected finish| / (sigma x sqrt(t)) )
-  // — the v23 hold-probability model pointed at the projected finish —
-  // as a %, rounded DOWN. Stale spot (>15s), no pace samples or no sigma
-  // -> NO prediction at all: the app never projects from stale data.
+  // PREDICTION ENGINE (v24; v33 fix pack) — display + record only, never
+  // a gate: the 10 decision rules above are untouched. Built ONLY from
+  // reads the app already computes: spot, the line the decision used,
+  // distance, pace and this window's realized volatility sigma
+  // (bdSigmaPerSec, the v23 hold-chance sigma). v33 changed HOW pace and
+  // confidence are worked out (the inspection's core findings): pace is
+  // the shared ~45-second read (bdPace), the projected finish uses the
+  // DAMPED projection (bdProjFinish) instead of pace x the whole time
+  // left, a short pace span shrinks confidence toward 50%, and the raw
+  // Phi confidence is then calibrated against the app's own settled
+  // record and capped until that record backs more (predCalibrate).
+  // Projected finish's sign picks the side (UP above the line, DOWN
+  // below). Confidence as a %, rounded DOWN. Stale spot (>15s), no pace
+  // or no sigma -> NO prediction at all: never projects from stale data.
   // =====================================================================
   function predCompute(a, st, tg, leftSec) {
     var now = Date.now();
@@ -4197,20 +4307,26 @@
     var es = erState[a.pair];
     var sm = (es && es.winStart === winStart) ? es.samples : [];
     if (sm.length < 3) return null;
-    var p = sm[sm.length - 1], o = sm[sm.length - 3];
-    var dt = (p.t - o.t) / 1000;
-    if (!(dt > 0) || dt > 30) return null;
-    var v = (p.spot - o.spot) / dt;
+    var pace = bdPace(sm);
+    if (!pace) return null;
+    var v = pace.v;
     var dist = st.spot - tg.value;
-    var proj = dist + v * leftSec;
+    var proj = bdProjFinish(dist, v, leftSec);
     if (proj === 0) return null;   // projected right on the line — no side to call
     var sig = bdSigmaPerSec(a, sm);
     if (!sig) return null;
-    var confF = leftSec > 0 ? bdPhi(Math.abs(proj) / (sig * Math.sqrt(leftSec))) : 1;
+    var rawF = leftSec > 0 ? bdPhi(Math.abs(proj) / (sig * Math.sqrt(leftSec))) : 1;
+    // v33: a pace span under 30s has not earned full confidence — shrink
+    // the raw read toward a coin flip in proportion to the span.
+    if (pace.short) rawF = 0.5 + (rawF - 0.5) * (pace.spanSec / 30);
+    var rawPct = Math.floor(rawF * 100);
+    // v33: feed the app's own calibration table back in + apply the cap.
+    var cal = predCalibrate(rawF);
+    var confF = cal.f;
     var confPct = Math.floor(confF * 100);
     if (confPct > 99) confPct = 99;
     if (confPct < 50) confPct = 50;
-    return { side: proj > 0 ? 'UP' : 'DOWN', confF: confF, confPct: confPct, proj: proj, sigma: sig };
+    return { side: proj > 0 ? 'UP' : 'DOWN', confF: confF, confPct: confPct, rawConfPct: rawPct, calibCap: cal.cap, paceSpanSec: Math.round(pace.spanSec), proj: proj, sigma: sig };
   }
   // VALUE CHECK (v24) — EV per contract in cents against Kalshi's ask for
   // the predicted side: conf x (100 - ask) - (1 - conf) x ask. Displayed
@@ -4309,6 +4425,11 @@
       db.predictions.unshift({
         id: a.pair + '|' + winStart, pair: a.pair, win: winStart,
         side: c.pred.side, conf: c.pred.confPct, proj: c.pred.proj, line: c.line,
+        // v33: the line's source rides along so settlement can say plainly
+        // when a Kalshi-strike line was graded on the Coinbase close (a
+        // proxy — Kalshi settles on its own index), and the pre-calibration
+        // confidence is kept for the record.
+        lineSrc: c.lineSrc || null, rawConf: typeof c.pred.rawConfPct === 'number' ? c.pred.rawConfPct : null,
         ask: c.predAsk != null ? c.predAsk : null, ev: c.predEv != null ? c.predEv : null,
         leftSec: c.leftSec, lockedAt: now, via: isPlace ? 'place' : 't180',
         status: 'open', result: '', close: null, settledAt: 0
@@ -4329,8 +4450,16 @@
     p.settledAt = Date.now();
     p.status = 'settled';
     var actual = close > p.line ? 'UP' : (close < p.line ? 'DOWN' : 'TIE');
-    // An exact tie at the line is a LOSS for the record — it didn't win.
-    p.result = actual === p.side ? 'WIN' : 'LOSS';
+    // v33 fix pack: an exact tie at the line is a PUSH — graded neither
+    // as a win nor a loss and excluded from the hit rate, the same way
+    // the Round Record already treats its ties. (Locks settled before
+    // v33 keep the result they were given; only new settlements push.)
+    if (actual === 'TIE') { p.result = 'PUSH'; }
+    else p.result = actual === p.side ? 'WIN' : 'LOSS';
+    // v33: when the line was Kalshi's strike, say the grading source
+    // plainly — the close here is Coinbase's candle close, a proxy for
+    // Kalshi's own settlement index, so a close call can differ there.
+    if (p.lineSrc === 'Kalshi') p.settleNote = 'Settled on the Coinbase candle close — a proxy: Kalshi settles on its own price index, so its official result can differ on close calls.';
   }
   // =====================================================================
   // KALSHI LAB (v30) — learns Kalshi's OBSERVABLE pricing patterns from
@@ -5067,7 +5196,7 @@
   // reaches the Round Record, the virtual book, the prediction record
   // or EdgeBoard. VISUAL ONLY: no alert sound, no pinned banner.
   // Computed ONLY from fresh reads (spot <=15s old, same gates as
-  // tsMomentum/bdExpect) and the existing smoothed pace (last 3 Entry
+  // tsMomentum/bdExpect) and the shared pace (v33: ~45s, bdPace; was last 3 Entry
   // Read samples). Directional honesty: a warning names the side the
   // market is actually moving toward, never the opposite of spot's
   // motion.
@@ -5084,10 +5213,10 @@
     var es = erState[a.pair];
     var sm = (es && es.winStart === winStart) ? es.samples : [];
     if (sm.length < 3) return;
-    var p = sm[sm.length - 1], o = sm[sm.length - 3];
-    var dt = (p.t - o.t) / 1000;
-    if (!(dt > 0) || dt > 30) return;
-    var v = (p.spot - o.spot) / dt;            // smoothed pace, $/sec (+ = up)
+    // v33: early warnings read the shared ~45-second pace (bdPace) too.
+    var pace = bdPace(sm);
+    if (!pace) return;
+    var v = pace.v;            // smoothed pace, $/sec (+ = up)
     var dist = c.dist;
     var side = dist > 0 ? 'UP' : (dist < 0 ? 'DOWN' : '');
     var toward = (dist > 0 && v < 0) || (dist < 0 && v > 0);
@@ -5872,21 +6001,14 @@
     // 1) Device internet (browser's own report — a hint, not proof)
     lines.push(diagLine('Phone internet', navigator.onLine ? 'ok' : 'bad', navigator.onLine ? 'Browser says you are online' : 'Browser says you are OFFLINE — check signal / Wi-Fi'));
     // 2) Live feed socket state
-    if (!wantActive) lines.push(diagLine('Live coin feed (PumpPortal)', 'warn', 'Feed is OFF — tap START up top, then test again'));
-    else if (ws && ws.readyState === WebSocket.OPEN && lastMsgAt && (Date.now() - lastMsgAt < 45000)) lines.push(diagLine('Live coin feed (PumpPortal)', 'ok', feedCoins + ' coins seen this session, last one ' + new Date(lastMsgAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })));
-    else lines.push(diagLine('Live coin feed (PumpPortal)', 'bad', 'Not answering right now — it is retrying on its own (try ' + (connectAttempts + 1) + '); tap Reconnect Feed to force it'));
+    lines.push(diagLine('Live coin feed', 'warn', 'Removed — the PumpPortal feed was taken out of this app in v34; nothing connects to it'));
     // 3) Solana network via the same RPC rotation the balance uses
     var rpcDone = rpcCall('getHealth', [], 8000).then(function () {
-      lines.push(diagLine('Solana network (balance & trade sending)', 'ok', 'Reached via ' + RPC_ENDPOINTS[rpcGoodIndex].replace('https://', '')));
+      lines.push(diagLine('Solana network (balance)', 'ok', 'Reached via ' + RPC_ENDPOINTS[rpcGoodIndex].replace('https://', '')));
     }).catch(function () {
-      lines.push(diagLine('Solana network (balance & trade sending)', 'bad', 'None of the ' + RPC_ENDPOINTS.length + ' Solana nodes answered — balance and trade sending will fail until one does'));
+      lines.push(diagLine('Solana network (balance & trade sending)', 'bad', 'None of the ' + RPC_ENDPOINTS.length + ' Solana nodes answered — the wallet balance read will fail until one does'));
     });
-    // 4) PumpPortal host reachability (no-cors: proves the host answers, builds nothing)
-    var ppDone = (typeof AbortController === 'undefined' ? fetch('https://pumpportal.fun/', { mode: 'no-cors' }) : fetchWithTimeout('https://pumpportal.fun/', { mode: 'no-cors' }, 8000)).then(function () {
-      lines.push(diagLine('PumpPortal (feed host & real-trade builder)', 'ok', 'Host answers from this phone'));
-    }).catch(function () {
-      lines.push(diagLine('PumpPortal (feed host & real-trade builder)', 'bad', 'Host did not answer — the feed and real-trade building both use it'));
-    });
+    // 4) (v34: the PumpPortal host check is gone with the feed — nothing in this check reaches out to it.)
     // 5) Signing library
     if (typeof solanaWeb3 !== 'undefined') lines.push(diagLine('Trade-signing library', 'ok', 'Loaded and ready'));
     else { if (window.s7EnsureSolana) window.s7EnsureSolana(); lines.push(diagLine('Trade-signing library', 'warn', 'Still loading — the app is re-trying both CDNs now; test again in a few seconds')); }
@@ -5894,7 +6016,7 @@
     if (connectedPubkey) lines.push(diagLine('Wallet app (Phantom / Solflare)', 'ok', 'Connected: ' + connectedPubkey.slice(0, 5) + '...' + connectedPubkey.slice(-5)));
     else if (db.linkedWallet) lines.push(diagLine('Wallet app (Phantom / Solflare)', 'warn', 'Watching only — real trades need this page open inside Phantom/Solflare'));
     else lines.push(diagLine('Wallet app (Phantom / Solflare)', 'warn', 'No wallet connected in this browser'));
-    Promise.all([rpcDone, ppDone]).then(function () {
+    Promise.all([rpcDone]).then(function () {
       if (btn) { btn.disabled = false; btn.style.opacity = ''; }
       box.innerHTML = lines.join('') + '<div class="body-txt" style="margin-top:8px;">Run at ' + esc(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })) + '. This check only reads — it never builds, signs, or sends a trade.</div>';
     });
@@ -6046,7 +6168,7 @@
     // 2. VIRTUAL $10 DESK
     var dst = deskStats();
     html += '<div class="setup-group"><div class="setup-head"><span class="setup-title">2. VIRTUAL $10 DESK</span><button type="button" class="setup-change" onclick="jumpToSetup(\'desk\',\'deskDipInput\')">Change it</button></div>';
-    html += '<div class="setup-line">Desk Executor: ' + (db.deskHalted ? '<span class="setup-off" style="color:var(--red);">HALTED</span> — day P&amp;L hit the -15% day halt. Stopped — your restart only (Restart Desk button on the desk tab).' : (db.deskExecutorOn !== false ? '<span class="setup-on">ON</span> — while the stream is live, the desk buys dips by itself on paper.' : '<span class="setup-off">OFF</span> — no automatic desk entries; hand adds still work.')) + '</div>';
+    html += '<div class="setup-line">Desk Executor: ' + (db.deskHalted ? '<span class="setup-off" style="color:var(--red);">HALTED</span> — day P&amp;L hit the -15% day halt. Stopped — your restart only (Restart Desk button on the desk tab).' : (db.deskExecutorOn !== false ? '<span class="setup-on">ON</span> — the desk buys dips by itself on paper while its stream is live; since v34 the stream is removed, so automatic entries are off and hand adds still work.' : '<span class="setup-off">OFF</span> — no automatic desk entries; hand adds still work.')) + '</div>';
     html += '<div class="setup-line">Pipeline: Scout → Filter → Analyst → Risk → Executor → Logger &bull; Analyst floor <strong>' + deskFloor() + '</strong> &bull; Sizer cap <strong>50%</strong> of desk equity &bull; Dip <strong>' + deskDipPct() + '%</strong>.</div>';
     html += '<div class="setup-line">Desk equity right now: <strong>$' + dst.equity.toFixed(2) + '</strong> — the desk is its own $10 paper book, separate from Practice Money.</div>';
     html += '<div class="setup-line">Open desk positions: <strong>' + dst.open.length + ' / 4</strong>.</div>';
@@ -6098,10 +6220,13 @@
     html += '<div class="setup-line">Kalshi Lab + market combos (v30): <span class="setup-on">ON</span> — Superbrain → Kalshi Lab learns Kalshi\'s observable patterns from the app\'s own recorded windows, stored merge-only in db.kalshiModel (last 300 samples): a sample is recorded per coin per window at the prediction lock, and only when a real Kalshi strike loaded for that window — never the Coinbase fallback line; if the strike never loaded, nothing is recorded. Strike bias shows the average Kalshi-strike-vs-Coinbase-open offset per coin with sample counts (under 30 samples labeled still learning); pricing calibration buckets priced samples by distance band against each coin\'s own build line (BTC $150 / ETH $5 / SOL $0.25 / XRP $0.005) and lines Kalshi\'s ask for the model\'s side up against the model\'s fair chance. Market combos are built from the current window\'s prediction legs at 60%+ (live predictions before a lock, locked ones after), priced as the product of the legs\' Kalshi ask fractions only when every ask is known (otherwise "price unknown — Kalshi blocked"), with the joint chance shown two ways — independence, and correlation-adjusted from the settled prediction history (exact leg-set hit rate at 10+ instances, else the all-pairs calibration, clamped 1–97%; under 10 settled pairs it says not enough history) — and never displayed above 97%. Locked combos live in db.combos (last 100, paper only — you place legs yourself in Kalshi) and settle in the same Coinbase-close pass as predictions: every leg right = won, any leg wrong or exactly tied = lost. The same totals show as COMBOS on the Win Rate screen below Predictions.</div>';
     html += '<div class="setup-line">Front screen / EdgeBoard decoupled (v31): <span class="setup-on">ON</span> — the front-screen Auto-Run master switch runs Superbrain lanes only ($10 Desk pipeline, Targets reads, Parlay Bot rebuild); the EdgeBoard scans lane is removed from the switch, its Lanes fold and every explainer. EdgeBoard scanning is governed inside EdgeBoard itself: while the EdgeBoard area is open it auto-scans at db.edgeboard.config.cadenceSec regardless of the Auto-Run state, gated only by its own merge-only toggle db.edgeboard.config.autoScan (Rules &amp; Config, default ON); OFF stops the automatic scans and "Scan lines now" still works by hand. The Betting row and the area switch remain as navigation doors only. No records on either side were deleted or moved.</div>';
     html += '<div class="setup-line">Best Decision + Signals are Superbrain\'s own (v32): <span class="setup-on">ON</span> — the Best Decision call, the BEST AVAILABLE strip and every signal + early warning (STRIKE CROSS, REGIME CHANGE, DISTANCE BUILDING, WINDOW-OPEN SETUP) are computed from Superbrain reads only: Coinbase spot/candles, the Kalshi 15-min board strips and Targets state. No EdgeBoard data, scan state, gate value, config or timer feeds, gates, delays or labels them — they render and update on Superbrain\'s own read cycle even if EdgeBoard was never opened or its data is empty. Labeled on the front screen under the Best Decision card and at the top of the Signals panel.</div>';
+    html += '<div class="setup-line">PumpPortal feed removed (v34): <span class="setup-on">ON</span> — the live feed egress is deleted from the shipped code: connectSocket no longer opens the PumpPortal data socket (it is a removed-state stub, FEED_REMOVED, that only settles callers — START, Auto-Run, wake/network heals, the watchdog, scheduleReconnect is guarded off), the new-token subscription send and every token-trade subscription send (socket open, practice buys, desk candidates, desk trade opens) are gone, syncSubscriptions stays the no-op it has been since v20 (the follow list is never sent anywhere), and Connection Check no longer fetches pumpportal.fun. Honest fallout, labeled in the UI: the $10 Desk SCOUT gets no new pairs from a stream, the Executor\u2019s stream-keyed automatic dip-buys stay off, candidates come from manual adds only, and the desk\u2019s records, balance, log and brief are untouched. The real-trade builder is deleted too (same v34 pass): no trade-builder call, no confirm modal, no real-buy/real-sell/real-copy buttons or handlers remain — the old entry names survive only as stubs that answer with the removal. What remains is only pump.fun coin/profile LINKS (your tap, navigation out — nothing is sent).</div>';
+    html += '<div class="setup-line">Fix-pack completion (v34): <span class="setup-on">ON</span> — round-call lock guard: t15RoundTick never locks a call with under 180s left (the decision engine\u2019s own no-entry line); a setup completing later makes no call and the round settles NO PLAY. At a lock, the real Kalshi ask for the called side is stored on the row (callAsk) when the Kalshi strip for the current window is live — null otherwise, never estimated — and shown on the round in the Round Record. Stale feed copy retired with the feed: the Auto-Run desk lane reads \u201cstream removed in v34 — manual adds only\u201d, the Feed uptime objective is retired in both Objectives views (its counter no longer accrues and its shortfall note no longer fires; historical seconds stay shown), and the wallet \u201cOpen in Phantom/Solflare\u201d deep-link buttons — which were built from the page\u2019s own address — are replaced by plain guidance; the app no longer reads its own address anywhere.</div>';
+    html += '<div class="setup-line">Hit-rate fix pack (v33): <span class="setup-on">ON</span> — all six inspection fixes: (1) pace over ~45s (bdPace: newest sample vs the sample closest to 45s earlier, anchor span 20\u201365s, widest span \u22658s early in a window) with a damped projection (bdProjFinish: pace reach = 60 \u00d7 (1 \u2212 e^(\u2212t/60)) seconds, never the whole time left), shared by predictions, EXPECT, momentum and early warnings; (2) confidence capped until calibration backs it up (75% &lt;30 settled, 85% &lt;100, 90% at 100+, 95% only with a proven 80+ band) and shrunk toward 50% on a sub-30s pace span; (3) the Win Rate calibration table feeds back into confidence (predCalibrate); (4) prediction hit rates split by lock type (PLACE vs late t180) with W/L counts and pushes shown; (5) exact ties grade as PUSH for predictions, and a Kalshi-strike line carries a proxy settle note; (6) the round-call learner is slower \u2014 the same miss kind twice in a row on a coin (pendKind/pendCount in db.t15Learn, a win resets the count) before any threshold moves, with the same step sizes and caps as before. No record was deleted or re-graded: locks and rounds settled before v33 keep their results.</div>';
     html += '<div class="setup-line">Paper Bot tracker (v22): <span class="setup-on">ON</span> \u2014 a one-line front-screen tracker for the Kalshi 15-minute PAPER bot (paper only, hard-locked: no Kalshi key, login or live order path). Its numbers are a snapshot baked in when the app updates \u2014 bank $16.52, today +$1.00, 12W\u20132L at the v22 snapshot \u2014 not a live sync.</div>';
-    html += '<div class="setup-line">Predictions (v24): <span class="setup-on">ON</span> \u2014 every window, every coin, the app publishes a prediction from the reads it already computes: the side it expects to win (UP/DOWN) from the projected finish (distance + pace \u00d7 time left), and a confidence % from that finish and this window\u2019s volatility \u2014 rounded down, labeled an app estimate. It shows on the Trade Screen under the decision, on the front card\u2019s EXPECT line, and as a compact \u25b2/\u25bc ~NN% marker on board rows. A stale read (spot over 15s old) or no volatility estimate means no prediction at all \u2014 it never projects from stale data. Display only: the 10 decision rules are unchanged.</div>';
+    html += '<div class="setup-line">Predictions (v24; pace + confidence v33): <span class="setup-on">ON</span> \u2014 every window, every coin, the app publishes a prediction from the reads it already computes: the side it expects to win (UP/DOWN) from the projected finish, and a confidence % from that finish and this window\u2019s volatility \u2014 rounded down, labeled an app estimate. Since v33 the pace is measured over ~45 seconds (one shared read: predictions, the EXPECT line, momentum and early warnings) and the projection is damped \u2014 pace is treated as fading with a 60-second decay, never stretched flat across the whole window; a pace span under 30s shrinks confidence toward 50%. The raw confidence is then calibrated against the app\u2019s own settled band record (predCalibrate: shrink toward the band\u2019s observed hit rate at 10+ settled in the band, weight n/(n+20)) and capped: 75% under 30 settled predictions, 85% under 100, 90% at 100+, 95% only when the 80+ band has 20+ settled calls hitting 80%+. It shows on the Trade Screen under the decision, on the front card\u2019s EXPECT line, and as a compact \u25b2/\u25bc ~NN% marker on board rows. A stale read (spot over 15s old) or no volatility estimate means no prediction at all \u2014 it never projects from stale data. Display only: the 10 decision rules are unchanged.</div>';
     html += '<div class="setup-line">Value check + best-bet ranking (v24): <span class="setup-on">ON</span> \u2014 when Kalshi\u2019s price is loaded, the prediction is priced against it: EV per contract = confidence \u00d7 (100 \u2212 ask) \u2212 (1 \u2212 confidence) \u00d7 ask, rounded toward zero. A PLACE with negative EV keeps its call; its why-line adds \u201cprice kills the value \u2014 app estimate says this entry is \u2212EV\u201d. Kalshi blocked shows \u201cValue: unknown\u201d \u2014 EV is never estimated without a real price. The board\u2019s BEST BET ranks PLACE coins by EV (priced ones first, unpriced below); when no PLACE has a price it falls back to the v20 distance ranking. Rows show their EV when priced.</div>';
-    html += '<div class="setup-line">Prediction record (v24): <span class="setup-on">ON</span> \u2014 one prediction locks per coin per window (at the first PLACE, or at 3:00 left if no PLACE fires), never changes once set, last 200 kept on the Superbrain side, and settles on the same Coinbase window close as the Round Record; an exact tie at the line counts as a loss. Win Rate \u2192 Predictions grades it in the open: overall and per-coin hit rates plus a by-confidence-band calibration table (50\u201359 / 60\u201369 / 70\u201379 / 80+). It never enters the Round Record stats, the virtual book, watched trades or EdgeBoard.</div>';
+    html += '<div class="setup-line">Prediction record (v24; ties v33): <span class="setup-on">ON</span> \u2014 one prediction locks per coin per window (at the first PLACE, or at 3:00 left if no PLACE fires), never changes once set, last 200 kept on the Superbrain side, and settles on the same Coinbase window close as the Round Record; since v33 an exact tie at the line is a PUSH \u2014 neither a win nor a loss, excluded from the hit rate (locks settled before v33 keep their given result). Win Rate \u2192 Predictions grades it in the open: overall hit rate SPLIT by lock type (PLACE locks vs late 3:00 locks, each with its counts), per-coin rates, pushes shown, plus a by-confidence-band calibration table (50\u201359 / 60\u201369 / 70\u201379 / 80+). When a lock\u2019s line was Kalshi\u2019s strike, its settle note says the Coinbase close is a proxy for Kalshi\u2019s own settlement index. It never enters the Round Record stats, the virtual book, watched trades or EdgeBoard.</div>';
     html += '<div class="setup-line">Pump.fun screens + Perps Desk (v20): <span class="setup-off">REMOVED</span> \u2014 Live Coins, Wallets I Follow, Big Buyers, My Practice Trades, Night Plan and the Perps Desk are gone from the app. Every saved record stays in storage untouched; only the screens and buttons went away.</div>';
     html += '</div>';
 
@@ -6333,7 +6458,7 @@
     var p = m.practice;
     // ---- practice book ----
     if (p.n && p.w / p.n * 100 < OBJ_GOAL) objNote('practice', 'Practice win rate is ' + floorPctTxt(p.w, p.n) + ' (' + p.w + ' of ' + p.n + ' scored) — below the ' + OBJ_GOAL + '% goal by ' + objGap(p.w, p.n, OBJ_GOAL).toFixed(2) + ' points. P&L ' + fmtUsdSigned(p.pnl) + '.');
-    if (p.noLive) objNote('coverage', p.noLive + ' of ' + p.closed + ' closed practice trades never got a live price (flat at 1.00x or stale). That is a feed / phone-asleep problem, not a pick problem — no rule change fixes it. Keep START on and the app open while trades are open.');
+    if (p.noLive) objNote('coverage', p.noLive + ' of ' + p.closed + ' closed practice trades never got a live price (flat at 1.00x or stale). That is a feed / phone-asleep problem, not a pick problem — no rule change fixes it. (Those trades predate the v34 feed removal — the live stream no longer runs.)');
     if (db.objOn) {
       var since = db.objMarks.practice || 0;
       var autoScored = db.trades.filter(function (t) { var r = practiceResult(t); return t.src === 'auto' && t.closedAt && t.closedAt > since && (r === 'WIN' || r === 'LOSS'); });
@@ -6400,9 +6525,9 @@
     }
     // ---- 15-minute rounds (their own learning changes their rules — kept separate) ----
     var r0 = m.rounds;
-    if (r0.n && r0.w / r0.n * 100 < OBJ_GOAL) objNote('rounds', 'Round-record win rate is ' + floorPctTxt(r0.w, r0.n) + ' (' + r0.w + ' of ' + r0.n + ') — below the ' + OBJ_GOAL + '%. The round engine changes its own call rules after each loss — see the 15-Min Targets tab.');
+    if (r0.n && r0.w / r0.n * 100 < OBJ_GOAL) objNote('rounds', 'Round-record win rate is ' + floorPctTxt(r0.w, r0.n) + ' (' + r0.w + ' of ' + r0.n + ') — below the ' + OBJ_GOAL + '%. The round engine changes its own call rules only after the same kind of loss twice in a row (v33 slower learner) — see the 15-Min Targets tab.');
     // ---- feed uptime ----
-    if (m.feed.want >= 600 && m.feed.live / m.feed.want * 100 < OBJ_FEED_GOAL) objNote('feed', 'The live feed was up ' + floorPctTxt(m.feed.live, m.feed.want) + ' of the time it was switched on with the app open — below the ' + OBJ_FEED_GOAL + '% goal. No rule fixes this: weak signal or the phone locking are the usual causes.');
+    if (typeof FEED_REMOVED === 'undefined' && m.feed.want >= 600 && m.feed.live / m.feed.want * 100 < OBJ_FEED_GOAL) objNote('feed', 'The live feed was up ' + floorPctTxt(m.feed.live, m.feed.want) + ' of the time it was switched on with the app open — below the ' + OBJ_FEED_GOAL + '% goal. No rule fixes this: weak signal or the phone locking are the usual causes.');
     persist();
     renderObjectives();
   }
@@ -6460,8 +6585,8 @@
     html += row('Practice book', 'Pick coins that go up and exit them in profit. Win rate counts wins and losses only; flat and stale are shown beside it.', p.w, p.n, 'P&L ' + fmtUsdSigned(p.pnl) + ' · ' + p.flat + ' flat · ' + p.stale + ' stale', OBJ_GOAL);
     html += row('Price coverage', 'Every open practice trade should get live prices until it closes, so it can actually win or lose.', p.closed - p.noLive, p.closed, p.noLive + ' closed without a live price', 100);
     html += row('Virtual $10 Desk', 'Buy only coins that clear the desk pipeline, and close them in profit.', m.desk.w, m.desk.n, 'desk P&L ' + fmtUsdSigned(m.desk.pnl), OBJ_GOAL);
-    html += row('15-Min round record', 'Call each 15-minute round right. Its own learning tightens its call rules after each loss.', m.rounds.w, m.rounds.n, '', OBJ_GOAL);
-    html += row('Feed uptime', 'Keep the live coin feed connected while it is switched on and the app is open.', m.feed.live, m.feed.want, 'seconds live ' + m.feed.live + ' of ' + m.feed.want, OBJ_FEED_GOAL);
+    html += row('15-Min round record', 'Call each 15-minute round right. Its own learning tightens its call rules only after the same kind of loss twice in a row (v33).', m.rounds.w, m.rounds.n, '', OBJ_GOAL);
+    html += '<div style="padding:6px 0;border-bottom:1px dashed #24314d;"><div style="font-size:0.8rem;"><strong>Feed uptime</strong> — <span style="color:var(--muted);font-weight:800;">RETIRED in v34</span></div><div class="body-txt">The live coin feed was removed from the app, so there is nothing left to keep connected. The seconds already on record stay below for history; no goal applies anymore.</div><div style="font-size:0.74rem;">Measured before removal: <strong>' + m.feed.live + ' live of ' + m.feed.want + ' switched-on seconds</strong></div></div>';
     html += '<div style="margin-top:8px;font-size:0.8rem;"><strong>Rules the app may change by itself</strong> (only these):</div>';
     html += '<div class="body-txt">Desk Analyst floor: <strong>' + deskFloor() + '</strong> (default 70, max 95) · 15-Min call rules: changed by the round record itself (Undo on that tab) · EdgeBoard: its own knobs, in EdgeBoard.</div>';
     html += '<div class="row-btns" style="margin-top:6px;"><button type="button" class="btn-toggle sm-btn" onclick="objToggle()">Self-updating: ' + (db.objOn ? 'ON' : 'OFF') + '</button>' +
@@ -6497,7 +6622,7 @@
     html += srow('Practice book', p.w, p.n, OBJ_GOAL, 'P&L ' + fmtUsdSigned(p.pnl) + ' · ' + p.flat + ' flat · ' + p.stale + ' stale');
     html += srow('Virtual $10 Desk', m.desk.w, m.desk.n, OBJ_GOAL, 'P&L ' + fmtUsdSigned(m.desk.pnl));
     html += srow('15-Min round record', m.rounds.w, m.rounds.n, OBJ_GOAL, '');
-    html += srow('Feed uptime', m.feed.live, m.feed.want, OBJ_FEED_GOAL, '');
+    html += '<div class="obj-sum-row"><span><strong>Live coin feed</strong> — removed in v34</span><span style="color:var(--muted);font-weight:800;">RETIRED</span></div>';
     if (db.objLog && db.objLog.length) {
       var e = db.objLog[0];
       html += '<div class="body-txt" style="margin-top:7px;">Latest self-check — <span style="color:var(--amber);">' + esc(new Date(e.at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })) + '</span>: ' + esc(e.text) + '</div>';
@@ -6510,6 +6635,7 @@
   // Feed uptime: counted every 10 seconds while the app is open.
   setInterval(function () {
     objState();
+    if (typeof FEED_REMOVED !== 'undefined' && FEED_REMOVED) return; // v34: feed removed — uptime no longer accrues
     if (!wantActive) return;
     db.feedUp.want += 10;
     if (active && ws && ws.readyState === WebSocket.OPEN && lastMsgAt && Date.now() - lastMsgAt < 45000) db.feedUp.live += 10;
@@ -8304,7 +8430,7 @@
     var deskTxt;
     if (db.deskHalted) deskTxt = 'HALTED by its day-loss rule — only your restart clears it';
     else if (db.deskExecutorOn === false) deskTxt = 'Executor OFF in Desk Settings';
-    else deskTxt = feedLive ? 'pipeline scanning every 20 s' : 'waits for the live feed';
+    else deskTxt = 'stream removed in v34 — manual adds only; candidates re-checked every 20 s';
     out.push(['Virtual $10 Desk pipeline', deskTxt]);
     out.push(['15-Min Targets reads', t15SpotTimer ? 'reading prices every 2 s; rounds recorded and learned from' : 'off (opens with its tab)']);
     out.push(['Parlay Bot rebuild', autoRun ? 'rebuilds every 15 min from gate-passing picks' : 'runs with Auto-Run']);
@@ -8749,6 +8875,7 @@
   function renderFeedStatus() {
     var el = document.getElementById('feedStatus');
     if (!el) return;
+    if (typeof FEED_REMOVED !== 'undefined' && FEED_REMOVED) { el.innerHTML = 'Feed: <strong>removed</strong> — the PumpPortal live feed was taken out of this app (v34). The $10 Desk keeps its records and manual adds; its live new-coin stream no longer runs.'; return; }
     if (!wantActive) { el.innerHTML = 'Feed: <strong>off</strong> — the $10 Desk pipeline waits for the feed (Auto-Run starts it).'; return; }
     if (active && lastMsgAt) {
       var when = new Date(lastMsgAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -8762,13 +8889,19 @@
 
   function setStartUI(state) {
     // state: 'off' | 'linking' | 'live' | 'reconnecting' | 'error' — the
-    // desk feed runs as plumbing under Auto-Run for the $10 Desk pipeline.
+    // desk feed ran as plumbing under Auto-Run for the $10 Desk pipeline
+    // until v34 removed it; the states stay for the callers that pass
+    // them, but the caption tells the removed truth.
     // v23: the hero pill is the Targets/Kalshi sync chip now — this function
     // no longer writes feed states into it; it only refreshes that chip and
     // keeps the in-fold caption honest.
     var caption = document.getElementById('startCaption');
     try { renderSyncChip(); } catch (eSC9) {}
     renderFeedStatus();
+    if (typeof FEED_REMOVED !== 'undefined' && FEED_REMOVED) {
+      if (caption) caption.innerText = 'Auto-Run runs the Targets reads and the Parlay Bot while the app is open. The PumpPortal desk feed was removed in v34.';
+      return;
+    }
     if (state === 'live') {
       if (caption) caption.innerText = "You're live — the desk feed is streaming.";
     } else if (state === 'linking') {
@@ -8802,13 +8935,12 @@
     }
   }
 
-  // The feed NEVER gives up while the user wants it on. The old code quit
-  // after 4 failed first-connect tries: it cleared wantActive AND the saved
-  // wasLive flag, so on a slow or blocked first handshake START looked dead
-  // for the whole session and even a reload would not resume. Now every
-  // failure — first connect or mid-stream drop — retries forever with
-  // capped backoff + jitter, and only the user's STOP ends it.
+  // (History: the feed used to retry forever with capped backoff while
+  // the user wanted it on, and only STOP ended it. v34 removed the feed,
+  // so there is nothing to reconnect — this stays as a guarded no-op for
+  // its remaining callers.)
   function scheduleReconnect() {
+    if (typeof FEED_REMOVED !== 'undefined' && FEED_REMOVED) return;
     if (!wantActive) return;
     setStartUI(everOpened ? 'reconnecting' : 'linking');
     renderFeedStatus();
@@ -8855,6 +8987,7 @@
   function startWatchdog() {
     if (watchdogTimer) return;
     watchdogTimer = setInterval(function () {
+      if (typeof FEED_REMOVED !== 'undefined' && FEED_REMOVED) return; // v34: no feed to watch
       if (!wantActive) return;
       if (ws && ws.readyState === WebSocket.CONNECTING) return; // a reconnect is already in flight — give it its window
       if (lastMsgAt && (Date.now() - lastMsgAt > 45000)) {
@@ -8875,120 +9008,26 @@
     }, 10000);
   }
 
+  // ---- Live feed REMOVED (v34) ----
+  // The PumpPortal live feed is out of the app: the WebSocket, the
+  // new-token subscription and every token-trade subscription send that
+  // used to live here are deleted from the shipped code, completing the
+  // pump.fun removal whose screens went in v20. Nothing in this app
+  // opens a connection to pumpportal.fun for a feed anymore, and the
+  // follow list is never sent anywhere (syncSubscriptions has been a
+  // no-op since v20). connectSocket stays as the single entry point
+  // every caller already uses (START, Auto-Run, wake/network heals,
+  // the watchdog) and now does exactly one thing: settle the app into
+  // the honest feed-removed state. The $10 Desk keeps its records and
+  // its manual paths; its live new-coin stream no longer runs.
+  var FEED_REMOVED = true;
   function connectSocket() {
-    if (!wantActive) return;
-    // Never stack sockets: a wake-up heal and a scheduled reconnect can race,
-    // and a leftover socket's late onclose/onerror would kill the fresh one.
-    // Tear any previous socket down silently before opening the new one.
-    if (ws) {
-      var staleSock = ws;
-      ws = null;
-      try { staleSock.onopen = null; staleSock.onmessage = null; staleSock.onclose = null; staleSock.onerror = null; staleSock.close(); } catch (e) {}
-    }
-    connectStartedAt = Date.now();
-    setStartUI(everOpened ? 'reconnecting' : 'linking');
+    if (ws) { var old = ws; ws = null; try { old.onopen = null; old.onmessage = null; old.onclose = null; old.onerror = null; old.close(); } catch (e) {} }
+    if (connectTimer) { clearTimeout(connectTimer); connectTimer = null; }
+    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+    active = false;
     sockOpened = false;
-    var myWs = null;
-    try {
-      myWs = new WebSocket('wss://pumpportal.fun/api/data');
-    } catch (e) {
-      connectAttempts++;
-      scheduleReconnect();
-      return;
-    }
-    ws = myWs;
-    // A socket that never opens (bad signal, blocked handshake) must not sit on LINKING forever:
-    // after 10s, close THIS socket — its onclose then schedules the next retry.
-    if (connectTimer) clearTimeout(connectTimer);
-    connectTimer = setTimeout(function () {
-      if (!sockOpened && wantActive && ws === myWs) { try { myWs.close(); } catch (e) {} }
-    }, 10000);
-    myWs.onopen = function () {
-      if (myWs !== ws) return; // a replaced socket's late open must not hijack the live one
-      sockOpened = true;
-      everOpened = true;
-      active = true;
-      connectAttempts = 0;
-      lastMsgAt = Date.now();
-      if (connectTimer) { clearTimeout(connectTimer); connectTimer = null; }
-      retryDelay = 2500;
-      setStartUI('live');
-      if (!db.wasLive) { db.wasLive = true; persist(); }
-      if (shownWallet()) { refreshWalletBalance(); ensureBalanceTimer(); }
-      // Only clear the placeholder on a fresh start — a reconnect or smart refresh keeps the feed history
-      var sb = document.getElementById('streamBox');
-      if (sb && !sb.querySelector('.card')) sb.innerHTML = '';
-      ws.send(JSON.stringify({ method: 'subscribeNewToken' }));
-      syncSubscriptions();
-      // Resubscribe to any open positions for live TP/SL tracking
-      var openMints = db.trades.filter(function (t) { return t.status === 'OPEN'; }).map(function (t) { return t.mint; });
-      (db.deskTrades || []).filter(function (t) { return t.status === 'OPEN' && !t.imported; }).forEach(function (t) { if (openMints.indexOf(t.mint) === -1) openMints.push(t.mint); });
-      if (openMints.length) {
-        ws.send(JSON.stringify({ method: 'subscribeTokenTrade', keys: openMints }));
-      }
-      // Desk candidates keep their trade stream across reconnects too.
-      // Subscriptions live on the socket, so a fresh socket that only
-      // resubscribes open positions leaves SCOUT's candidates frozen —
-      // no ticks, no dip, and the Executor never fires again that session.
-      var candMints = [];
-      deskCandidates.forEach(function (c, mint) {
-        if (!c.killed && !c.bought && c.score100 >= deskFloor() && openMints.indexOf(mint) === -1) candMints.push(mint);
-      });
-      if (candMints.length) {
-        try { ws.send(JSON.stringify({ method: 'subscribeTokenTrade', keys: candMints })); } catch (e) {}
-      }
-    };
-    myWs.onmessage = function (evt) {
-      if (myWs !== ws) return;
-      lastMsgAt = Date.now();
-      try {
-        var msg = JSON.parse(evt.data);
-        if (!msg || !msg.mint) return;
-        // v14: a coin or wallet address that is not a plain Solana address is
-        // dropped right here, so nothing unchecked from the feed can ever reach
-        // a button's tap action, a link or a saved record.
-        if (!feedAddrOk(msg.mint)) return;
-        if (msg.traderPublicKey != null && msg.traderPublicKey !== '' && !feedAddrOk(msg.traderPublicKey)) return;
-        feedCoins++;
-        if (feedCoins === 1 || feedCoins % 3 === 0) renderFeedStatus();
-        // Capture trades made by the shown Pump.fun account into My Pump.fun
-        // (the connected wallet when one is connected — wallet truth, fix 1)
-        if (shownWallet() && msg.traderPublicKey === shownWallet() && (msg.txType === 'buy' || msg.txType === 'sell')) {
-          db.myActivity.unshift({
-            type: msg.txType.toUpperCase(),
-            mint: msg.mint,
-            sol: parseFloat(msg.solAmount || 0),
-            time: new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-          });
-          if (db.myActivity.length > 25) db.myActivity.pop();
-          persist();
-        }
-        // Trade events: live TP/SL ticks + smart-wallet tracking / alerts / mirror-sell
-        if (msg.txType === 'buy' || msg.txType === 'sell') {
-          handleTradeEvent(msg);
-          return;
-        }
-        // Otherwise evaluate new token launch across 8 agents
-        runEightAgents(msg);
-      } catch (e) {}
-    };
-    myWs.onclose = function () {
-      if (myWs !== ws) return; // stale socket closing — the current one is unaffected
-      active = false;
-      sockOpened = false;
-      if (!wantActive) return;
-      // First connect or mid-stream drop — same answer: keep retrying with
-      // backoff for as long as the user wants the feed on. Nothing here ever
-      // clears wantActive or the saved wasLive flag; only STOP does that.
-      connectAttempts++;
-      scheduleReconnect();
-    };
-    myWs.onerror = function () {
-      // Close only THIS socket; its onclose schedules the retry. (The old
-      // handler closed the global `ws`, which could kill a healthy fresh
-      // socket that had already replaced this one.)
-      try { myWs.close(); } catch (e) {}
-    };
+    renderFeedStatus();
   }
 
   function buildWhyLine(checksArr, solVal, mcVal, isConsensus, watchedName) {
@@ -9172,7 +9211,6 @@
       '<div style="font-size:0.7rem;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;"><span data-rugline>' + esc(rugLineText(rugCache.get(e.mint))) + '</span>' + (rugCache.get(e.mint) && rugCache.get(e.mint).status === 'done' ? '' : '<button type="button" class="copy-pill" data-rugcheck>Check RugCheck</button>') + '</div>' +
       '<div class="row-btns">' +
         '<button class="btn-go sm-btn" data-action="simbuy">Practice Buy ($' + db.size.toFixed(2) + ' fake)</button>' +
-        '<button class="btn-blue sm-btn" data-action="realbuy">Buy with Real SOL</button>' +
         '<button class="btn-toggle sm-btn" data-action="viewcoin">View Coin</button>' +
       '</div>' +
       '<div class="row-btns" style="margin-top:6px;">' +
@@ -9197,7 +9235,6 @@
     el.querySelector('[data-action="deskadd"]').addEventListener('click', function () { openDeskTrade(e.sym, e.mint, e.mc, 'Added from Live Coins', e.score * 12.5); });
     var blockBtn = el.querySelector('[data-action="blockdev"]');
     if (blockBtn) blockBtn.addEventListener('click', function () { addDeskBlacklistAddr(e.trader, e.sym); });
-    el.querySelector('[data-action="realbuy"]').addEventListener('click', function () { executePumpTrade('buy', e.mint, e.sym, db.solSize); });
     el.querySelector('[data-action="viewcoin"]').addEventListener('click', function () { openPumpCoin(e.mint); });
     var rugBtn = el.querySelector('[data-rugcheck]');
     if (rugBtn) rugBtn.addEventListener('click', function () {
@@ -9378,11 +9415,10 @@
 
   // ---- Smart Wallet Tracker ----
   function syncSubscriptions() {
-    // v20: the wallet-follow side of the app is removed, so followed-wallet
-    // account-trade subscriptions are no longer sent anywhere — your follow
-    // list stays on this phone. The feed keeps only the new-coin stream the
-    // $10 Desk's SCOUT reads, plus token-trade subscriptions for open
-    // positions (public coin addresses), subscribed where those open.
+    // v20 made this a no-op (followed-wallet subscriptions stopped being
+    // sent anywhere — your follow list stays on this phone), and v34
+    // removed the feed itself, so there is nothing left to subscribe to.
+    // The function stays only because older call sites still call it.
     return;
   }
 
@@ -9694,14 +9730,10 @@
     if (side === 'BUY') {
       buttonsHtml =
         '<button class="btn-go sm-btn" data-action="simcopy">Practice Copy ($' + db.size.toFixed(2) + ' fake)</button>' +
-        '<button class="btn-blue sm-btn" data-action="realcopy">Buy with Real SOL</button>' +
         '<button class="btn-toggle sm-btn" data-action="deskadd">Add to $10 Desk</button>' +
         '<button class="btn-toggle sm-btn" data-action="viewcoin">Pump.fun</button>';
     } else {
       buttonsHtml =
-        '<button class="btn-halt sm-btn" data-action="realsell25">Sell 25% (Real)</button>' +
-        '<button class="btn-halt sm-btn" data-action="realsell50">Sell 50% (Real)</button>' +
-        '<button class="btn-halt sm-btn" data-action="realsell100">Sell All (Real)</button>' +
         '<button class="btn-toggle sm-btn" data-action="viewcoin">Pump.fun</button>';
     }
     el.innerHTML =
@@ -9716,14 +9748,6 @@
     if (simBtn) simBtn.addEventListener('click', function () { openSimTrade('COPY:' + String(wallet.name).slice(0, 8), mint, mc, wallet.addr, { src: 'manual' }); });
     var deskBtn = el.querySelector('[data-action="deskadd"]');
     if (deskBtn) deskBtn.addEventListener('click', function () { openDeskTrade(sym, mint, mc, 'Added from a followed-wallet alert card — ' + wallet.name); });
-    var realCopyBtn = el.querySelector('[data-action="realcopy"]');
-    if (realCopyBtn) realCopyBtn.addEventListener('click', function () { executePumpTrade('buy', mint, sym, db.solSize); });
-    var rs25 = el.querySelector('[data-action="realsell25"]');
-    if (rs25) rs25.addEventListener('click', function () { executePumpTrade('sell', mint, sym, '25%'); });
-    var rs50 = el.querySelector('[data-action="realsell50"]');
-    if (rs50) rs50.addEventListener('click', function () { executePumpTrade('sell', mint, sym, '50%'); });
-    var rs100 = el.querySelector('[data-action="realsell100"]');
-    if (rs100) rs100.addEventListener('click', function () { executePumpTrade('sell', mint, sym, '100%'); });
     el.querySelector('[data-action="viewcoin"]').addEventListener('click', function () { openPumpCoin(mint); });
     box.prepend(el);
     while (box.children.length > 30) box.removeChild(box.lastChild);
@@ -9770,9 +9794,7 @@
       ladder2Pct: null,
       timeExitApplicable: true
     });
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ method: 'subscribeTokenTrade', keys: [mint] }));
-    }
+    // v34: no token-trade subscription is sent — the PumpPortal feed is removed (see connectSocket).
     persist();
     showToast('Practice buy opened: $' + sym + ' at ' + entryMc.toFixed(1) + ' SOL market size');
     return true;
@@ -10075,7 +10097,7 @@
     if (unknownSrc) lines.push('• ' + unknownSrc + ' were opened before this version recorded who opened them or at what gate score.');
     var exitList = Object.keys(reasons).map(function (k) { return reasons[k] + '× ' + esc(k); }).join(', ');
     lines.push('• Exits: ' + exitList + '.');
-    if (rec.scored === 0 && rec.flat + rec.stale === closed.length) lines.push('<strong>Nothing here says the coin picks were wrong — these trades never got a live price to win or lose on.</strong> Keep the feed running (START) and the app open while trades are open.');
+    if (rec.scored === 0 && rec.flat + rec.stale === closed.length) lines.push('<strong>Nothing here says the coin picks were wrong — these trades never got a live price to win or lose on.</strong> (They predate the v34 feed removal — the live stream no longer runs.)');
     return '<div class="streak-box">' + lines.join('<br />') + '</div>';
   }
 
@@ -10313,9 +10335,7 @@
     }
     // A passing, surviving candidate gets its trades streamed so the
     // Executor can watch its market size for a dip.
-    if (!cand.killed && score100 >= deskFloor() && ws && ws.readyState === WebSocket.OPEN) {
-      try { ws.send(JSON.stringify({ method: 'subscribeTokenTrade', keys: [mint] })); } catch (e) {}
-    }
+    // v34: passing candidates no longer get a live trade stream — the PumpPortal feed is removed (see connectSocket).
     // FILTER's on-chain checks (mint/freeze authority, top-10 holders) run
     // over the app's existing Solana RPC rotation — but ONLY for candidates
     // that reached the Analyst floor, so the RPC nodes are never spammed
@@ -10577,7 +10597,7 @@
       return '<div style="padding:6px 0;border-bottom:1px dashed #24314d;"><div style="font-size:0.8rem;"><strong>' + name + '</strong> <span style="color:var(--muted);">— ' + job + '</span></div><div style="font-size:0.74rem;color:var(--muted);margin-top:2px;">' + live + '</div></div>';
     };
     box.innerHTML =
-      stage('1 · SCOUT', 'find new pairs before CT does', 'Live stream pushes new pairs in as they launch; the desk re-checks its candidates every 20 seconds while the app is open. Stream: <strong style="color:' + (streamLive ? 'var(--green)' : 'var(--red)') + '">' + (streamLive ? 'LIVE' : 'OFF — tap START') + '</strong>' + (lastDeskScanAt ? ' · last scan ' + new Date(lastDeskScanAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '') + ' · watching <strong style="color:var(--text);">' + cands.length + '</strong> candidates.') +
+      stage('1 · SCOUT', 'find new pairs before CT does', 'Live stream <strong style="color:var(--red);">REMOVED in v34</strong> — the PumpPortal feed is out of the app, so SCOUT no longer receives new pairs as they launch and the Executor\'s automatic dip-buys (which keyed off the stream) stay off. Candidates now come only from manual adds below; the desk still re-checks them every 20 seconds while the app is open.' + (lastDeskScanAt ? ' · last scan ' + new Date(lastDeskScanAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '') + ' · watching <strong style="color:var(--text);">' + cands.length + '</strong> candidates.') +
       stage('2 · FILTER', 'kill almost all of them', 'Hard kills: copycat name, creator bet too much, no real floor, messy ticker, blacklisted creator. Killed this session: <strong style="color:var(--text);">' + deskFilterKills + '</strong> · blacklist holds <strong style="color:var(--text);">' + (db.deskBlacklist || []).length + '</strong> creator wallets.<br><span style="display:block;margin-top:4px;">Article\'s FILTER kills: liquidity under $15,000 · LP not burned or locked · top 10 holders over 30% · mint/freeze authority not revoked · dev sold more than 5% in 10 minutes · dev wallet on the blacklist · pairs younger than 3 minutes wait in the queue instead of dying.</span><span style="display:block;margin-top:4px;">Now LIVE in this app: for every candidate that reaches the Analyst floor, FILTER reads the chain itself over Solana RPC — <strong style="color:var(--text);">mint/freeze authority still live = kill</strong> · <strong style="color:var(--text);">top 10 holders over 30% of supply = kill</strong>, reasons logged below. If the chain can\'t be reached, the candidate is flagged "couldn\'t verify" — never a fake pass, never a fake kill. Curve depth uses the stream\'s virtual SOL reserves as a labeled proxy: under ~85 SOL (≈ the $15k line) = "thin curve" flag, not a kill. LP burn/lock stays recorded-only — a pump.fun launch has no LP until it graduates, so there is nothing to burn yet.</span><span style="display:block;margin-top:4px;">RugCheck gate (live): floor-passing candidates are also checked at RugCheck — a <strong style="color:var(--text);">danger risk or a score over 500 = kill</strong>, with the reason logged in the Decision Log below ("RugCheck: risk / score"). If RugCheck can\'t be reached, the candidate is flagged "couldn\'t verify" — never a fake pass, never a fake kill.</span>') +
       stage('3 · ANALYST', 'score what survives', 'Score = the 8 safety checks passed ÷ 8 × 100. Desk entries need <strong style="color:var(--text);">' + deskFloor() + ' or more</strong> — under ' + deskFloor() + ' = skip. Passing right now: <strong style="color:var(--text);">' + passing + '</strong>.') +
       stage('4 · RISK', 'decide the size and the exit BEFORE the entry', 'Size = score% × <strong style="color:var(--text);">50% cap</strong> of desk equity $' + st.equity.toFixed(2) + ' (score 70 → $' + (st.equity * 0.35).toFixed(2) + ' · score 100 → $' + (st.equity * 0.50).toFixed(2) + '), never over 50%. Exits fixed at entry: hard stop <strong style="color:var(--text);">−15%</strong> · at <strong style="color:var(--text);">+60%</strong> sell half and the stop on the rest moves to breakeven · trail the rest <strong style="color:var(--text);">25%</strong> from the peak · max hold 45m.') +
@@ -10742,9 +10762,7 @@
       closeReason: '',
       reason: (reason || 'Added from the terminal') + ' · Analyst score ' + score100 + '/100' + (scoreAssumed ? ' (floor — the stream had not scored this coin)' : '')
     });
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ method: 'subscribeTokenTrade', keys: [mint] }));
-    }
+    // v34: no token-trade subscription is sent — the PumpPortal feed is removed (see connectSocket).
     deskLog('EXECUTOR opened ' + ticket + ' $' + sym + ' — $' + size.toFixed(2) + ' paper, score ' + score100 + '/100. ' + (reason || 'Added from the terminal') + '.');
     persist();
     renderDesk();
@@ -11006,7 +11024,7 @@
   function renderDeskCycle() {
     var el = document.getElementById('deskCycleLine');
     if (!el) return;
-    if (!deskLastCycle) { el.innerHTML = 'The desk hasn\u2019t run a cycle yet \u2014 it starts when the feed is live.'; return; }
+    if (!deskLastCycle) { el.innerHTML = 'The desk hasn\u2019t run a cycle yet \u2014 it scans every 20 seconds while the app is open. Its live stream was removed in v34.'; return; }
     var c = deskLastCycle;
     el.innerHTML = '<strong style="color:var(--text);">Last cycle</strong> (' + new Date(c.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '): SCOUT checked <strong style="color:var(--text);">' + c.checked + '</strong> \u00b7 FILTER killed <strong style="color:var(--text);">' + c.killed + '</strong> \u00b7 ANALYST scored <strong style="color:var(--text);">' + c.scored + '</strong> \u00b7 EXECUTOR opened <strong style="color:var(--text);">' + c.opened + '</strong>';
   }
@@ -11470,7 +11488,7 @@
     if (!box) return;
     var sorted = Array.from(discoveredWhales.entries()).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 12);
     if (!sorted.length) {
-      box.innerHTML = '<div class="empty-note">No big buyers spotted yet — tap START up top and let the coins stream in.</div>';
+      box.innerHTML = '<div class="empty-note">No big buyers spotted — the live coin stream was removed in v34, so nothing new streams in.</div>';
       return;
     }
     box.innerHTML = sorted.map(function (entry) {
@@ -11795,99 +11813,21 @@
   // the wallet's own approval prompt — no key or seed is ever stored here.
   var linkUnlinkArmed = false;
 
-  // ---- Wallet deep links: open THIS page inside Phantom / Solflare ----
-  // Safari, Chrome and the Google app have no wallet inside them, so Connect
-  // can't reach Phantom there. These links open this same page inside the
-  // wallet app's own browser, where Connect Wallet works. They need the page
-  // to have a web address (https://…) — a page opened from a file has none.
-  // ---- The hosted page's own address (e.g. GitHub Pages) ----
-  // Every link that has to come back to THIS app is built from the address
-  // the page was actually opened at — never a hard-coded one. The #part is
-  // dropped (it only marks a spot in the page).
-  function pageAddress() {
-    var href = String((window.location && location.href) || '');
-    return href.split('#')[0];
-  }
-  function pageOrigin() {
-    var o = String((window.location && location.origin) || '');
-    if (o && o !== 'null') return o;
-    var m = pageAddress().match(/^(https?:\/\/[^\/?#]+)/i);
-    return m ? m[1] : '';
-  }
-  function pageIsGithubPages() {
-    var h = String((window.location && location.hostname) || '').toLowerCase();
-    return /\.github\.io$/.test(h);
-  }
-  // ---- Pump.fun links ----
-  // Built in one place, from a checked Solana address. openPump opens them in
-  // a new tab; if the browser blocks that (wallet in-app browsers and
-  // home-screen mode often do), it opens Pump.fun right here instead —
-  // your saved data stays, and the feed reconnects when you come back.
-  function pumpHomeUrl() { return 'https://pump.fun'; }
-  function pumpCoinUrl(mint) { return isValidSolanaAddress(String(mint || '').trim()) ? 'https://pump.fun/coin/' + encodeURIComponent(String(mint).trim()) : ''; }
-  function pumpProfileUrl(addr) { return isValidSolanaAddress(String(addr || '').trim()) ? 'https://pump.fun/profile/' + encodeURIComponent(String(addr).trim()) : ''; }
-  function openPump(url) {
-    if (!url || url.indexOf('https://pump.fun') !== 0) { showToast('That Pump.fun link could not be built — the address did not check out.'); return; }
-    var w = null;
-    try { w = window.open(url, '_blank'); } catch (e) { w = null; }
-    if (w) { try { w.opener = null; } catch (e) {} return; }
-    try { window.location.assign(url); } catch (e2) { window.location.href = url; }
-  }
-  function openPumpCoin(mint) { openPump(pumpCoinUrl(mint)); }
-  function openPumpProfileAddr(addr) { openPump(pumpProfileUrl(addr)); }
-
-  function walletDeepLinks() {
-    // Framed copies (this app showing inside another page, e.g. the Muse
-    // shell) never read the page's own address: in a frame that address is
-    // the host page's internal one, not the app's, so a wallet link built
-    // from it could only open the wrong page. The buttons are replaced by
-    // a plain note there (see walletDeepLinkHtml). On the app's own web
-    // address — framed by nothing — the address is read and used as before.
-    var framed = false;
-    try { framed = window.self !== window.top; } catch (e) { framed = true; }
-    if (framed) return { ok: false, framed: true, proto: '', url: '', phantom: '', solflare: '' };
-    var proto = String((window.location && location.protocol) || '');
-    var url = pageAddress();
-    var webOk = (proto === 'https:' || proto === 'http:') && !!url;
-    var ref = webOk ? pageOrigin() : '';
-    return {
-      ok: webOk, framed: framed, proto: proto, url: url,
-      phantom: 'https://phantom.app/ul/browse/' + encodeURIComponent(url) + '?ref=' + encodeURIComponent(ref),
-      solflare: 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(url) + '?ref=' + encodeURIComponent(ref)
-    };
-  }
+  // ---- Wallet opening guidance (v34) ----
+  // The old "Open in Phantom / Solflare" buttons built their links from
+  // this page's own address — removed: the app no longer
+  // reads its own address to build links. What stays is the guidance:
+  // open the app from the link he already uses, inside the wallet app's
+  // own browser, and Connect Wallet works there.
   function walletDeepLinkHtml() {
-    var d = walletDeepLinks();
-    if (d.framed) {
-      return '<div class="warn-box" style="margin-top:6px;"><strong>Open in Phantom is hidden in this copy.</strong> This app is showing inside another page, so its own web address is not the one on screen — a wallet link built here could open the wrong page. Open the app from its own link (your GitHub Pages address) and the Open in Phantom / Open in Solflare buttons work there.</div>';
-    }
-    if (!d.ok) {
-      return '<div class="warn-box" style="margin-top:6px;"><strong>Open in Phantom isn\'t possible from this copy.</strong> This copy of the app is open from a file (' + esc(d.proto || 'no web address') + '), not from a web address, so Phantom has no page to open. Put the app on a web address (host or publish the file), open that link, then tap Open in Phantom.</div>';
-    }
-    var tgt = d.framed ? ' target="_blank" rel="noopener"' : '';
-    var btnStyle = 'display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;font-weight:700;';
-    return '<div class="row-btns" style="margin-top:6px;">' +
-        '<a class="btn-blue sm-btn" style="' + btnStyle + '" href="' + esc(d.phantom) + '"' + tgt + '>Open in Phantom</a>' +
-        '<a class="btn-toggle sm-btn" style="' + btnStyle + '" href="' + esc(d.solflare) + '"' + tgt + '>Open in Solflare</a>' +
-      '</div>' +
-      '<div class="body-txt" style="margin-top:6px;">These open: <strong style="word-break:break-all;">' + esc(d.url) + '</strong>' + (pageIsGithubPages() ? ' (your GitHub Pages address)' : '') + '.</div>' +
-      (d.framed ? '<div class="body-txt" style="margin-top:6px;color:var(--amber);">This app is showing inside another page, so the wallet may open that page\'s address instead. If it does, open the app\'s own link directly and try again.</div>' : '') +
-      '<div class="body-txt" style="margin-top:6px;">This opens this same page inside the wallet app\'s browser — tap <strong>Connect Wallet</strong> there and approve. The wallet app\'s browser keeps its own saved data: to bring your trades and settings along, tap <strong>Copy Full Backup</strong> in Settings &amp; Safety here, then <strong>Paste Backup</strong> inside the wallet app.</div>';
+    return '<div class="warn-box" style="margin-top:6px;"><strong>To trade from your wallet app:</strong> open Phantom or Solflare, go to its built-in browser, and open this app from the link you already use for it (your hosted address) — then tap <strong>Connect Wallet</strong> there and approve. The wallet app\'s browser keeps its own saved data: to bring your trades and settings along, tap <strong>Copy Full Backup</strong> in Settings &amp; Safety here, then <strong>Paste Backup</strong> inside the wallet app.</div>';
   }
-  // The big next step for a watching-only account: one large Open in Phantom
-  // button and one plain line. (compact = the version under the top bar.)
+  // The big next step for a watching-only account, as a guidance card now
+  // (compact = the version under the top bar).
   function walletBigOpenHtml(compact) {
-    var d = walletDeepLinks();
-    if (!d.ok) return walletDeepLinkHtml();
-    var tgt = d.framed ? ' target="_blank" rel="noopener"' : '';
-    var big = 'display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;width:100%;min-height:52px;font-size:1rem;font-weight:900;border-radius:12px;margin-top:8px;';
-    var html = '<a class="btn-go" style="' + big + '" href="' + esc(d.phantom) + '"' + tgt + '>Open in Phantom</a>' +
-      '<div style="font-size:0.8rem;font-weight:800;color:var(--text);text-align:center;margin:6px 0 4px;">Open in Phantom to turn this into a trading link.</div>';
-    if (compact) {
-      return '<div class="card" style="border-color:var(--green);padding:10px;margin-bottom:10px;">' + html +
-        '<div class="body-txt" style="text-align:center;">Use Solflare instead? <a href="' + esc(d.solflare) + '"' + tgt + ' style="color:var(--blue);font-weight:700;">Open in Solflare</a></div></div>';
-    }
-    return html + walletDeepLinkHtml();
+    var inner = '<div style="font-size:0.8rem;font-weight:800;color:var(--text);text-align:center;margin:6px 0 4px;">Open this app inside Phantom or Solflare to turn this into a trading link.</div>' + walletDeepLinkHtml();
+    if (compact) return '<div class="card" style="border-color:var(--green);padding:10px;margin-bottom:10px;">' + inner + '</div>';
+    return inner;
   }
 
   // Wallet apps inject their provider a moment after the page loads, so a
@@ -11990,7 +11930,7 @@
       subscribeAccountTrades(shownWallet());
       showToast('Activity refreshed — the live stream is watching your linked account. New buys and sells land in Your Live Buys & Sells below as they happen.');
     } else {
-      showToast('The stream is off — tap START at the top, then refresh. Your Pump.fun activity only shows while the stream is running.');
+      showToast('The live stream was removed in v34 — Pump.fun activity no longer streams into this app.');
     }
   }
 
@@ -12131,7 +12071,7 @@
     var box = document.getElementById('myAcctFeed');
     if (!box) return;
     if (!db.myActivity || !db.myActivity.length) {
-      box.innerHTML = '<div class="empty-note">Nothing yet — your buys and sells will show here while the stream is running.</div>';
+      box.innerHTML = '<div class="empty-note">Nothing here — this list filled from the live stream, which was removed in v34. Past entries stay on record.</div>';
       return;
     }
     box.innerHTML = db.myActivity.map(function (a) {
@@ -12142,246 +12082,21 @@
     }).join('');
   }
 
-  function executeRealBuy(mint, sym) {
-    executePumpTrade('buy', mint, sym, db.solSize);
-  }
-
-  function setRealTradeButtonsDisabled(disabled) {
-    ['confirmGoBtn', 'confirmCancelBtn'].forEach(function (id) {
-      var b = document.getElementById(id);
-      if (b) { b.disabled = disabled; b.style.opacity = disabled ? '0.55' : ''; }
-    });
-    document.querySelectorAll('[data-action="realbuy"], [data-action="realcopy"], [data-action="realsell25"], [data-action="realsell50"], [data-action="realsell100"], #ledgerBox .btn-halt').forEach(function (b) { b.disabled = disabled; });
-  }
-
+  // ---- Real trades REMOVED (v34) ----
+  // The PumpPortal trade builder is deleted, completing the pump.fun
+  // removal: there is no trade-builder call, no confirm modal, and no
+  // real-buy / real-sell / real-copy button or handler anywhere in the
+  // app. Nothing here can build, sign or send a real pump.fun trade.
+  // These two names stay only because older card code referenced them;
+  // they answer with the removal, in plain words.
   function executePumpTrade(action, mint, sym, amountVal) {
-    // Real trades are manual only — AUTO-COPY / MIRROR-SELL never call this.
-    // Provider-connected wallet only: a pasted read-only address cannot sign.
-    // Uses the exact provider that connected, so connect and sign always match.
-    if (realTradeBusy) {
-      showToast('A real trade is already being built and signed — wait for it to finish before starting another.');
-      return;
-    }
-    var provider = connectedProvider || getWalletProvider();
-    if (!provider || !connectedPubkey) {
-      var card = document.getElementById('noWalletCard');
-      if (card) {
-        card.style.display = 'block';
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      showToast('Real trades need a signing wallet: open this app inside the Phantom or Solflare app browser and tap Connect Wallet. A pasted address is read-only and cannot sign.');
-      return;
-    }
-    pendingRealBuy = { action: action, mint: mint, sym: sym, amountVal: amountVal };
-    var amountLabel = action === 'buy' ? (amountVal + ' SOL') : String(amountVal);
-    var sellPctLine = '';
-    if (action === 'sell') {
-      var pctTxt = String(amountVal);
-      sellPctLine = 'Sell amount: <strong>' + esc(pctTxt) + (pctTxt === '100%' ? ' (Sell All)' : ' of your tokens for this coin') + '</strong><br />' +
-        'Percentage: <strong>' + esc(pctTxt) + '</strong><br />';
-    }
-    document.getElementById('confirmTitle').innerText = action === 'buy' ? 'Confirm Real Buy' : ('Confirm Real Sell — ' + String(amountVal));
-    document.getElementById('confirmText').innerHTML =
-      'Action: <strong>' + esc(String(action).toUpperCase()) + '</strong><br />' +
-      'Token: <strong>$' + esc(sym) + '</strong><br />' +
-      'Mint: <span style="word-break:break-all;">' + esc(mint) + '</span><br />' +
-      sellPctLine +
-      'Amount: <strong>' + esc(amountLabel) + '</strong><br />' +
-      'Signing wallet: <strong>' + esc(shortAddr(connectedPubkey)) + '</strong>' + (isMainWallet(connectedPubkey) ? ' — <strong>your MAIN wallet</strong>' : '') + '<br />' +
-      'Slippage: <strong>' + db.slippage + '%</strong><br /><br />' +
-      'Nothing is built or signed yet. On confirm, the trade is built via PumpPortal and your wallet app asks you to sign it — you sign every real trade personally, and your keys never leave your wallet.';
-    // Fresh card, fresh message box — warnings land in confirmMsg, inside
-    // the card above the Confirm button, never behind it (SERIOUS-7 fix 3).
-    var msgBox0 = document.getElementById('confirmMsg');
-    if (msgBox0) { msgBox0.style.display = 'none'; msgBox0.innerHTML = ''; }
-    // RugCheck line on the confirmation card: shows the cached result when a
-    // lookup has already run for this mint; otherwise kicks one off (never
-    // blocking the card) and fills the line in when it lands.
-    var rugLineEl = document.getElementById('confirmRugLine');
-    if (rugLineEl) {
-      var rugEntry = rugCache.get(mint);
-      rugLineEl.innerText = rugLineText(rugEntry);
-      if (!rugEntry || rugEntry.status === 'failed') {
-        rugFetch(mint, function (e2) {
-          var el2 = document.getElementById('confirmRugLine');
-          if (el2 && pendingRealBuy && pendingRealBuy.mint === mint) el2.innerText = rugLineText(e2);
-        });
-      }
-    }
-    // Confirmation card clarity: REAL MONEY is always stated in plain words, and a
-    // real buy above 0.5 SOL gets an extra warning line calling out the amount.
-    var bigWarn = document.getElementById('confirmBigWarn');
-    if (action === 'buy' && Number(amountVal) > 0.5) {
-      document.getElementById('confirmBigText').innerText = 'This buy is ' + amountVal + ' SOL — above the 0.5 SOL line. Double-check the amount before you sign.';
-      bigWarn.style.display = 'block';
-    } else {
-      bigWarn.style.display = 'none';
-    }
-    var warn = document.getElementById('confirmMainWarn');
-    var ack = document.getElementById('confirmMainAck');
-    if (isMainWallet(connectedPubkey)) {
-      // Main-wallet guard: the acknowledgement is required fresh for EACH real
-      // trade — the box always starts unticked, even if a past trade was acked.
-      warn.style.display = 'block';
-      ack.checked = false;
-    } else {
-      warn.style.display = 'none';
-    }
-    document.getElementById('confirmModal').classList.add('show');
+    showToast('Real pump.fun trades were removed from this app in v34 — pump.fun is out entirely. Practice and paper trades still work.');
   }
-
-  function cancelRealBuy() {
-    pendingRealBuy = null;
-    document.getElementById('confirmModal').classList.remove('show');
-  }
-
-  // The confirmation card's own message box: guard warnings render INSIDE
-  // the card, directly above the Confirm button — never as a toast behind
-  // the dark overlay (SERIOUS-7 fix 3). Ticking the acknowledgement clears it.
-  function showConfirmMsg(html) {
-    var box = document.getElementById('confirmMsg');
-    if (!box) return;
-    box.innerHTML = html;
-    box.style.display = 'block';
-  }
-  function hideConfirmMsg() {
-    var box = document.getElementById('confirmMsg');
-    if (box) { box.style.display = 'none'; box.innerHTML = ''; }
-  }
-  function confirmAckChanged() {
-    var ack = document.getElementById('confirmMainAck');
-    if (ack && ack.checked) hideConfirmMsg();
-  }
-
-  function confirmRealBuy() {
-    if (!pendingRealBuy) return;
-    if (realTradeBusy) return; // already sending — re-taps are ignored
-    if (isMainWallet(connectedPubkey)) {
-      // Main-wallet guard, per trade: a tick on a previous trade never carries
-      // over — this trade needs its own acknowledgement, and it is consumed here.
-      var ack = document.getElementById('confirmMainAck');
-      if (!ack.checked) {
-        showConfirmMsg('<strong>MAIN-WALLET GUARD:</strong> tick the acknowledgement above to proceed with quezskiiii — this trade would sign from your main wallet.');
-        showToast('Main-wallet guard: tick the acknowledgement to proceed with quezskiiii.');
-        return;
-      }
-      ack.checked = false;
-      mainWalletAcked = false;
-    }
-    hideConfirmMsg();
-    var job = pendingRealBuy;
-    pendingRealBuy = null;
-    document.getElementById('confirmModal').classList.remove('show');
-    sendRealTrade(job.action, job.mint, job.sym, job.amountVal);
-  }
-
-  // Wait for the Solana web3 library, re-kicking its CDN loader — a trade tap
-  // should heal a failed library load instead of failing instantly on it.
-  function waitForSolanaLib(timeoutMs) {
-    if (typeof solanaWeb3 !== 'undefined') return Promise.resolve(true);
-    if (window.s7EnsureSolana) window.s7EnsureSolana();
-    var started = Date.now();
-    return new Promise(function (resolve) {
-      var iv = setInterval(function () {
-        if (typeof solanaWeb3 !== 'undefined') { clearInterval(iv); resolve(true); return; }
-        if (Date.now() - started > timeoutMs) { clearInterval(iv); resolve(false); }
-      }, 250);
-    });
-  }
-
-  function sendRealTrade(action, mint, sym, amountVal) {
-    // No double-send: while one real trade is being built/signed/sent, every
-    // other send is ignored and the trade buttons stay disabled, so the same
-    // trade can never be submitted twice.
-    if (realTradeBusy) return;
-    var provider = connectedProvider || getWalletProvider();
-    if (!provider || !connectedPubkey) {
-      showToast('Wallet disconnected — reconnect before signing a real trade.');
-      return;
-    }
-    realTradeBusy = true;
-    setRealTradeButtonsDisabled(true);
-    waitForSolanaLib(10000).then(function (ready) {
-      if (!ready) {
-        realTradeBusy = false;
-        setRealTradeButtonsDisabled(false);
-        showToast('The Solana library could not load from either CDN — check your connection, tap Refresh up top, then try the trade again.');
-        return;
-      }
-      sendRealTradeReady(action, mint, sym, amountVal, provider);
-    });
-  }
-
-  function sendRealTradeReady(action, mint, sym, amountVal, provider) {
-    showToast('Building real ' + action + ' for $' + sym + ' — your wallet will ask you to sign.');
-    // 25s timeout: the old bare fetch could hang forever on a network switch,
-    // leaving realTradeBusy stuck on and every real-trade button disabled
-    // until the page was reloaded.
-    fetchWithTimeout('https://pumpportal.fun/api/trade-local', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        publicKey: connectedPubkey,
-        action: action,
-        mint: mint,
-        denominatedInSol: action === 'buy' ? 'true' : 'false',
-        amount: amountVal,
-        slippage: db.slippage,
-        priorityFee: 0.0005,
-        pool: 'auto'
-      })
-    }, 25000).then(function (response) {
-      if (response.status !== 200) throw new Error('Could not build Pump.fun transaction. Check wallet SOL/token balance.');
-      return response.arrayBuffer();
-    }).then(function (data) {
-      var tx = solanaWeb3.VersionedTransaction.deserialize(new Uint8Array(data));
-      return provider.signTransaction(tx);
-    }).then(function (signed) {
-      // Submit through the RPC rotation, not just the one rate-limited
-      // mainnet endpoint: if the first node refuses, the next one sends.
-      var raw = signed.serialize();
-      var tryEndpoint = function (n) {
-        var conn = new solanaWeb3.Connection(RPC_ENDPOINTS[n % RPC_ENDPOINTS.length], 'confirmed');
-        return conn.sendRawTransaction(raw).catch(function (e) {
-          if (n + 1 < RPC_ENDPOINTS.length) return tryEndpoint(n + 1);
-          throw e;
-        });
-      };
-      return tryEndpoint(rpcGoodIndex);
-    }).then(function (sig) {
-      realTradeBusy = false;
-      setRealTradeButtonsDisabled(false);
-      showToast('Pump.fun ' + String(action).toUpperCase() + ' sent for $' + sym + ' — Tx ' + sig.slice(0, 12) + '… Waiting for on-chain confirmation (sent is not the same as filled).');
-      confirmRealTx(sig, action, sym);
-    }).catch(function (e) {
-      realTradeBusy = false;
-      setRealTradeButtonsDisabled(false);
-      if (e && e.name === 'AbortError') {
-        showToast('PumpPortal did not answer in 25 seconds — the trade was NOT sent. Check your connection and tap again.');
-      } else {
-        showToast('Transaction canceled or failed: ' + (e && e.message ? e.message : e));
-      }
-    });
-  }
-
-  // After a real trade is sent, check the chain a few times and say plainly
-  // whether it confirmed, failed, or is still unconfirmed. Read-only.
-  function confirmRealTx(sig, action, sym) {
-    var tries = 0;
-    var check = function () {
-      tries++;
-      rpcCall('getSignatureStatuses', [[sig], { searchTransactionHistory: true }], 8000).then(function (res) {
-        var st = res && res.value && res.value[0];
-        if (st && st.err) { showToast('Real ' + action + ' for $' + sym + ' FAILED on-chain — nothing was filled. Tx ' + sig.slice(0, 12) + '…'); return; }
-        if (st && (st.confirmationStatus === 'confirmed' || st.confirmationStatus === 'finalized')) { showToast('Real ' + action + ' for $' + sym + ' CONFIRMED on-chain. Tx ' + sig.slice(0, 12) + '…'); return; }
-        if (tries < 8) setTimeout(check, 2500);
-        else showToast('Real ' + action + ' for $' + sym + ' is still NOT confirmed after 20 seconds — check your wallet before trying again. Tx ' + sig.slice(0, 12) + '…');
-      }).catch(function () {
-        if (tries < 8) setTimeout(check, 2500);
-        else showToast("Couldn't check the chain for $" + sym + ' — open your wallet to see whether it filled. Tx ' + sig.slice(0, 12) + '…');
-      });
-    };
-    setTimeout(check, 2000);
+  function executeRealBuy(mint, sym) { executePumpTrade('buy', mint, sym, null); }
+  function cancelRealBuy() { pendingRealBuy = null; }
+  function confirmRealBuy() { pendingRealBuy = null; showToast('Real pump.fun trades were removed from this app in v34.'); }
+  function setRealTradeButtonsDisabled(disabled) {
+    document.querySelectorAll('[data-action="realbuy"], [data-action="realcopy"], [data-action="realsell25"], [data-action="realsell50"], [data-action="realsell100"], #ledgerBox .btn-halt').forEach(function (b) { b.disabled = disabled; });
   }
 
   // ---- Prediction Desk ----
@@ -12818,7 +12533,7 @@
     renderSleepBtn();
     renderWhales();
     var dBox = document.getElementById('discoveredBox');
-    if (dBox) dBox.innerHTML = '<div class="empty-note">Tap START up top — big buyers will show up here as coins stream in.</div>';
+    if (dBox) dBox.innerHTML = '<div class="empty-note">The live coin stream was removed in v34 — nothing new streams in here.</div>';
     btn.removeAttribute('data-armed');
     btn.innerText = 'Full Reset';
     showToast('Full reset done — fresh $7.00 practice money, no wallets followed, no linked account, default settings.');
@@ -12901,7 +12616,7 @@
   try {
     var wnCard = document.getElementById('whatsNewCard');
     if (wnCard) wnCard.open = false;
-    if (db.whatsNewSeen !== 'v32') { db.whatsNewSeen = 'v32'; persist(); }
+    if (db.whatsNewSeen !== 'v34') { db.whatsNewSeen = 'v34'; persist(); }
   } catch (eWN) {}
   // Restore the tab you were on last time (saved on every switch) — instant, no reload
   currentTabId = (db.uiTab && VALID_TABS.indexOf(db.uiTab) !== -1) ? db.uiTab : 'targets';
