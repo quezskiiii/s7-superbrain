@@ -542,7 +542,7 @@
       <div class="hero-logo-wrap"><img class="hero-logo" id="heroLogo" src="data:," alt="S7 Global logo" /><script>/* v14: logo stored once — reuse the home-screen icon's image */(function () { var l = document.querySelector('link[rel="apple-touch-icon"]'), i = document.getElementById('heroLogo'); if (l && i) i.src = l.getAttribute('href'); })();</script></div>
       <div class="hero-id">
         <div class="hero-brand">S7 Superbrain</div>
-        <span class="ver-stamp" id="verStamp">v34 · Nov 21, 2026 · GOAL 100%</span>
+        <span class="ver-stamp" id="verStamp">v35 · Nov 21, 2026 · GOAL 100%</span>
       </div>
       <div class="hero-num sb-only" id="kalshiBalBox" role="button" tabindex="0" aria-label="Kalshi balance — tap to update" onclick="openKalshiBalPanel()"><div class="kpi-lbl">Kalshi Balance</div><div class="kpi-num" id="kpiKalshi">$15.52</div></div>
     </div>
@@ -567,8 +567,8 @@
     </div>
     <details class="fold mini" id="autoRunLanesFold"><summary><span id="autoRunHonest">Runs only while the app is open — full details in Lanes</span></summary><div class="body-txt" style="margin:2px 0 6px;">Auto-Run: <strong>Runs only while this app is open on screen.</strong> A fully closed app — or a locked phone — runs nothing; it picks back up the moment you reopen it. Practice and paper only: real money still needs your tap and your wallet signature.</div><div id="autoRunLanes"></div>
       <div class="ar-extra">
-        <div class="start-caption" id="startCaption">Auto-Run runs the $10 Desk pipeline, the Targets reads and the Parlay Bot while the app is open.</div>
-        <div class="feed-status" id="feedStatus">Feed: <strong>removed</strong> — the PumpPortal live feed was taken out of this app (v34).</div>
+        <div class="start-caption" id="startCaption">Auto-Run runs the $10 Desk pipeline, the Targets reads and the God Mode Parlay Builder while the app is open.</div>
+        <div class="feed-status" id="feedStatus">Feed: <strong>removed</strong> — the live coin feed was taken out of this app (v34).</div>
       </div></details>
   </div>
 
@@ -610,10 +610,14 @@
   <!-- ===================== AREA 1: SUPERBRAIN — PUMP.FUN TERMINAL ===================== -->
   <div id="areaSB">
   <!-- WHAT'S NEW (front screen) — one tappable line, collapsed by default -->
-  <details class="fold front-card" id="whatsNewCard"><summary>What's new in v34 — tap to read</summary>
+  <details class="fold front-card" id="whatsNewCard"><summary>What's new in v35 — tap to read</summary>
     <ul class="front-list" style="margin-bottom:4px;">
+      <li><strong>The $1 Parlay Bot is now the God Mode Parlay Builder</strong> — in the Betting Desk. It builds parlays only from Kalshi 15-minute legs that clear the God Mode gate — nothing else gets on a ticket, and when nothing clears it, it says so plainly instead of forcing a build.</li>
+      <li><strong>The gate, in plain numbers</strong> — a leg qualifies only when ALL four hold: the model's calibrated confidence is 60% or more, the value against the live Kalshi ask is positive, the ask actually loaded (never the Coinbase fallback line), and the ask is 85¢ or less. Every leg in the current window shows its gate check in the builder — pass, or the one reason it failed, in numbers.</li>
+      <li><strong>Real joint math, honest payout</strong> — tickets are same-window combos of 2–4 passing legs, ranked by the correlation-adjusted joint chance (the same math as Kalshi Lab combos, never shown above 97%), with the independence figure shown alongside, labeled. The top ticket shows its legs, the combined price, what your stake pays — the stake field starts at $1, change it and the payout updates — and the expected killer: the weakest leg, named plainly. When the top ticket runs 3–4 legs, the best 2-leg ticket shows separately, labeled safer — fewer legs.</li>
+      <li><strong>Slip out, paper-logged, graded</strong> — Copy slip makes a clean text slip (legs, sides, prices, joint chance, payout) to paste into Kalshi or Gambly — the app places nothing. Lock ticket (paper) keeps the ticket on this phone, and it settles with the same window-close grading as predictions and combos: every leg right wins, any leg wrong loses, and a leg that finishes exactly on its line pushes the whole ticket only when every other leg won. The record shows in the builder and as GOD MODE PARLAYS on the Win Rate screen. The Auto-Run lane is renamed too — "Parlay Bot rebuild" is now "God Mode Parlay rebuild": while Auto-Run is on, the builder refreshes its top ticket as new windows open.</li>
       <li><strong>Round calls got their lock guard, and the last stale feed lines are cleaned up</strong> — a round call now never locks inside the final 3:00 of a window (the same no-entry line the decision engine already used): a setup that only completes after 3:00 left makes no call at all instead of a late, low-quality lock. When a call does lock and Kalshi has loaded, the round now records the real Kalshi ask for the called side at that moment — shown on the round as "Kalshi ask at lock NN¢", never estimated. The Auto-Run lane list no longer says the desk is waiting on the live feed, and the old Feed uptime objective is retired — the feed is gone, so nothing is scored against keeping it connected. And the "Open in Phantom" buttons are gone: they were built from the app's own address, so instead the wallet card now tells you plainly how to open the app inside Phantom or Solflare's own browser and connect there.</li>
-      <li><strong>The PumpPortal live feed is removed — for real this time</strong> — you ordered pump.fun out of the app earlier, and the screens went in v20, but the live feed underneath was still connecting. Now it's deleted from the app itself: no WebSocket to pumpportal.fun, no new-coin subscription, no token-trade subscriptions, and Connection Check no longer reaches out to that host. Your follow list was already staying on this phone (since v20) and still does.</li>
+      <li><strong>The live coin feed is removed — for real this time</strong> — you ordered pump.fun out of the app earlier, and the screens went in v20, but the live feed underneath was still connecting. Now it's deleted from the app itself: no WebSocket to the old feed host, no new-coin subscription, no token-trade subscriptions, and Connection Check no longer reaches out to that host. Your follow list was already staying on this phone (since v20) and still does.</li>
       <li><strong>What that changes on the $10 Desk</strong> — SCOUT no longer receives new pairs as they launch, and the Executor's automatic dip-buys — which keyed off the stream — stay off. Everything else about the desk is untouched: its records, balance, Decision Log and Morning Brief stay, candidates can still be added by hand, and the desk still re-checks them every 20 seconds while the app is open. The feed status line and the desk's SCOUT stage say "removed" plainly instead of pretending to reconnect.</li>
       <li><strong>Real pump.fun trades are removed too</strong> — the removal is complete now: the trade builder that used to assemble real buys and sells is deleted, along with every "Buy with Real SOL" / "Sell (Real)" button and the real-trade confirm card. Nothing in this app can build, sign or send a real pump.fun trade anymore — practice and paper trades are untouched. What remains is only links out: a coin or profile link opens pump.fun in your browser when you tap it, and nothing is sent anywhere. Targets, Best Decision, Signals, Kalshi Lab, EdgeBoard, the relay and every record on both sides work exactly as before.</li>
       <li><strong>The hit-rate fix pack is in</strong> — an inspection of the prediction model found real drag costing points, and all six fixes are now live. Straight line first: no fix makes a market read 100% — prices move and some windows are coin flips. What changed is the app no longer manufactures false confidence or grades itself unfairly.</li>
@@ -625,7 +629,7 @@
       <li><strong>The self-learner is slower</strong> — the round-call learner used to tighten a coin's rules after a single loss, which mostly made it call less, not read better. Now the same kind of miss has to happen twice in a row on a coin before any rule moves (a win in between resets the count). The first miss is still named in plain words and logged — it just doesn't move a threshold by itself.</li>
       <li><strong>Best Decision and Signals are Superbrain's own</strong> — they run off the Kalshi board and spot reads only, nothing to do with EdgeBoard. The Best Decision call, the BEST AVAILABLE strip and every signal and early warning are worked out purely from Superbrain's own reads — Coinbase spot and candles, the Kalshi 15-minute board strips and the Targets state. No EdgeBoard data, scan, gate value or timing feeds them, holds them up or labels them.</li>
       <li><strong>They run even if EdgeBoard was never opened</strong> — Best Decision and Signals render and update on Superbrain's own read cycle with EdgeBoard untouched, empty or never visited. You'll see it labeled right on the front screen: a line under the Best Decision card — "Superbrain's own read — not tied to EdgeBoard" — and the same note at the top of the Signals panel.</li>
-      <li><strong>The front screen no longer runs EdgeBoard</strong> — Auto-Run is Superbrain-only now: the master switch runs the $10 Desk pipeline, the Targets reads and the Parlay Bot rebuild, and that's it. The EdgeBoard scans lane is gone from the switch and its Lanes list — nothing on the front screen drives, gates or waits on EdgeBoard anymore.</li>
+      <li><strong>The front screen no longer runs EdgeBoard</strong> — Auto-Run is Superbrain-only now: the master switch runs the $10 Desk pipeline, the Targets reads and the God Mode Parlay rebuild, and that's it. The EdgeBoard scans lane is gone from the switch and its Lanes list — nothing on the front screen drives, gates or waits on EdgeBoard anymore.</li>
       <li><strong>EdgeBoard scans on its own, inside its own area</strong> — while EdgeBoard is open it auto-scans on its own cadence (the 30s / 60s / 120s you set in Rules &amp; Config), no matter what the front screen's Auto-Run switch says. It has its own on/off now — "Auto-scan while EdgeBoard is open" in Rules &amp; Config, on by default. Turn it off and the automatic scans stop; "Scan lines now" still works by hand any time.</li>
       <li><strong>The EdgeBoard door stays</strong> — the Betting row and the area switch on the front screen are just ways in, and they work exactly as before. Nothing was deleted: every EdgeBoard record (paper bets, parlays, alerts, learning) and every Superbrain record is untouched, and the gate, the Lab, the relay and the $10 Desk all behave exactly as they did.</li>
       <li><strong>Kalshi Lab — the app now learns Kalshi's habits</strong> — a new screen under 15-Min Trading. The app can't read Kalshi's private code, so it learns their patterns from real windows it watches itself: where Kalshi sets its strike compared with the exchange open, and how Kalshi prices a contract compared with what the app's own model thinks it's worth at the same distance and time. Every learned number shows how many windows it came from, and under 30 samples it says "still learning — small sample" right on the figure.</li>
@@ -901,6 +905,16 @@
 
     <div class="card" id="pdLocked">
       <div class="empty-note">Ticket slots stay locked until all 4 intake answers above are saved.</div>
+    </div>
+
+    <div class="sec-title">God Mode Parlay Builder — Kalshi 15-Min Legs Only</div>
+    <div class="card" id="gmCard" style="border-color:var(--amber);">
+      <div class="card-top"><span class="sym">God Mode Parlay Builder</span><span class="tag tag-smart">PAPER · GATE-PASSERS ONLY</span></div>
+      <div class="body-txt">The $1 Parlay Bot, rebuilt to the God Mode standard. A Kalshi 15-minute leg gets on a ticket ONLY when all four hold: the model's <strong>calibrated confidence is 60%+</strong>, the value vs the <strong>live Kalshi ask is positive</strong>, the ask <strong>actually loaded</strong> (never the Coinbase fallback line), and the ask is <strong>85¢ or less</strong>. Tickets are same-window combos of 2–4 passing legs, ranked by the correlation-adjusted joint chance — the same joint math as Kalshi Lab combos. <strong>The app places nothing</strong> — copy the slip and place the legs yourself in Kalshi or Gambly. Lock a ticket and it is kept as a paper record and graded when the window settles.</div>
+      <label>Stake ($) — the payout math updates as you type</label>
+      <input type="number" id="gmStake" min="0" step="0.5" value="1" inputmode="decimal" oninput="gmStakeInput(this.value)" style="max-width:130px;" />
+      <div id="gmBody"><div class="empty-note">Reading this window's legs…</div></div>
+      <div id="gmRecord"></div>
     </div>
 
     <div id="pdTickets" style="display:none;">
@@ -2139,9 +2153,10 @@
       normalizeTradeWatch(merged);
       normalizeEdgeboard(merged);
       normalizeKalshiLab(merged);
+      normalizeGodParlays(merged);
       return merged;
     } catch (e) {
-      return normalizeKalshiLab(normalizePerps(normalizeDesk(JSON.parse(JSON.stringify(DEFAULT_DB)))));
+      return normalizeGodParlays(normalizeKalshiLab(normalizePerps(normalizeDesk(JSON.parse(JSON.stringify(DEFAULT_DB))))));
     }
   }
 
@@ -2781,7 +2796,9 @@
       // fetch, and open combos due this window settle in this same pass.
       var pendS = klSamples().filter(function (s) { return s && s.pair === a.pair && !s.settledResult && now >= s.windowKey + 900000 + 20000; });
       var pendC = klLocked().some(function (cb) { return cb && cb.status === 'open' && now >= cb.windowKey + 900000 + 20000; });
-      if (!pend.length && !pendP.length && !pendS.length && !pendC) return;
+      // v35: open God Mode parlays due this window settle in this same pass.
+      var pendGM = gmList().some(function (t) { return t && t.status === 'open' && now >= t.windowKey + 900000 + 20000; });
+      if (!pend.length && !pendP.length && !pendS.length && !pendC && !pendGM) return;
       if (t15SettleAt[a.pair] && now - t15SettleAt[a.pair] < 15000) return;
       t15SettleAt[a.pair] = now;
       fetchWithTimeout('https://api.exchange.coinbase.com/products/' + a.pair + '/candles?granularity=900', {}, 8000).then(function (r) {
@@ -2831,6 +2848,9 @@
         });
         (arr || []).forEach(function (x) { if (x && Number(x[4]) > 0) { if (klTrySettleCombos(a.pair, x[0] * 1000, Number(x[4]))) changed = true; } });
         if (klTrySettleCombos(null, 0, 0)) changed = true;
+        // v35: God Mode parlays settle from the same closes, right beside combos.
+        (arr || []).forEach(function (x) { if (x && Number(x[4]) > 0) { if (gmTrySettleParlays(a.pair, x[0] * 1000, Number(x[4]))) changed = true; } });
+        if (gmTrySettleParlays(null, 0, 0)) changed = true;
         if (changed) persist();
       }).catch(function () {});
     });
@@ -3304,6 +3324,10 @@
     // COMBOS (v30) — paper market combos from Kalshi Lab, graded from the
     // same store (db.combos) with the same totals the Lab screen shows.
     html += wrSection('Combos', klComboTotalsInner());
+    // GOD MODE PARLAYS (v35) — the Betting Desk builder's paper tickets,
+    // graded in the same store (db.godParlays) with the same totals the
+    // builder shows. Pushes are noted, never folded into W or L.
+    html += wrSection('GOD MODE PARLAYS', gmTotalsInner());
     // YOUR CALLS — mirrored trades (his Trade Watch trades, booked on paper)
     var mir = (db.t15Rounds || []).filter(function (r) { return r && r.kind === 'mirror' && r.status === 'settled' && (r.result === 'WIN' || r.result === 'LOSS'); });
     var mw = mir.filter(function (r) { return r.result === 'WIN'; }).length;
@@ -4491,6 +4515,296 @@
     merged.combos = cb;
     return merged;
   }
+  // =====================================================================
+  // GOD MODE PARLAY BUILDER (v35) — the $1 Parlay Bot rebuilt to the God
+  // Mode standard, living in the Betting Desk. Kalshi 15-minute legs
+  // ONLY, from the SAME prediction/combo machinery as Kalshi Lab:
+  // candidate legs come from the locked prediction for the window (else
+  // the live board read — the same sources klCurrentLegs reads), and the
+  // joint math is klIndep / klAdjusted / klCombinedAsk — no second math
+  // path. The gate is stricter than the Lab's 60% combo bar: a leg
+  // qualifies ONLY when ALL four hold — calibrated model confidence
+  // >= 60% (predCompute's calibrated figure, never the raw read),
+  // positive EV vs the LIVE Kalshi ask, the ask actually loaded (the
+  // live strip's ask for the leg's side — never the Coinbase fallback),
+  // and ask <= 85c. Tickets are same-window combos of 2–4 qualifying
+  // legs ranked by the correlation-adjusted joint chance (klAdjusted,
+  // clamped <= 97%; the independence figure is shown too, labeled).
+  // Paper only: "Lock ticket (paper)" stores the ticket merge-only in
+  // db.godParlays (last 100) and it settles in the same Coinbase-close
+  // pass as predictions/combos — every leg right = WIN, any leg wrong =
+  // LOSS, and a leg exactly tied pushes: the ticket is a PUSH only when
+  // every other leg won. The app places nothing: the Copy button makes
+  // a clean text slip to paste into Kalshi/Gambly yourself.
+  // =====================================================================
+  var GM_MIN_CONF = 60;
+  var GM_MAX_ASK = 85;
+  var gmStake = 1;
+  var gmCache = { winStart: 0, top: null, two: null };
+  var gmSig = '';
+  function normalizeGodParlays(merged) {
+    if (!Array.isArray(merged.godParlays)) merged.godParlays = [];
+    merged.godParlays = merged.godParlays.filter(function (t) { return t && typeof t === 'object' && Array.isArray(t.legs) && t.legs.length >= 2 && typeof t.windowKey === 'number'; });
+    if (merged.godParlays.length > 100) merged.godParlays.length = 100;
+    return merged;
+  }
+  function gmList() { if (!Array.isArray(db.godParlays)) normalizeGodParlays(db); return db.godParlays; }
+  // Candidate legs for the current window — EVERY coin with a model read
+  // (not just 60%+), so the gate can also name the closest leg that
+  // failed. The ask is the LIVE Kalshi ask for the leg's side from the
+  // board cache (kalPx exists only when the strip is live; predAsk is
+  // the same live ask when the live read is the leg's source). Without a
+  // live strip the leg carries no ask and cannot pass — the Coinbase
+  // fallback line is never an ask.
+  function gmLegCandidates() {
+    var now = Date.now();
+    var winStart = Math.floor(now / 900000) * 900000;
+    var legs = [];
+    T15_ASSETS.forEach(function (a) {
+      var side = null, conf = null, confF = null, line = null;
+      var locked = predFindLock(a.pair, winStart);
+      var c = bdCache[a.pair];
+      if (locked) { side = locked.side; conf = locked.conf; confF = (typeof locked.conf === 'number' ? locked.conf / 100 : null); line = locked.line; }
+      else if (c && c.pred) { side = c.pred.side; conf = c.pred.confPct; confF = c.pred.confF; line = c.line; }
+      if (!side || typeof conf !== 'number') return;
+      var ask = null;
+      if (c && c.kalLive) {
+        var rawAsk = null;
+        if (c.kalPx) rawAsk = String(side).toUpperCase() === 'UP' ? c.kalPx.yesAsk : c.kalPx.noAsk;
+        else if (c.pred && String(c.pred.side).toUpperCase() === String(side).toUpperCase()) rawAsk = c.predAsk;
+        if (typeof rawAsk === 'number' && isFinite(rawAsk)) ask = rawAsk;
+      }
+      legs.push({
+        coin: a.pair.split('-')[0], pair: a.pair,
+        side: String(side).toLowerCase() === 'up' ? 'up' : 'down',
+        confidence: conf, askCents: ask,
+        line: (typeof line === 'number' ? line : null),
+        evCents: (ask != null && typeof confF === 'number') ? predEvRound(predEvCents(confF, ask)) : null
+      });
+    });
+    return { winStart: winStart, legs: legs };
+  }
+  // THE GATE — one leg, four conditions, and the ONE reason it failed
+  // (in numbers) when it does. Pure over the leg's conf / ask / EV.
+  function gmGateCheck(leg) {
+    if (!(typeof leg.confidence === 'number' && leg.confidence >= GM_MIN_CONF)) return { pass: false, reason: 'model confidence ' + leg.confidence + '% — the gate needs 60% or more' };
+    if (typeof leg.askCents !== 'number') return { pass: false, reason: 'no live Kalshi ask loaded for this side — the gate never uses the Coinbase fallback line as a price' };
+    if (leg.askCents > GM_MAX_ASK) return { pass: false, reason: 'Kalshi ask ' + leg.askCents + '¢ — over the 85¢ cap' };
+    if (!(typeof leg.evCents === 'number' && leg.evCents > 0)) return { pass: false, reason: 'EV ' + (typeof leg.evCents === 'number' ? predEvTxt(leg.evCents) : 'unknown') + ' per contract vs the ' + leg.askCents + '¢ ask — the gate needs positive EV' };
+    return { pass: true, reason: null };
+  }
+  function gmCombosOf(arr, k) {
+    var out = [];
+    (function go(start, pick) {
+      if (pick.length === k) { out.push(pick.slice()); return; }
+      for (var i = start; i < arr.length; i++) { pick.push(arr[i]); go(i + 1, pick); pick.pop(); }
+    })(0, []);
+    return out;
+  }
+  function gmTicketKey(t) { return t.legs.map(function (l) { return l.pair + l.side; }).sort().join('|'); }
+  function gmTicket(legs) {
+    var indep = klIndep(legs);
+    var adj = klAdjusted(legs, indep);
+    return { legs: legs.slice(), jointIndep: indep, jointAdj: adj, combinedAskCents: klCombinedAsk(legs), rank: (typeof adj === 'number' ? adj : indep) };
+  }
+  // Evaluate the current window: gate every candidate, build every 2–4
+  // leg ticket from the passers, rank by adjusted joint chance.
+  function gmEvaluate() {
+    var cur = gmLegCandidates();
+    var evald = cur.legs.map(function (l) { var g = gmGateCheck(l); return { leg: l, pass: g.pass, reason: g.reason }; });
+    var passers = evald.filter(function (e) { return e.pass; }).map(function (e) { return e.leg; });
+    var tickets = [];
+    if (passers.length >= 2) {
+      for (var k = 2; k <= Math.min(4, passers.length); k++) {
+        gmCombosOf(passers, k).forEach(function (ls) { tickets.push(gmTicket(ls)); });
+      }
+      tickets.sort(function (x, y) {
+        if (y.rank !== x.rank) return y.rank - x.rank;
+        if (y.jointIndep !== x.jointIndep) return y.jointIndep - x.jointIndep;
+        return x.legs.length - y.legs.length;
+      });
+    }
+    var top = tickets.length ? tickets[0] : null;
+    var two = null;
+    for (var i = 0; i < tickets.length; i++) { if (tickets[i].legs.length === 2) { two = tickets[i]; break; } }
+    if (top && two && gmTicketKey(top) === gmTicketKey(two)) two = null;
+    var failed = evald.filter(function (e) { return !e.pass; });
+    failed.sort(function (x, y) { return y.leg.confidence - x.leg.confidence; });
+    return { winStart: cur.winStart, evald: evald, passers: passers, tickets: tickets, top: top, two: two, closest: failed.length ? failed[0] : null };
+  }
+  // Payout for a stake at the ticket's combined price — exact against
+  // the displayed combined price: payout = stake / (combinedCents / 100).
+  function gmPayout(stake, combinedAskCents) {
+    if (!(typeof combinedAskCents === 'number' && combinedAskCents > 0)) return null;
+    return stake * 100 / combinedAskCents;
+  }
+  function gmKiller(t) {
+    var k = null;
+    t.legs.forEach(function (l) { if (!k || l.confidence < k.confidence) k = l; });
+    return k;
+  }
+  function gmStakeVal() {
+    var v = Number(gmStake);
+    if (!(v > 0) || !isFinite(v)) v = 1;
+    return Math.round(v * 100) / 100;
+  }
+  function gmStakeInput(v) {
+    var n = parseFloat(v);
+    gmStake = (isFinite(n) && n > 0) ? n : 1;
+    gmSig = '';
+    try { gmRender(); } catch (eGS) {}
+  }
+  function gmLockTicket(which) {
+    var t = which === 'two' ? gmCache.two : gmCache.top;
+    if (!t) { showToast('That ticket is stale — the builder has moved on to a new window.'); return; }
+    var list = gmList();
+    list.unshift({
+      id: 'god-' + Date.now() + '-' + Math.floor(Math.random() * 100000),
+      lockedAt: Date.now(), windowKey: gmCache.winStart,
+      legs: t.legs.map(function (l) { return { coin: l.coin, pair: l.pair, side: l.side, confidence: l.confidence, askCents: l.askCents, line: l.line }; }),
+      jointIndep: t.jointIndep, jointAdj: t.jointAdj, combinedAskCents: t.combinedAskCents,
+      stake: gmStakeVal(), status: 'open', settledAt: 0, legActual: {}
+    });
+    if (list.length > 100) list.length = 100;
+    persist();
+    gmSig = '';
+    try { gmRender(); } catch (eGL) {}
+    showToast('God Mode ticket locked (paper) — it grades itself when the window settles. You place legs yourself in Kalshi if you play them.');
+  }
+  function gmSlipText(t, stake) {
+    var lines = ['GOD MODE PARLAY — S7 Superbrain (paper build — place it yourself)'];
+    t.legs.forEach(function (l) { lines.push(l.coin + ' ' + String(l.side).toUpperCase() + ' — Kalshi ask ' + l.askCents + '¢ · model ~' + l.confidence + '%'); });
+    var joint = (typeof t.jointAdj === 'number' ? t.jointAdj : t.jointIndep);
+    lines.push('Joint chance ~' + joint + '% (correlation-adjusted) · ~' + t.jointIndep + '% if the legs were independent');
+    var pay = gmPayout(stake, t.combinedAskCents);
+    lines.push('Combined price ~' + t.combinedAskCents + '¢ · $' + stake.toFixed(2) + ' pays $' + (pay != null ? pay.toFixed(2) : '—'));
+    var w0 = new Date(gmCache.winStart), w1 = new Date(gmCache.winStart + 900000);
+    lines.push('Window ' + w0.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + ' – ' + w1.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + ' · Kalshi 15-min markets');
+    return lines.join('\n');
+  }
+  function gmCopySlip(which) {
+    var t = which === 'two' ? gmCache.two : gmCache.top;
+    if (!t) { showToast('That ticket is stale — the builder has moved on to a new window.'); return; }
+    var text = gmSlipText(t, gmStakeVal());
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { showToast('God Mode slip copied — paste it into Kalshi or Gambly yourself. The app placed nothing.'); }).catch(function () { copyToastResult(fallbackCopy(text), 'God Mode slip copied.'); });
+    } else {
+      copyToastResult(fallbackCopy(text), 'God Mode slip copied.');
+    }
+  }
+  // Settlement — runs inside the SAME Coinbase-close pass as predictions
+  // and combos (t15SettlePending calls this right beside
+  // klTrySettleCombos). A leg's actual side comes from that coin's
+  // settled prediction for the window (klLegActualFromPreds), else from
+  // the candle close vs the line stored on the leg at lock time. Any leg
+  // wrong = LOSS; a leg exactly tied pushes, and the ticket grades PUSH
+  // only when every other leg won.
+  function gmTrySettleParlays(closePair, closeWin, closeVal) {
+    var list = gmList();
+    var changed = false;
+    var now = Date.now();
+    list.forEach(function (t) {
+      if (!t || t.status !== 'open') return;
+      if (now < t.windowKey + 900000 + 20000) return;
+      if (closePair && t.windowKey === closeWin && typeof closeVal === 'number' && isFinite(closeVal)) {
+        t.legs.forEach(function (l) {
+          if (l.pair === closePair && typeof l.line === 'number') {
+            if (!t.legActual || typeof t.legActual !== 'object') t.legActual = {};
+            var act0 = closeVal > l.line ? 'UP' : (closeVal < l.line ? 'DOWN' : 'TIE');
+            if (t.legActual[l.pair] !== act0) { t.legActual[l.pair] = act0; changed = true; }
+          }
+        });
+      }
+      var all = true, anyLoss = false, anyPush = false;
+      t.legs.forEach(function (l) {
+        var act = klLegActualFromPreds(l, t.windowKey) || (t.legActual ? t.legActual[l.pair] : null);
+        if (!act) { all = false; return; }
+        if (act === 'TIE') anyPush = true;
+        else if (String(act).toLowerCase() !== l.side) anyLoss = true;
+      });
+      if (all) { t.status = anyLoss ? 'lost' : (anyPush ? 'push' : 'won'); t.settledAt = Date.now(); changed = true; }
+    });
+    return changed;
+  }
+  function gmTotals() {
+    var list = gmList();
+    var settled = list.filter(function (t) { return t.status === 'won' || t.status === 'lost' || t.status === 'push'; });
+    var w = settled.filter(function (t) { return t.status === 'won'; }).length;
+    var pu = settled.filter(function (t) { return t.status === 'push'; }).length;
+    return { total: list.length, open: list.length - settled.length, settled: settled.length, w: w, l: settled.length - w - pu, push: pu };
+  }
+  // The totals block shared by the builder's record and Win Rate →
+  // GOD MODE PARLAYS, so both screens show the same numbers.
+  function gmTotalsInner() {
+    var t = gmTotals();
+    if (!t.total) return '<div class="empty-note">No God Mode parlays locked yet — build one in the Betting Desk.</div>';
+    var h = wrLine('God Mode record', '<strong>' + t.w + 'W – ' + t.l + 'L</strong>' + (t.push ? ' · ' + t.push + ' push' + (t.push === 1 ? '' : 'es') : '') + (t.open ? ' · ' + t.open + ' still open' : ''));
+    if (t.settled < 30) h += '<div class="body-txt" style="margin-top:4px;">Small sample — under 30 settled God Mode parlays, so treat this record as an early read, not proof.</div>';
+    return h;
+  }
+  function gmTicketHtml(t, label, which) {
+    var stake = gmStakeVal();
+    var pay = gmPayout(stake, t.combinedAskCents);
+    var killer = gmKiller(t);
+    var h = '<div class="kl-cand">';
+    h += '<div class="body-txt" style="margin-bottom:4px;"><strong>' + label + '</strong></div>';
+    t.legs.forEach(function (l) {
+      h += '<div class="kl-leg"><span><strong>' + l.coin + '</strong> ' + String(l.side).toUpperCase() + ' · confidence ~' + l.confidence + '%</span><span>ask ' + l.askCents + '¢</span></div>';
+    });
+    h += klChanceLines(t.jointIndep, t.jointAdj);
+    h += '<div class="body-txt">Combined price ~' + t.combinedAskCents + '¢ · <strong>$' + stake.toFixed(2) + ' pays $' + (pay != null ? pay.toFixed(2) : '—') + '</strong></div>';
+    if (killer) h += '<div class="body-txt" style="margin-top:4px;">Expected killer: <strong>' + killer.coin + ' ' + String(killer.side).toUpperCase() + '</strong> — the weakest leg at ~' + killer.confidence + '%; if this ticket loses, it most likely loses there.</div>';
+    h += '<div class="row-btns" style="margin-top:6px;"><button type="button" class="btn-blue sm-btn" onclick="gmCopySlip(\'' + which + '\')">Copy slip</button><button type="button" class="btn-toggle sm-btn" onclick="gmLockTicket(\'' + which + '\')">Lock ticket (paper)</button></div>';
+    h += '</div>';
+    return h;
+  }
+  function gmRecordHtml(t) {
+    var when = t.lockedAt ? new Date(t.lockedAt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    var stat = t.status === 'won' ? '<span class="tag tag-win">WON</span>' : (t.status === 'lost' ? '<span class="tag tag-loss">LOST</span>' : (t.status === 'push' ? '<span class="tag tag-no">PUSH</span>' : '<span class="tag tag-no">OPEN</span>'));
+    var h = '<div class="kl-rec"><div class="body-txt"><strong>' + esc(klLegsTxt(t.legs)) + '</strong> ' + stat + (when ? ' <span style="color:var(--muted);">· locked ' + esc(when) + '</span>' : '') + '</div>';
+    h += klChanceLines(t.jointIndep, t.jointAdj);
+    h += '<div class="body-txt">' + (t.combinedAskCents != null ? 'Combined price at lock ~' + t.combinedAskCents + '¢ · stake $' + Number(t.stake || 1).toFixed(2) : 'price unknown') + '</div></div>';
+    return h;
+  }
+  function gmRender() {
+    var body = document.getElementById('gmBody');
+    if (!body) return;
+    var ev = gmEvaluate();
+    gmCache = { winStart: ev.winStart, top: ev.top, two: ev.two };
+    var stake = gmStakeVal();
+    var sig = ev.winStart + '|' + stake + '|' + ev.evald.map(function (e) { return e.leg.pair + e.leg.side + e.leg.confidence + '/' + e.leg.askCents + '/' + e.leg.evCents + (e.pass ? 'P' : 'F'); }).join(',') + '|' + gmList().map(function (t) { return t.id + t.status; }).join(',');
+    if (sig === gmSig) return;
+    gmSig = sig;
+    var h = '';
+    if (ev.evald.length) {
+      h += '<div class="sec-title" style="margin-top:10px;">Gate check — this window</div>';
+      ev.evald.forEach(function (e) {
+        h += '<div class="body-txt">' + (e.pass ? '<strong style="color:var(--green);">PASS</strong>' : '<strong style="color:var(--red);">OUT</strong>') + ' · <strong>' + e.leg.coin + ' ' + String(e.leg.side).toUpperCase() + '</strong> ~' + e.leg.confidence + '%' + (typeof e.leg.askCents === 'number' ? ' · ask ' + e.leg.askCents + '¢' : ' · no ask loaded') + (e.pass ? '' : ' — ' + esc(e.reason)) + '</div>';
+      });
+    }
+    if (ev.top) {
+      h += gmTicketHtml(ev.top, 'THE GOD MODE TICKET', 'top');
+      if (ev.two) h += gmTicketHtml(ev.two, 'SAFER — FEWER LEGS (best 2-leg ticket)', 'two');
+    } else {
+      h += '<div class="kl-cand"><div class="body-txt"><strong>No God Mode parlay right now — the gate is strict on purpose.</strong></div>';
+      if (ev.closest) h += '<div class="body-txt" style="margin-top:4px;">Closest to forming: <strong>' + ev.closest.leg.coin + ' ' + String(ev.closest.leg.side).toUpperCase() + '</strong> — ' + esc(ev.closest.reason) + '. A parlay needs at least 2 gate-passing legs in the same window.</div>';
+      else if (ev.passers.length === 1) h += '<div class="body-txt" style="margin-top:4px;">One leg clears the gate (' + ev.passers[0].coin + ' ' + String(ev.passers[0].side).toUpperCase() + ') — a parlay needs at least 2 in the same window.</div>';
+      else h += '<div class="body-txt" style="margin-top:4px;">No coin has a model read yet this window — tickets form as the window\u2019s predictions come in.</div>';
+      h += '</div>';
+    }
+    body.innerHTML = h;
+    var rec = document.getElementById('gmRecord');
+    if (rec) {
+      var tt = gmTotals();
+      var rh = '<div class="sec-title" style="margin-top:10px;">God Mode record (paper)</div>';
+      if (!tt.total) rh += '<div class="empty-note">No God Mode tickets locked yet — lock one above and it grades itself when its window settles.</div>';
+      else {
+        rh += '<div class="body-txt">Record: <strong>' + tt.w + 'W – ' + tt.l + 'L</strong>' + (tt.push ? ' · ' + tt.push + ' push' + (tt.push === 1 ? '' : 'es') : '') + (tt.open ? ' · ' + tt.open + ' open' : '') + '</div>';
+        gmList().slice(0, 5).forEach(function (t) { rh += gmRecordHtml(t); });
+      }
+      rec.innerHTML = rh;
+    }
+  }
   function klSamples() { if (!db.kalshiModel || !Array.isArray(db.kalshiModel.samples)) normalizeKalshiLab(db); return db.kalshiModel.samples; }
   function klLocked() { if (!db.combos || !Array.isArray(db.combos.locked)) normalizeKalshiLab(db); return db.combos.locked; }
   function klSigned(v, dec) { return (v < 0 ? '-' : '+') + t15Fmt(Math.abs(v), dec); }
@@ -4824,6 +5138,7 @@
   function bdUpdateAll() {
     T15_ASSETS.forEach(function (a) { try { bdCache[a.pair] = bdComputeFor(a); } catch (eBD) {} });
     try { predLockTick(); } catch (ePL) {}
+    try { gmRender(); } catch (eGM) {}
     try { bdRenderFront(); } catch (eBF) {}
     try { mbRender(); } catch (eMB) {}
     try { baRender(); } catch (eBA) {}
@@ -6001,14 +6316,14 @@
     // 1) Device internet (browser's own report — a hint, not proof)
     lines.push(diagLine('Phone internet', navigator.onLine ? 'ok' : 'bad', navigator.onLine ? 'Browser says you are online' : 'Browser says you are OFFLINE — check signal / Wi-Fi'));
     // 2) Live feed socket state
-    lines.push(diagLine('Live coin feed', 'warn', 'Removed — the PumpPortal feed was taken out of this app in v34; nothing connects to it'));
+    lines.push(diagLine('Live coin feed', 'warn', 'Removed — the live feed was taken out of this app in v34; nothing connects to it'));
     // 3) Solana network via the same RPC rotation the balance uses
     var rpcDone = rpcCall('getHealth', [], 8000).then(function () {
       lines.push(diagLine('Solana network (balance)', 'ok', 'Reached via ' + RPC_ENDPOINTS[rpcGoodIndex].replace('https://', '')));
     }).catch(function () {
       lines.push(diagLine('Solana network (balance & trade sending)', 'bad', 'None of the ' + RPC_ENDPOINTS.length + ' Solana nodes answered — the wallet balance read will fail until one does'));
     });
-    // 4) (v34: the PumpPortal host check is gone with the feed — nothing in this check reaches out to it.)
+    // 4) (v34: the old feed-host check is gone with the feed — nothing in this check reaches out to it.)
     // 5) Signing library
     if (typeof solanaWeb3 !== 'undefined') lines.push(diagLine('Trade-signing library', 'ok', 'Loaded and ready'));
     else { if (window.s7EnsureSolana) window.s7EnsureSolana(); lines.push(diagLine('Trade-signing library', 'warn', 'Still loading — the app is re-trying both CDNs now; test again in a few seconds')); }
@@ -6197,7 +6512,7 @@
     html += '<div class="setup-line">Declutter (Claude v11): <span class="setup-on">ON</span> — the menu is grouped (15-Min Trading &bull; Desks &bull; Settings &amp; safety), and long reference cards fold away until you tap Show.</div>';
     html += '<div class="setup-line">EdgeBoard section (Claude v11): <span class="setup-on">ON</span> — its own area with its own screens (Edges, Lines, Alerts, Parlay, Paper Bets, Rules &amp; Learning) and its own saved data, kept separate from Superbrain: a Superbrain reset or an older backup never touches it. Paper only, $1 bankroll, gate fixed at EV +5% and true chance 55% — the gate cannot be loosened in its settings.</div>';
     html += '<div class="setup-line">Parlay Bot (Claude v12): <span class="setup-on">ON</span> — EdgeBoard &rarr; Parlay Bot scans every league and builds one $1 paper slip from gate-passing picks only, graded A+ / A / B / C, best grade first, until $1 pays $1,000+. It never pads a slip, prints the true chance on it, re-prices on every scan, and its tracked slips settle on their own $1 — separate from the EdgeBoard paper bankroll.</div>';
-    html += '<div class="setup-line">Auto-Run master switch (Claude v13): ' + (typeof autoRun !== 'undefined' && autoRun ? '<span class="setup-on">RUNNING</span>' : '<span class="setup-off">PAUSED</span>') + ' — the front-screen switch runs the Superbrain lanes only while the app is open: $10 Desk pipeline scans every 20s, Targets reads every 4s, Parlay Bot rebuilds every 15 min. EdgeBoard is NOT run by this switch (v31) — it scans on its own schedule inside its own area, governed by its own toggle in Rules &amp; Config. STOP pauses the Superbrain lanes for the session; Self-Run decides whether Auto-Run starts RUNNING on open. A closed app or locked phone runs nothing.</div>';
+    html += '<div class="setup-line">Auto-Run master switch (Claude v13): ' + (typeof autoRun !== 'undefined' && autoRun ? '<span class="setup-on">RUNNING</span>' : '<span class="setup-off">PAUSED</span>') + ' — the front-screen switch runs the Superbrain lanes only while the app is open: $10 Desk pipeline scans every 20s, Targets reads every 4s, God Mode Parlay rebuild refreshes the builder\u2019s top ticket as new windows open. EdgeBoard is NOT run by this switch (v31) — it scans on its own schedule inside its own area, governed by its own toggle in Rules &amp; Config. STOP pauses the Superbrain lanes for the session; Self-Run decides whether Auto-Run starts RUNNING on open. A closed app or locked phone runs nothing.</div>';
     html += '<div class="setup-line">Learning report (Claude v13): <span class="setup-on">ON</span> — Settings &amp; Safety &rarr; Objectives shows every lane&rsquo;s record, its misses in plain words, and each learned change with its reason and an Undo. EdgeBoard keeps its own learning under Rules &amp; Learning. Gates, stops, size caps and the 45-minute hold are locked — learning never touches them.</div>';
     html += '<div class="setup-line">Fix batch (Claude v14): <span class="setup-on">ON</span> — live-feed coin and wallet addresses are checked the moment they arrive; anything that is not a clean Solana address (32–44 base58 characters) is dropped before it can reach a button, a link or a saved record, and DexScreener Trending rows get the same check. The trade-building library (web3.js 1.98.4) loads only when its fingerprint matches — every download path carries the same pinned file and the same check, with no unverified fallback. What&rsquo;s new folds to one line after its first view, a small Superbrain / EdgeBoard switch stays pinned top-right while you scroll, and the hero logo reuses the one stored logo image. No trading rules changed.</div>';
     html += '<div class="setup-line">Slip Parser (Claude v15): <span class="setup-on">ON</span> — EdgeBoard &rarr; Slip Parser reads pasted pick text on this phone with plain text rules (no AI service, no key, no screenshots), shows the legs for you to confirm or fix, and only then checks each leg against EdgeBoard&rsquo;s verified lines; a post&rsquo;s unit size and edge % are ignored. Verified legs can be tracked as one paper slip in Paper Bets — only a single moneyline that passes the gate gets a paper stake (quarter-Kelly, max 5% of the EdgeBoard paper bankroll); anything else is tracked record-only at $0.00 — or sent one at a time to the Betting Desk Ticket Builder as a pre-fill you build yourself (not limited to gate passes; the probability is filled only when EdgeBoard&rsquo;s own math has one). Book links (FanDuel, DraftKings, BetMGM, theScore Bet) are web searches that place nothing. Its data lives in EdgeBoard&rsquo;s own section — a Superbrain reset never touches it.</div>';
@@ -6218,10 +6533,11 @@
     html += '<div class="setup-line">Decision reasons show the numbers (v28): <span class="setup-on">ON</span> \u2014 the 10 Best Decision rules are unchanged (same reads in, same verdict out); only the reason lines gained the measured values behind them: the distance vs the coin\'s build line (BTC $150 / ETH $5 / SOL $0.25 / XRP $0.005), the real Kalshi ask vs the 50\u201375\u00a2 zone, the leading price on a decided round, and the real time left inside the no-entry cutoff. The same reason shows on the Trade Screen verdict, the front Best Decision card and the BEST AVAILABLE wait line. A price the app doesn\'t have is never invented \u2014 the reason says prices aren\'t loaded.</div>';
     html += '<div class="setup-line">EdgeBoard God Mode (v29): <span class="setup-on">ON</span> \u2014 EdgeBoard home carries a GOD MODE panel (live count of gate passers + the single best passer big; tap jumps to Edges filtered to passers; zero passers shows the strict-gate line \u2014 the gate is never relaxed to fill it). Edges defaults to EV-descending sort with All / God Mode / per-sport chips and passers pinned first with a GOD MODE badge. Sports: WNBA + Women\'s College BB wired with predictor math; MLS, Premier League, La Liga, Bundesliga, Serie A, Ligue 1 and Champions League wired lines-only (verified odds, no predictor \u2014 labeled); UFC/MMA checked and NOT wired (its free feed carries no odds). Lines is grouped per sport with chips, counts and per-sport scan times; Props is its own screen beside Lines, grouped by sport, fed by Kalshi\'s verified public prop series \u2014 price-only, no EV or gate badge without a verified true chance. Scans run enabled sports in parallel and record db.edgeboard.scanStatus per sport; Rules &amp; Learning is now Rules &amp; Config (sport toggles, 30/60/120s cadence, Edges sort \u2014 all merge-only in db.edgeboard.config; the gate shown read-only, locked) with a Data panel and a Clear scan data button that wipes only snapshots + scanStatus (paper bets, parlay, alerts, learning preserved). Popup scoping: Superbrain flip/toast popups queue while EdgeBoard is active (dot on the Superbrain switch) and EdgeBoard alerts never pop over Superbrain \u2014 nothing dropped, display deferred only.</div>';
     html += '<div class="setup-line">Kalshi Lab + market combos (v30): <span class="setup-on">ON</span> — Superbrain → Kalshi Lab learns Kalshi\'s observable patterns from the app\'s own recorded windows, stored merge-only in db.kalshiModel (last 300 samples): a sample is recorded per coin per window at the prediction lock, and only when a real Kalshi strike loaded for that window — never the Coinbase fallback line; if the strike never loaded, nothing is recorded. Strike bias shows the average Kalshi-strike-vs-Coinbase-open offset per coin with sample counts (under 30 samples labeled still learning); pricing calibration buckets priced samples by distance band against each coin\'s own build line (BTC $150 / ETH $5 / SOL $0.25 / XRP $0.005) and lines Kalshi\'s ask for the model\'s side up against the model\'s fair chance. Market combos are built from the current window\'s prediction legs at 60%+ (live predictions before a lock, locked ones after), priced as the product of the legs\' Kalshi ask fractions only when every ask is known (otherwise "price unknown — Kalshi blocked"), with the joint chance shown two ways — independence, and correlation-adjusted from the settled prediction history (exact leg-set hit rate at 10+ instances, else the all-pairs calibration, clamped 1–97%; under 10 settled pairs it says not enough history) — and never displayed above 97%. Locked combos live in db.combos (last 100, paper only — you place legs yourself in Kalshi) and settle in the same Coinbase-close pass as predictions: every leg right = won, any leg wrong or exactly tied = lost. The same totals show as COMBOS on the Win Rate screen below Predictions.</div>';
-    html += '<div class="setup-line">Front screen / EdgeBoard decoupled (v31): <span class="setup-on">ON</span> — the front-screen Auto-Run master switch runs Superbrain lanes only ($10 Desk pipeline, Targets reads, Parlay Bot rebuild); the EdgeBoard scans lane is removed from the switch, its Lanes fold and every explainer. EdgeBoard scanning is governed inside EdgeBoard itself: while the EdgeBoard area is open it auto-scans at db.edgeboard.config.cadenceSec regardless of the Auto-Run state, gated only by its own merge-only toggle db.edgeboard.config.autoScan (Rules &amp; Config, default ON); OFF stops the automatic scans and "Scan lines now" still works by hand. The Betting row and the area switch remain as navigation doors only. No records on either side were deleted or moved.</div>';
+    html += '<div class="setup-line">Front screen / EdgeBoard decoupled (v31): <span class="setup-on">ON</span> — the front-screen Auto-Run master switch runs Superbrain lanes only ($10 Desk pipeline, Targets reads, God Mode Parlay rebuild); the EdgeBoard scans lane is removed from the switch, its Lanes fold and every explainer. EdgeBoard scanning is governed inside EdgeBoard itself: while the EdgeBoard area is open it auto-scans at db.edgeboard.config.cadenceSec regardless of the Auto-Run state, gated only by its own merge-only toggle db.edgeboard.config.autoScan (Rules &amp; Config, default ON); OFF stops the automatic scans and "Scan lines now" still works by hand. The Betting row and the area switch remain as navigation doors only. No records on either side were deleted or moved.</div>';
     html += '<div class="setup-line">Best Decision + Signals are Superbrain\'s own (v32): <span class="setup-on">ON</span> — the Best Decision call, the BEST AVAILABLE strip and every signal + early warning (STRIKE CROSS, REGIME CHANGE, DISTANCE BUILDING, WINDOW-OPEN SETUP) are computed from Superbrain reads only: Coinbase spot/candles, the Kalshi 15-min board strips and Targets state. No EdgeBoard data, scan state, gate value, config or timer feeds, gates, delays or labels them — they render and update on Superbrain\'s own read cycle even if EdgeBoard was never opened or its data is empty. Labeled on the front screen under the Best Decision card and at the top of the Signals panel.</div>';
-    html += '<div class="setup-line">PumpPortal feed removed (v34): <span class="setup-on">ON</span> — the live feed egress is deleted from the shipped code: connectSocket no longer opens the PumpPortal data socket (it is a removed-state stub, FEED_REMOVED, that only settles callers — START, Auto-Run, wake/network heals, the watchdog, scheduleReconnect is guarded off), the new-token subscription send and every token-trade subscription send (socket open, practice buys, desk candidates, desk trade opens) are gone, syncSubscriptions stays the no-op it has been since v20 (the follow list is never sent anywhere), and Connection Check no longer fetches pumpportal.fun. Honest fallout, labeled in the UI: the $10 Desk SCOUT gets no new pairs from a stream, the Executor\u2019s stream-keyed automatic dip-buys stay off, candidates come from manual adds only, and the desk\u2019s records, balance, log and brief are untouched. The real-trade builder is deleted too (same v34 pass): no trade-builder call, no confirm modal, no real-buy/real-sell/real-copy buttons or handlers remain — the old entry names survive only as stubs that answer with the removal. What remains is only pump.fun coin/profile LINKS (your tap, navigation out — nothing is sent).</div>';
+    html += '<div class="setup-line">Live feed removed (v34): <span class="setup-on">ON</span> — the live feed egress is deleted from the shipped code: connectSocket no longer opens the feed data socket (it is a removed-state stub, FEED_REMOVED, that only settles callers — START, Auto-Run, wake/network heals, the watchdog, scheduleReconnect is guarded off), the new-token subscription send and every token-trade subscription send (socket open, practice buys, desk candidates, desk trade opens) are gone, syncSubscriptions stays the no-op it has been since v20 (the follow list is never sent anywhere), and Connection Check no longer fetches the old feed host. Honest fallout, labeled in the UI: the $10 Desk SCOUT gets no new pairs from a stream, the Executor\u2019s stream-keyed automatic dip-buys stay off, candidates come from manual adds only, and the desk\u2019s records, balance, log and brief are untouched. The real-trade builder is deleted too (same v34 pass): no trade-builder call, no confirm modal, no real-buy/real-sell/real-copy buttons or handlers remain — the old entry names survive only as stubs that answer with the removal. What remains is only pump.fun coin/profile LINKS (your tap, navigation out — nothing is sent).</div>';
     html += '<div class="setup-line">Fix-pack completion (v34): <span class="setup-on">ON</span> — round-call lock guard: t15RoundTick never locks a call with under 180s left (the decision engine\u2019s own no-entry line); a setup completing later makes no call and the round settles NO PLAY. At a lock, the real Kalshi ask for the called side is stored on the row (callAsk) when the Kalshi strip for the current window is live — null otherwise, never estimated — and shown on the round in the Round Record. Stale feed copy retired with the feed: the Auto-Run desk lane reads \u201cstream removed in v34 — manual adds only\u201d, the Feed uptime objective is retired in both Objectives views (its counter no longer accrues and its shortfall note no longer fires; historical seconds stay shown), and the wallet \u201cOpen in Phantom/Solflare\u201d deep-link buttons — which were built from the page\u2019s own address — are replaced by plain guidance; the app no longer reads its own address anywhere.</div>';
+    html += '<div class="setup-line">God Mode Parlay Builder (v35): <span class="setup-on">ON</span> — the $1 Parlay Bot is rebuilt in the Betting Desk as the God Mode Parlay Builder: Kalshi 15-min legs only, from the same prediction/combo machinery as Kalshi Lab (the locked prediction for the window first, else the live read; joint chance = klIndep + klAdjusted, clamped ≤97%, the independence figure shown alongside, labeled). The gate admits a leg ONLY when all four hold: calibrated confidence ≥60%, positive EV vs the live Kalshi ask, the ask actually loaded (never the Coinbase fallback line), and ask ≤85¢. Tickets are same-window combos of 2–4 passing legs ranked by the correlation-adjusted joint chance; the top ticket shows its legs with sides and prices, the joint %, the combined price, stake → payout (stake is an editable field, $1 by default, payout math live) and the expected killer — the weakest leg, named plainly. The best 2-leg ticket shows separately when it differs, labeled safer — fewer legs. No passers shows "No God Mode parlay right now — the gate is strict on purpose" plus the closest forming candidate with the one reason it failed, in numbers. Copy slip writes a clean text slip (legs, sides, prices, joint %, payout) for Kalshi/Gambly — the app places nothing. Locked tickets live merge-only in db.godParlays (last 100: legs coin/side/ask/conf, joint %, combined price, stake, window id, locked time) and settle in the same Coinbase-close pass as predictions/combos: every leg right = won, any leg wrong = lost, a tied leg makes the ticket a push only when every other leg won. The record shows in the builder (W–L + last tickets) and as GOD MODE PARLAYS on the Win Rate screen (W–L, pushes noted, small-sample note under 30 settled). The Auto-Run lane "Parlay Bot rebuild" is renamed "God Mode Parlay rebuild" (lane list, fold copy, My Setups): while Auto-Run is on, the builder refreshes its top ticket as new windows open. No other Auto-Run change — the v31 decoupling stands.</div>';
     html += '<div class="setup-line">Hit-rate fix pack (v33): <span class="setup-on">ON</span> — all six inspection fixes: (1) pace over ~45s (bdPace: newest sample vs the sample closest to 45s earlier, anchor span 20\u201365s, widest span \u22658s early in a window) with a damped projection (bdProjFinish: pace reach = 60 \u00d7 (1 \u2212 e^(\u2212t/60)) seconds, never the whole time left), shared by predictions, EXPECT, momentum and early warnings; (2) confidence capped until calibration backs it up (75% &lt;30 settled, 85% &lt;100, 90% at 100+, 95% only with a proven 80+ band) and shrunk toward 50% on a sub-30s pace span; (3) the Win Rate calibration table feeds back into confidence (predCalibrate); (4) prediction hit rates split by lock type (PLACE vs late t180) with W/L counts and pushes shown; (5) exact ties grade as PUSH for predictions, and a Kalshi-strike line carries a proxy settle note; (6) the round-call learner is slower \u2014 the same miss kind twice in a row on a coin (pendKind/pendCount in db.t15Learn, a win resets the count) before any threshold moves, with the same step sizes and caps as before. No record was deleted or re-graded: locks and rounds settled before v33 keep their results.</div>';
     html += '<div class="setup-line">Paper Bot tracker (v22): <span class="setup-on">ON</span> \u2014 a one-line front-screen tracker for the Kalshi 15-minute PAPER bot (paper only, hard-locked: no Kalshi key, login or live order path). Its numbers are a snapshot baked in when the app updates \u2014 bank $16.52, today +$1.00, 12W\u20132L at the v22 snapshot \u2014 not a live sync.</div>';
     html += '<div class="setup-line">Predictions (v24; pace + confidence v33): <span class="setup-on">ON</span> \u2014 every window, every coin, the app publishes a prediction from the reads it already computes: the side it expects to win (UP/DOWN) from the projected finish, and a confidence % from that finish and this window\u2019s volatility \u2014 rounded down, labeled an app estimate. Since v33 the pace is measured over ~45 seconds (one shared read: predictions, the EXPECT line, momentum and early warnings) and the projection is damped \u2014 pace is treated as fading with a 60-second decay, never stretched flat across the whole window; a pace span under 30s shrinks confidence toward 50%. The raw confidence is then calibrated against the app\u2019s own settled band record (predCalibrate: shrink toward the band\u2019s observed hit rate at 10+ settled in the band, weight n/(n+20)) and capped: 75% under 30 settled predictions, 85% under 100, 90% at 100+, 95% only when the 80+ band has 20+ settled calls hitting 80%+. It shows on the Trade Screen under the decision, on the front card\u2019s EXPECT line, and as a compact \u25b2/\u25bc ~NN% marker on board rows. A stale read (spot over 15s old) or no volatility estimate means no prediction at all \u2014 it never projects from stale data. Display only: the 10 decision rules are unchanged.</div>';
@@ -6850,6 +7166,7 @@
     trendOnTab(id);
     if (id === 'winrate') { try { renderWinRate(); } catch (eWR) {} try { krLoadRecord(); } catch (eKR) {} }
     if (id === 'kalshilab') { try { renderKalshiLab(); } catch (eKL2) {} }
+    if (id === 'predict') { try { gmRender(); } catch (eGM2) {} }
   }
 
   function showMoreTabs() {
@@ -8333,7 +8650,7 @@
   // AUTO-RUN (v13) — one master switch for the Superbrain lanes, while the
   // app is open. RUNNING: the live coin feed + 8 agents (Auto-Copy /
   // Mirror-Sell, practice only), the Virtual $10 Desk pipeline, the Perps
-  // Desk auto-mark, the 15-Min Targets reads and the Parlay Bot rebuild all
+  // Desk auto-mark, the 15-Min Targets reads and the God Mode Parlay rebuild all
   // cycle on their own. EdgeBoard's scans are NOT an Auto-Run lane (v31):
   // they are governed by EdgeBoard's own autoScan toggle — see ebTick.
   // STOP pauses all of it for this session (Self-Run stays as you set it, so
@@ -8367,7 +8684,7 @@
     t15Start();
     ebAutoStart();
     renderAutoRun();
-    if (!quiet) showToast('RUNNING — every Superbrain lane started: $10 Desk pipeline, 15-Min reads + Parlay Bot rebuilds. Practice and paper only. It runs only while this app is open.');
+    if (!quiet) showToast('RUNNING — every Superbrain lane started: $10 Desk pipeline, 15-Min reads + God Mode Parlay rebuilds. Practice and paper only. It runs only while this app is open.');
   }
   function autoRunStop() {
     autoRun = false;
@@ -8406,7 +8723,7 @@
       .then(function () { perpsAuto.busy = false; renderAutoRun(); });
   }
 
-  // ---- Shared tick (v31): the Parlay Bot rebuild lane still belongs to the
+  // ---- Shared tick (v31): the God Mode Parlay rebuild lane still belongs to the
   // front-screen Auto-Run, but EdgeBoard SCANNING no longer does — a scan
   // fires only while the EdgeBoard area is open AND EdgeBoard's own
   // autoScan toggle (Rules & Config) is ON, whatever Auto-Run says. ----
@@ -8433,7 +8750,7 @@
     else deskTxt = 'stream removed in v34 — manual adds only; candidates re-checked every 20 s';
     out.push(['Virtual $10 Desk pipeline', deskTxt]);
     out.push(['15-Min Targets reads', t15SpotTimer ? 'reading prices every 2 s; rounds recorded and learned from' : 'off (opens with its tab)']);
-    out.push(['Parlay Bot rebuild', autoRun ? 'rebuilds every 15 min from gate-passing picks' : 'runs with Auto-Run']);
+    out.push(['God Mode Parlay rebuild', autoRun ? 'the builder refreshes its top ticket as new windows open' : 'runs with Auto-Run']);
     return out;
   }
   function renderAutoRun() {
@@ -8875,7 +9192,7 @@
   function renderFeedStatus() {
     var el = document.getElementById('feedStatus');
     if (!el) return;
-    if (typeof FEED_REMOVED !== 'undefined' && FEED_REMOVED) { el.innerHTML = 'Feed: <strong>removed</strong> — the PumpPortal live feed was taken out of this app (v34). The $10 Desk keeps its records and manual adds; its live new-coin stream no longer runs.'; return; }
+    if (typeof FEED_REMOVED !== 'undefined' && FEED_REMOVED) { el.innerHTML = 'Feed: <strong>removed</strong> — the live coin feed was taken out of this app (v34). The $10 Desk keeps its records and manual adds; its live new-coin stream no longer runs.'; return; }
     if (!wantActive) { el.innerHTML = 'Feed: <strong>off</strong> — the $10 Desk pipeline waits for the feed (Auto-Run starts it).'; return; }
     if (active && lastMsgAt) {
       var when = new Date(lastMsgAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -8899,7 +9216,7 @@
     try { renderSyncChip(); } catch (eSC9) {}
     renderFeedStatus();
     if (typeof FEED_REMOVED !== 'undefined' && FEED_REMOVED) {
-      if (caption) caption.innerText = 'Auto-Run runs the Targets reads and the Parlay Bot while the app is open. The PumpPortal desk feed was removed in v34.';
+      if (caption) caption.innerText = 'Auto-Run runs the Targets reads and the God Mode Parlay Builder while the app is open. The desk feed was removed in v34.';
       return;
     }
     if (state === 'live') {
@@ -8909,7 +9226,7 @@
     } else if (state === 'reconnecting') {
       if (caption) caption.innerText = 'Connection dropped — reconnecting on its own.';
     } else {
-      if (caption) caption.innerText = 'Auto-Run runs the $10 Desk pipeline, the Targets reads and the Parlay Bot while the app is open.';
+      if (caption) caption.innerText = 'Auto-Run runs the $10 Desk pipeline, the Targets reads and the God Mode Parlay Builder while the app is open.';
     }
   }
 
@@ -9009,11 +9326,11 @@
   }
 
   // ---- Live feed REMOVED (v34) ----
-  // The PumpPortal live feed is out of the app: the WebSocket, the
+  // The live coin feed is out of the app: the WebSocket, the
   // new-token subscription and every token-trade subscription send that
   // used to live here are deleted from the shipped code, completing the
   // pump.fun removal whose screens went in v20. Nothing in this app
-  // opens a connection to pumpportal.fun for a feed anymore, and the
+  // opens a connection to the old feed host for a feed anymore, and the
   // follow list is never sent anywhere (syncSubscriptions has been a
   // no-op since v20). connectSocket stays as the single entry point
   // every caller already uses (START, Auto-Run, wake/network heals,
@@ -9576,6 +9893,7 @@
     if (!Object.prototype.hasOwnProperty.call(parsed, 'edgeboard') && db && db.edgeboard) merged.edgeboard = db.edgeboard;
     normalizeEdgeboard(merged);
     normalizeKalshiLab(merged);
+    normalizeGodParlays(merged);
     merged.uiTab = currentTabId;
     merged.wasLive = !!wantActive;
     db = merged;
@@ -9794,7 +10112,7 @@
       ladder2Pct: null,
       timeExitApplicable: true
     });
-    // v34: no token-trade subscription is sent — the PumpPortal feed is removed (see connectSocket).
+    // v34: no token-trade subscription is sent — the live feed is removed (see connectSocket).
     persist();
     showToast('Practice buy opened: $' + sym + ' at ' + entryMc.toFixed(1) + ' SOL market size');
     return true;
@@ -10335,7 +10653,7 @@
     }
     // A passing, surviving candidate gets its trades streamed so the
     // Executor can watch its market size for a dip.
-    // v34: passing candidates no longer get a live trade stream — the PumpPortal feed is removed (see connectSocket).
+    // v34: passing candidates no longer get a live trade stream — the live feed is removed (see connectSocket).
     // FILTER's on-chain checks (mint/freeze authority, top-10 holders) run
     // over the app's existing Solana RPC rotation — but ONLY for candidates
     // that reached the Analyst floor, so the RPC nodes are never spammed
@@ -10597,7 +10915,7 @@
       return '<div style="padding:6px 0;border-bottom:1px dashed #24314d;"><div style="font-size:0.8rem;"><strong>' + name + '</strong> <span style="color:var(--muted);">— ' + job + '</span></div><div style="font-size:0.74rem;color:var(--muted);margin-top:2px;">' + live + '</div></div>';
     };
     box.innerHTML =
-      stage('1 · SCOUT', 'find new pairs before CT does', 'Live stream <strong style="color:var(--red);">REMOVED in v34</strong> — the PumpPortal feed is out of the app, so SCOUT no longer receives new pairs as they launch and the Executor\'s automatic dip-buys (which keyed off the stream) stay off. Candidates now come only from manual adds below; the desk still re-checks them every 20 seconds while the app is open.' + (lastDeskScanAt ? ' · last scan ' + new Date(lastDeskScanAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '') + ' · watching <strong style="color:var(--text);">' + cands.length + '</strong> candidates.') +
+      stage('1 · SCOUT', 'find new pairs before CT does', 'Live stream <strong style="color:var(--red);">REMOVED in v34</strong> — the live feed is out of the app, so SCOUT no longer receives new pairs as they launch and the Executor\'s automatic dip-buys (which keyed off the stream) stay off. Candidates now come only from manual adds below; the desk still re-checks them every 20 seconds while the app is open.' + (lastDeskScanAt ? ' · last scan ' + new Date(lastDeskScanAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '') + ' · watching <strong style="color:var(--text);">' + cands.length + '</strong> candidates.') +
       stage('2 · FILTER', 'kill almost all of them', 'Hard kills: copycat name, creator bet too much, no real floor, messy ticker, blacklisted creator. Killed this session: <strong style="color:var(--text);">' + deskFilterKills + '</strong> · blacklist holds <strong style="color:var(--text);">' + (db.deskBlacklist || []).length + '</strong> creator wallets.<br><span style="display:block;margin-top:4px;">Article\'s FILTER kills: liquidity under $15,000 · LP not burned or locked · top 10 holders over 30% · mint/freeze authority not revoked · dev sold more than 5% in 10 minutes · dev wallet on the blacklist · pairs younger than 3 minutes wait in the queue instead of dying.</span><span style="display:block;margin-top:4px;">Now LIVE in this app: for every candidate that reaches the Analyst floor, FILTER reads the chain itself over Solana RPC — <strong style="color:var(--text);">mint/freeze authority still live = kill</strong> · <strong style="color:var(--text);">top 10 holders over 30% of supply = kill</strong>, reasons logged below. If the chain can\'t be reached, the candidate is flagged "couldn\'t verify" — never a fake pass, never a fake kill. Curve depth uses the stream\'s virtual SOL reserves as a labeled proxy: under ~85 SOL (≈ the $15k line) = "thin curve" flag, not a kill. LP burn/lock stays recorded-only — a pump.fun launch has no LP until it graduates, so there is nothing to burn yet.</span><span style="display:block;margin-top:4px;">RugCheck gate (live): floor-passing candidates are also checked at RugCheck — a <strong style="color:var(--text);">danger risk or a score over 500 = kill</strong>, with the reason logged in the Decision Log below ("RugCheck: risk / score"). If RugCheck can\'t be reached, the candidate is flagged "couldn\'t verify" — never a fake pass, never a fake kill.</span>') +
       stage('3 · ANALYST', 'score what survives', 'Score = the 8 safety checks passed ÷ 8 × 100. Desk entries need <strong style="color:var(--text);">' + deskFloor() + ' or more</strong> — under ' + deskFloor() + ' = skip. Passing right now: <strong style="color:var(--text);">' + passing + '</strong>.') +
       stage('4 · RISK', 'decide the size and the exit BEFORE the entry', 'Size = score% × <strong style="color:var(--text);">50% cap</strong> of desk equity $' + st.equity.toFixed(2) + ' (score 70 → $' + (st.equity * 0.35).toFixed(2) + ' · score 100 → $' + (st.equity * 0.50).toFixed(2) + '), never over 50%. Exits fixed at entry: hard stop <strong style="color:var(--text);">−15%</strong> · at <strong style="color:var(--text);">+60%</strong> sell half and the stop on the rest moves to breakeven · trail the rest <strong style="color:var(--text);">25%</strong> from the peak · max hold 45m.') +
@@ -10762,7 +11080,7 @@
       closeReason: '',
       reason: (reason || 'Added from the terminal') + ' · Analyst score ' + score100 + '/100' + (scoreAssumed ? ' (floor — the stream had not scored this coin)' : '')
     });
-    // v34: no token-trade subscription is sent — the PumpPortal feed is removed (see connectSocket).
+    // v34: no token-trade subscription is sent — the live feed is removed (see connectSocket).
     deskLog('EXECUTOR opened ' + ticket + ' $' + sym + ' — $' + size.toFixed(2) + ' paper, score ' + score100 + '/100. ' + (reason || 'Added from the terminal') + '.');
     persist();
     renderDesk();
@@ -12083,7 +12401,7 @@
   }
 
   // ---- Real trades REMOVED (v34) ----
-  // The PumpPortal trade builder is deleted, completing the pump.fun
+  // The real-trade builder is deleted, completing the pump.fun
   // removal: there is no trade-builder call, no confirm modal, and no
   // real-buy / real-sell / real-copy button or handler anywhere in the
   // app. Nothing here can build, sign or send a real pump.fun trade.
@@ -12508,6 +12826,7 @@
     if (keepEdgeboard) db.edgeboard = keepEdgeboard; // separate area — Superbrain's reset never touches it
     normalizeEdgeboard(db);
     normalizeKalshiLab(db);
+    normalizeGodParlays(db);
     db.uiTab = currentTabId; // navigation state only: stay on the tab you're looking at, stream flag matches reality
     db.wasLive = !!wantActive;
     connectedPubkey = null;
