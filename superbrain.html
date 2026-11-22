@@ -644,6 +644,8 @@
     .cop-send { flex: 0 0 auto; background: var(--blue); border: none; color: #06283d; border-radius: 10px; padding: 10px 16px; min-height: 44px; font: inherit; font-size: 0.86rem; font-weight: 900; cursor: pointer; }
     /* v45: SPACING ONLY — the Copilot pill can never cover Market Board row content, in the resting fold or at any scroll position. The pill is fixed at bottom-right (right:12px, 96px wide, so its left edge sits 108px from the viewport's right edge); the board rows reserve that column inside the row itself — padding-right:100px ends every row's content (coin, read lines, BEST BET badge, verdict) 14px left of the pill's left edge at any viewport width (row right edge = width − 22px of body + card padding; content right edge = width − 122px; pill left edge = width − 108px), whatever the scroll position: horizontal separation, not a scroll trick. Row heights (62px, 98px has-settle), row tap targets and the 132px scroll-margin-bottom are unchanged, and nothing outside #mbCard is touched. */
     #mbCard .mb-row { padding-right: 100px; }
+    /* v48: self-update banner — rendered only when the served build is newer than the running one; display:none (inline) until then, so it never disturbs the front-screen layout. */
+    #updBanner { width: 100%; box-sizing: border-box; margin: 0 0 7px; background: rgba(34,197,94,0.14); border: 1px solid var(--green); color: var(--text); border-radius: 10px; padding: 10px 12px; min-height: 44px; font: inherit; font-size: 0.88rem; font-weight: 800; cursor: pointer; text-align: center; }
   </style>
 </head>
 <body>
@@ -655,7 +657,7 @@
       <div class="hero-logo-wrap"><img class="hero-logo" id="heroLogo" src="data:," alt="S7 Global logo" /><script>/* v14: logo stored once — reuse the home-screen icon's image */(function () { var l = document.querySelector('link[rel="apple-touch-icon"]'), i = document.getElementById('heroLogo'); if (l && i) i.src = l.getAttribute('href'); })();</script></div>
       <div class="hero-id">
         <div class="hero-brand">S7 Superbrain</div>
-        <span class="ver-stamp" id="verStamp">v47 · Nov 22, 2026 · GOAL 100%</span>
+        <span class="ver-stamp" id="verStamp">v48 · Nov 22, 2026 · GOAL 100%</span>
       </div>
       <div class="hero-num sb-only" id="kalshiBalBox" role="button" tabindex="0" aria-label="Kalshi balance — tap to update" onclick="openKalshiBalPanel()"><div class="kpi-lbl">Kalshi Balance</div><div class="kpi-num" id="kpiKalshi">$15.52</div></div>
     </div>
@@ -667,6 +669,8 @@
       <button id="refreshBtn" class="btn-toggle hero-refresh" onclick="smartRefresh()" aria-label="Refresh — re-sync the Market Board and Targets reads">&#10227; Refresh</button>
     </div>
   </div>
+  <!-- v48: self-update banner — stays display:none and empty unless the served build is newer; tapping reloads the fresh copy -->
+  <button type="button" id="updBanner" style="display:none;" onclick="updReload()"></button>
   <div id="twFrontLine" class="tw-front" style="display:none;" onclick="twOpenCard()" role="button" tabindex="0"></div>
 
   <div class="area-pin" id="areaPin" role="group" aria-label="Switch area"><button type="button" id="pinSB" class="active" onclick="pinArea('sb')">Superbrain<span class="pin-dot" id="pinSbDot"></span></button><button type="button" id="pinEB" class="eb" onclick="pinArea('eb')">EdgeBoard</button></div>
@@ -732,9 +736,10 @@
   <!-- ===================== AREA 1: SUPERBRAIN — PUMP.FUN TERMINAL ===================== -->
   <div id="areaSB">
   <!-- WHAT'S NEW (front screen) — one tappable line, collapsed by default -->
-  <details class="fold front-card" id="whatsNewCard"><summary>What's new in v47 — tap to read</summary>
+  <details class="fold front-card" id="whatsNewCard"><summary>What's new in v48 — tap to read</summary>
     <ul class="front-list" style="margin-bottom:4px;">
-      <li><strong>Board bridge — the real Kalshi board on your phone (v47)</strong> — Kalshi's public feed blocks your phone's browser, so the board usually runs on the labeled Coinbase line. If you deploy your own Cloudflare Worker (the same one the read-only relay uses), paste its URL in Settings &amp; Safety → Kalshi Relay → <strong>Board bridge</strong> and the board will read Kalshi's real strike and prices <em>through your own Worker</em> — the board header then says "via your bridge". <strong>Public prices only: no key, no account data, nothing can be traded through it</strong>, and no third-party proxy is ever used. If the bridge doesn't answer, the board falls back to reading directly, then to the Coinbase line, exactly as before — and the Coinbase line is never relabeled as Kalshi.</li>
+      <li><strong>Update check + setup at a glance (v48)</strong> — the app now checks its own live version when it opens, and again every 10 minutes while it stays open. If a newer version is live, a slim banner appears directly under the hero — <strong>"Update ready — tap to reload"</strong> — and one tap loads the fresh copy. When you're already on the newest version nothing appears, and the app never reloads on its own. In Settings &amp; Safety, the <strong>Board bridge</strong> now has its own card (it used to hide inside the Kalshi Relay fold), and a new <strong>Setup status</strong> card at the top shows the bridge, the relay and your balance source in three plain lines.</li>
+      <li><strong>Board bridge — the real Kalshi board on your phone (v47)</strong> — Kalshi's public feed blocks your phone's browser, so the board usually runs on the labeled Coinbase line. If you deploy your own Cloudflare Worker (the same one the read-only relay uses), paste its URL in Settings &amp; Safety → <strong>Board bridge</strong> and the board will read Kalshi's real strike and prices <em>through your own Worker</em> — the board header then says "via your bridge". <strong>Public prices only: no key, no account data, nothing can be traded through it</strong>, and no third-party proxy is ever used. If the bridge doesn't answer, the board falls back to reading directly, then to the Coinbase line, exactly as before — and the Coinbase line is never relabeled as Kalshi.</li>
       <li><strong>Copy order &amp; open Kalshi (v46)</strong> — when the call is PLACE and the real Kalshi price has loaded, a new button on the Trade Screen and on the Best Decision card copies your order exactly as the app sized it — market ticker, coin and side (like “BTC UP — buy YES”), limit price at the Kalshi ask minus 1¢, contract count and stake — and opens Kalshi in a new tab, so you place it yourself with no typing errors. <strong>The app never places an order.</strong> The button only appears for a live PLACE with a real Kalshi price behind it: it stays hidden on every capped call (vault halt, late-session stop or break, 2-loss cooldown, strike locking, settlement zone, spread cap) and it is never built from the Coinbase fallback line.</li>
       <li><strong>Spacing fix (v45)</strong> — the Copilot bubble no longer sits over the Market Board. Board rows now keep a clear space on their right side, so the bubble can't cover any row's verdict — not at the top of the screen, not scrolled partway, not scrolled all the way down. Nothing else changed: the bubble, your records and every read work exactly as before.</li>
       <li><strong>Copilot bubble (v44)</strong> — a small Copilot pill floats at the bottom right of the Superbrain screens (never in EdgeBoard). Tap it and ask about your session, your active entry, the late session, your records or the round — with quick-tap questions or your own words. <strong>Copilot answers only from the app's own live numbers — it makes no outside calls and places nothing.</strong> Every answer is worked out from the app's state the moment you ask, is stamped with the time it was made, and says so plainly when a number hasn't loaded yet (like "Kalshi prices haven't loaded yet") instead of guessing. Some answers carry a jump button that takes you straight to the Trade Screen, Win Rate or Targets.</li>
@@ -880,6 +885,28 @@
   <!-- TAB 4: SETTINGS & SAFETY -->
   <div id="config" class="view">
     <div class="tab-intro"><strong>Settings &amp; Safety:</strong> Your objectives, your backup, a connection check and the full reset. Nothing on this page spends real money by itself.</div>
+    <div class="card" id="setupStatusCard" style="border-color:var(--blue);">
+      <div class="card-top">
+        <span class="sym" style="font-size:0.82rem;">Setup status</span>
+        <span class="tag tag-win">AT A GLANCE</span>
+      </div>
+      <div class="body-txt" id="setupStatusBridge">Board bridge: Not set</div>
+      <div class="body-txt" id="setupStatusRelay">Kalshi relay: Not set</div>
+      <div class="body-txt" id="setupStatusBalance">Kalshi balance: Manual entry</div>
+    </div>
+    <div class="card" id="boardBridgeCard" style="border-color:var(--blue);">
+      <div class="card-top">
+        <span class="sym" style="font-size:0.82rem;">Board bridge (public Kalshi data)</span>
+      </div>
+      <div class="body-txt" style="margin-bottom:8px;">Your own Cloudflare Worker that fetches Kalshi's public board so your phone can see the real strike. No key, no account data — public prices only.</div>
+      <label>Bridge URL<input type="text" id="kbUrl" autocomplete="off" placeholder="Paste your Worker URL here" /></label>
+      <label>Bridge token<input type="text" id="kbToken" autocomplete="off" placeholder="The same token you set on your relay" /></label>
+      <div class="row-btns" style="margin-top:8px;">
+        <button type="button" class="btn-blue sm-btn" onclick="kbSave()">Save</button>
+        <button type="button" class="btn-toggle sm-btn" onclick="kbTest()">Test bridge</button>
+      </div>
+      <div class="body-txt" id="kbStatus" style="margin-top:6px;">Not set — the board reads Kalshi directly.</div>
+    </div>
     <div class="card" id="mySetupsPanel" style="border-color:var(--blue);">
       <div class="card-top">
         <span class="sym" style="font-size:0.88rem;">My Setups</span>
@@ -963,15 +990,6 @@
         <button type="button" class="btn-toggle sm-btn" onclick="krDisconnect()">Disconnect</button>
       </div>
       <div class="body-txt" id="krStatus" style="margin-top:6px;">Not connected.</div>
-      <div style="border-top:1px dashed #24314d;margin:12px 0 8px;"></div>
-      <div class="body-txt" style="margin-bottom:8px;"><strong style="color:var(--text);">Board bridge (public Kalshi data)</strong> — Your own Cloudflare Worker that fetches Kalshi's public board so your phone can see the real strike. No key, no account data — public prices only.</div>
-      <label>Bridge URL<input type="text" id="kbUrl" autocomplete="off" placeholder="Paste your Worker URL here" /></label>
-      <label>Bridge token<input type="text" id="kbToken" autocomplete="off" placeholder="The same token you set on your relay" /></label>
-      <div class="row-btns" style="margin-top:8px;">
-        <button type="button" class="btn-blue sm-btn" onclick="kbSave()">Save</button>
-        <button type="button" class="btn-toggle sm-btn" onclick="kbTest()">Test bridge</button>
-      </div>
-      <div class="body-txt" id="kbStatus" style="margin-top:6px;">Not set — the board reads Kalshi directly.</div>
     </details>
     <div class="card">
       <div class="card-top">
@@ -1854,6 +1872,7 @@
   var tabScrollPositions = {}; // tab id -> window scroll position, remembered while the app is open (memory only)
   var currentTabId = 'core';
   var VALID_TABS = ['targets', 'winrate', 'kalshilab', 'desk', 'predict', 'config'];
+  var APP_BUILD = 48; // v48: the running build number — the self-update check compares the served hero stamp against this (the stamp above reads "v48 · …")
 
   var DEFAULT_DB = {
     bankroll: 7.00,
@@ -3514,6 +3533,7 @@
       if (krConfigured()) s.innerText = krState.err ? 'Connected to ' + db.kalshiRelay.url + ' \u2014 the last sync could not reach it; your last balance is still shown.' : 'Connected to ' + db.kalshiRelay.url + ' \u2014 read-only sync is on.';
       else s.innerText = 'Not connected.';
     }
+    try { renderSetupStatus(); } catch (eSS27) {}
   }
   function krReadFields() {
     var u = document.getElementById('krUrl');
@@ -3585,6 +3605,7 @@
       if (kbConfigured()) s.innerText = 'Bridge set to ' + kbBase() + ' — the board tries your bridge first for Kalshi\'s public prices.';
       else s.innerText = 'Not set — the board reads Kalshi directly.';
     }
+    try { renderSetupStatus(); } catch (eSS47) {}
   }
   function kbReadFields() {
     var u = document.getElementById('kbUrl');
@@ -3609,6 +3630,7 @@
     var s = document.getElementById('kbStatus');
     db.kalshiBridge = kbReadFields();
     persist();
+    try { renderSetupStatus(); } catch (eSS48) {}
     if (!kbConfigured()) {
       if (s) s.innerText = 'Paste your Worker URL first — there is no bridge to test yet.';
       return;
@@ -3630,6 +3652,48 @@
       kbState.busy = false;
       if (s) s.innerText = 'Bridge did not answer — check the Worker URL and that the token matches the RELAY_TOKEN on your Worker. The board keeps reading directly meanwhile.';
     });
+  }
+  // ---- Setup status (v48) — read-only display at the top of Settings &
+  // Safety. NO new state: each line is read live from the existing saved
+  // fields (db.kalshiBridge, db.kalshiRelay, db.kalshiBalanceSource).
+  function renderSetupStatus() {
+    var b = document.getElementById('setupStatusBridge');
+    var r = document.getElementById('setupStatusRelay');
+    var bal = document.getElementById('setupStatusBalance');
+    if (b) b.innerText = 'Board bridge: ' + (kbConfigured() ? 'Set' : 'Not set');
+    if (r) r.innerText = 'Kalshi relay: ' + (krConfigured() ? 'Set' : 'Not set');
+    if (bal) bal.innerText = 'Kalshi balance: ' + (db.kalshiBalanceSource === 'relay' ? 'From relay' : 'Manual entry');
+  }
+  // ---- Self-update check (v48) — the stale-version fix. On load and every
+  // 10 minutes while the app stays open, the app fetches its OWN page
+  // (same origin, cache:'no-store', cache-busting query), reads the served
+  // hero stamp, and only when the served build is NEWER than APP_BUILD
+  // shows a slim banner under the hero: one tap reloads the fresh copy.
+  // Nothing is stored, a failed check is silent, the check never runs
+  // while he is typing in a field, and the app never reloads on its own.
+  // After the tap-reload the running build equals the served one, so the
+  // banner cannot reappear for the same version.
+  var updServedBuild = 0; // memory only — never saved
+  function updParseBuild(html) {
+    var m = /verStamp[^>]*>\s*v(\d+)\s*·/.exec(html || '');
+    if (!m) m = /\bv(\d+)\s*·/.exec(html || '');
+    return m ? parseInt(m[1], 10) : 0;
+  }
+  function updCheck() {
+    var ae = document.activeElement;
+    if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT' || ae.isContentEditable)) return; // typing — skip this cycle silently
+    if (typeof fetch !== 'function') return;
+    fetch(location.pathname + '?upd=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (html) {
+      var served = updParseBuild(html);
+      if (served > APP_BUILD) {
+        updServedBuild = served;
+        var b = document.getElementById('updBanner');
+        if (b) { b.innerText = 'Update ready — v' + served + ' is live · Tap to reload'; b.style.display = 'block'; }
+      }
+    }).catch(function () { /* silent — never nag, never change anything */ });
+  }
+  function updReload() {
+    if (updServedBuild > APP_BUILD) location.replace(location.pathname + '?v=' + updServedBuild);
   }
   // ---- Hero sync chip (v23) — the Targets/Kalshi sync state, same reads
   // the Market Board stamp is earned from. ----
@@ -8432,6 +8496,7 @@
     renderKalshiBal();
     try { krRenderSettings(); } catch (eKRSet) {}
     try { kbRenderSettings(); } catch (eKBSet) {}
+    try { renderSetupStatus(); } catch (eSSSet) {}
     var kT = document.getElementById('kpiTracked'); if (kT) kT.innerText = (db.smartWallets || []).length;
     var kS = document.getElementById('kpiScan'); if (kS) kS.innerText = db.scanned;
     var tC = document.getElementById('tradeCount'); if (tC) tC.innerText = db.trades.length;
@@ -8588,7 +8653,7 @@
     html += '<div class="setup-line">Kalshi board rows (v26): <span class="setup-on">ON</span> \u2014 every Market Board row now carries Kalshi\'s Yes bid/ask and No bid/ask in cents on its own second line when the Kalshi strip loaded for that coin, next to the existing spot / line / distance / time left / prediction marker / mini decision. When Kalshi is blocked the row keeps the \u201cCoinbase line \u2014 Kalshi blocked\u201d label and shows \u201cKalshi prices \u2014\u201d \u2014 prices are never substituted or invented. Rows are fixed-height so live updates never reflow the page.</div>';
     html += '<div class="setup-line">Practice follows Kalshi balance (v26): <span class="setup-on">ON</span> \u2014 saving your Kalshi balance in the hero now also sets the Targets virtual book to the same amount through the same adjustment path as \u201cMatch my Kalshi balance\u201d, logged in the adjustment list labeled \u201csynced to your Kalshi balance\u201d \u2014 never a win or a loss; the win rate and round stats never change, and an open unsettled stake is handled exactly as the manual button handles it. The Match button stays on the Round Record card for one-off syncs.</div>';
     html += '<div class="setup-line">Kalshi relay (v27): ' + (krConfigured() ? '<span class="setup-on">CONNECTED</span>' : '<span class="setup-off">NOT CONNECTED</span>') + ' \u2014 Settings &amp; Safety \u2192 Kalshi Relay (read-only) holds a relay URL and token you set yourself (stored only in this browser; both start empty \u2014 nothing is built in). The app sends only GET requests with that token to that URL: /balance syncs your real Kalshi balance into the hero (labeled \u201cKalshi \u00b7 synced\u201d with the time) and lines the practice book up through the same adjustment path, labeled \u201csynced from Kalshi relay\u201d; a failed sync keeps the last value and the hero says \u201crelay unreachable\u201d. /record fills the REAL KALSHI RECORD at the top of Win Rate \u2014 settled W\u2013L, your exact net to the cent, recent settlements and fills \u2014 kept separate from every paper record. There is no API-key or .pem field anywhere in the app and no order path: the relay can look, never trade. Disconnect clears both fields from this browser.</div>';
-    html += '<div class="setup-line">Board bridge (v47): ' + (kbConfigured() ? '<span class="setup-on">SET</span>' : '<span class="setup-off">NOT SET</span>') + ' — Settings &amp; Safety → Kalshi Relay (read-only) → Board bridge holds a Worker URL and token you set yourself (stored only in this browser; both start empty — nothing is built in). When set, the app\'s PUBLIC Kalshi reads (the board — and through it the Trade Screen, Kalshi Lab and God Mode, which all read the same board state) try your Worker first: GET &lt;bridge&gt;/board/trade-api/v2&lt;path&gt;, bounded at 4 seconds, with the token as a bearer header only when one is saved. Any bridge failure falls back to the exact direct read, then to the labeled Coinbase fallback. Prices that arrive through the bridge ARE Kalshi\'s own and are labeled Kalshi, with the transport named: the board stamp reads “Kalshi board · via your bridge” and the hero chip adds “VIA YOUR BRIDGE”. The signed read-only relay (/balance, /record) is a separate path and is never rerouted through the bridge. No API key exists on this path at all and nothing can be ordered through it.</div>';
+    html += '<div class="setup-line">Board bridge (v47): ' + (kbConfigured() ? '<span class="setup-on">SET</span>' : '<span class="setup-off">NOT SET</span>') + ' — Settings &amp; Safety → Board bridge (public Kalshi data) — its own card since v48, under the Setup status card — holds a Worker URL and token you set yourself (stored only in this browser; both start empty — nothing is built in). When set, the app\'s PUBLIC Kalshi reads (the board — and through it the Trade Screen, Kalshi Lab and God Mode, which all read the same board state) try your Worker first: GET &lt;bridge&gt;/board/trade-api/v2&lt;path&gt;, bounded at 4 seconds, with the token as a bearer header only when one is saved. Any bridge failure falls back to the exact direct read, then to the labeled Coinbase fallback. Prices that arrive through the bridge ARE Kalshi\'s own and are labeled Kalshi, with the transport named: the board stamp reads “Kalshi board · via your bridge” and the hero chip adds “VIA YOUR BRIDGE”. The signed read-only relay (/balance, /record) is a separate path and is never rerouted through the bridge. No API key exists on this path at all and nothing can be ordered through it.</div>';
     html += '<div class="setup-line">Decision reasons show the numbers (v28): <span class="setup-on">ON</span> \u2014 the 10 Best Decision rules are unchanged (same reads in, same verdict out); only the reason lines gained the measured values behind them: the distance vs the coin\'s build line (BTC $150 / ETH $5 / SOL $0.25 / XRP $0.005), the real Kalshi ask vs the 50\u201375\u00a2 zone, the leading price on a decided round, and the real time left inside the no-entry cutoff. The same reason shows on the Trade Screen verdict, the front Best Decision card and the BEST AVAILABLE wait line. A price the app doesn\'t have is never invented \u2014 the reason says prices aren\'t loaded.</div>';
     html += '<div class="setup-line">EdgeBoard God Mode (v29): <span class="setup-on">ON</span> \u2014 EdgeBoard home carries a GOD MODE panel (live count of gate passers + the single best passer big; tap jumps to Edges filtered to passers; zero passers shows the strict-gate line \u2014 the gate is never relaxed to fill it). Edges defaults to EV-descending sort with All / God Mode / per-sport chips and passers pinned first with a GOD MODE badge. Sports: WNBA + Women\'s College BB wired with predictor math; MLS, Premier League, La Liga, Bundesliga, Serie A, Ligue 1 and Champions League wired lines-only (verified odds, no predictor \u2014 labeled); UFC/MMA checked and NOT wired (its free feed carries no odds). Lines is grouped per sport with chips, counts and per-sport scan times; Props is its own screen beside Lines, grouped by sport, fed by Kalshi\'s verified public prop series \u2014 price-only, no EV or gate badge without a verified true chance. Scans run enabled sports in parallel and record db.edgeboard.scanStatus per sport; Rules &amp; Learning is now Rules &amp; Config (sport toggles, 30/60/120s cadence, Edges sort \u2014 all merge-only in db.edgeboard.config; the gate shown read-only, locked) with a Data panel and a Clear scan data button that wipes only snapshots + scanStatus (paper bets, parlay, alerts, learning preserved). Popup scoping: Superbrain flip/toast popups queue while EdgeBoard is active (dot on the Superbrain switch) and EdgeBoard alerts never pop over Superbrain \u2014 nothing dropped, display deferred only.</div>';
     html += '<div class="setup-line">Kalshi Lab + market combos (v30): <span class="setup-on">ON</span> — Superbrain → Kalshi Lab learns Kalshi\'s observable patterns from the app\'s own recorded windows, stored merge-only in db.kalshiModel (last 300 samples): a sample is recorded per coin per window at the prediction lock, and only when a real Kalshi strike loaded for that window — never the Coinbase fallback line; if the strike never loaded, nothing is recorded. Strike bias shows the average Kalshi-strike-vs-Coinbase-open offset per coin with sample counts (under 30 samples labeled still learning); pricing calibration buckets priced samples by distance band against each coin\'s own build line (BTC $150 / ETH $5 / SOL $0.25 / XRP $0.005) and lines Kalshi\'s ask for the model\'s side up against the model\'s fair chance. Market combos are built from the current window\'s prediction legs at 60%+ (live predictions before a lock, locked ones after), priced as the product of the legs\' Kalshi ask fractions only when every ask is known (otherwise "price unknown — Kalshi blocked"), with the joint chance shown two ways — independence, and correlation-adjusted from the settled prediction history (exact leg-set hit rate at 10+ instances, else the all-pairs calibration, clamped 1–97%; under 10 settled pairs it says not enough history) — and never displayed above 97%. Locked combos live in db.combos (last 100, paper only — you place legs yourself in Kalshi) and settle in the same Coinbase-close pass as predictions: every leg right = won, any leg wrong or exactly tied = lost. The same totals show as COMBOS on the Win Rate screen below Predictions.</div>';
@@ -15299,6 +15364,9 @@
   refreshUI();
   renderGodUI();
   renderSelfRunUI();
+  // v48: self-update check — once on load, then every 10 minutes while open.
+  try { updCheck(); } catch (eUP48) {}
+  setInterval(function () { try { updCheck(); } catch (eUP48b) {} }, 600000);
   renderWakeLock();
   applyWakeLock();
   try { renderAlertPrefs(); } catch (eAP41) {}
