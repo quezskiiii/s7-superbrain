@@ -658,7 +658,7 @@
       <div class="hero-logo-wrap"><img class="hero-logo" id="heroLogo" src="data:," alt="S7 Global logo" /><script>/* v14: logo stored once — reuse the home-screen icon's image */(function () { var l = document.querySelector('link[rel="apple-touch-icon"]'), i = document.getElementById('heroLogo'); if (l && i) i.src = l.getAttribute('href'); })();</script></div>
       <div class="hero-id">
         <div class="hero-brand">S7 Superbrain</div>
-        <span class="ver-stamp" id="verStamp">v48 · Nov 22, 2026 · GOAL 100%</span>
+        <span class="ver-stamp" id="verStamp">v49 · Nov 23, 2026 · GOAL 100%</span>
       </div>
       <div class="hero-num sb-only" id="kalshiBalBox" role="button" tabindex="0" aria-label="Kalshi balance — tap to update" onclick="openKalshiBalPanel()"><div class="kpi-lbl">Kalshi Balance</div><div class="kpi-num" id="kpiKalshi">$15.52</div></div>
     </div>
@@ -731,14 +731,28 @@
     <div id="sigList"><div class="empty-note">No signals yet today — they appear while the app is open and running.</div></div>
   </div>
 
+
+  <!-- BEST CALLOUTS (v49) — front screen, under Signals. His standing rule, programmed in: every coin hunt starts with the best callouts. Live ranked Solana trending pools filtered to pump.fun coins (GeckoTerminal, CORS-open; pump.fun's own API blocks other sites — verified Nov 23, 2026, and labeled as such on the card). Links out only; the app places nothing. -->
+  <div class="card front-card" id="bcCard">
+    <div class="card-top"><span class="sym" style="font-size:0.88rem;">Best Callouts</span><span class="ts-note" id="bcSync">pump.fun coins · loading…</span></div>
+    <div class="sig-note">The best callouts first — live trending pump.fun coins, ranked. Superbrain's own pump.fun lane, not EdgeBoard.</div>
+    <div id="bcRows"><div class="empty-note">Loading the callouts…</div></div>
+    <div class="body-txt" id="bcNote" style="margin-top:6px;">Source: GeckoTerminal live Solana trending pools, pump.fun coins only. pump.fun's own feed blocks other websites, so its callouts board is one tap away below — this list is never labeled as pump.fun's own feed.</div>
+    <div class="row-btns" style="margin-top:6px;">
+      <button type="button" class="btn-blue sm-btn" onclick="bcOpenBoard()">Best Callouts on pump.fun ↗</button>
+      <button type="button" class="btn-toggle sm-btn" onclick="bcLoad(true)">Refresh</button>
+    </div>
+  </div>
+
   <!-- BETTING LINK (v22; v26: sits under Signals in the front-screen order) — navigation only: jumps to the EdgeBoard area; no data crosses -->
   <button type="button" class="bet-link front-card" onclick="goEdgeBoard()">Betting — open EdgeBoard <span>→</span></button>
 
   <!-- ===================== AREA 1: SUPERBRAIN — PUMP.FUN TERMINAL ===================== -->
   <div id="areaSB">
   <!-- WHAT'S NEW (front screen) — one tappable line, collapsed by default -->
-  <details class="fold front-card" id="whatsNewCard"><summary>What's new in v48 — tap to read</summary>
+  <details class="fold front-card" id="whatsNewCard"><summary>What's new in v49 — tap to read</summary>
     <ul class="front-list" style="margin-bottom:4px;">
+      <li><strong>Best Callouts — programmed in (v49)</strong> — your standing rule is now built into the app: every coin hunt starts with the best callouts. A new <strong>Best Callouts</strong> card sits on the front screen under Signals. It loads live, ranked Solana trending pools filtered to pump.fun coins only (PumpSwap / pump.fun) — the same coins lighting up the pump.fun callouts board — and shows each one's price, market cap, 24h move, 24h volume and buy/sell count, with a <strong>Pump.fun</strong> button that takes you straight to that coin. One more button opens the <strong>Best Callouts board on pump.fun</strong> itself. Honest sourcing, labeled on the card: pump.fun's own data feed blocks other websites (checked Nov 23), so the in-app list reads GeckoTerminal's live trending pools, which any site may read — it is never passed off as pump.fun's own feed. If the list can't load, the card says so plainly and keeps the last good list. <strong>Links only — the app places nothing, exactly as since v34.</strong> The card refreshes on open, on the hero Refresh, on its own Refresh button, and every 2 minutes while the app is open.</li>
       <li><strong>Update check + setup at a glance (v48)</strong> — the app now checks its own live version when it opens, and again every 10 minutes while it stays open. If a newer version is live, a slim banner appears directly under the hero — <strong>"Update ready — tap to reload"</strong> — and one tap loads the fresh copy. When you're already on the newest version nothing appears, and the app never reloads on its own. In Settings &amp; Safety, the <strong>Board bridge</strong> now has its own card (it used to hide inside the Kalshi Relay fold), and a new <strong>Setup status</strong> card at the top shows the bridge, the relay and your balance source in three plain lines.</li>
       <li><strong>Board bridge — the real Kalshi board on your phone (v47)</strong> — Kalshi's public feed blocks your phone's browser, so the board usually runs on the labeled Coinbase line. If you deploy your own Cloudflare Worker (the same one the read-only relay uses), paste its URL in Settings &amp; Safety → <strong>Board bridge</strong> and the board will read Kalshi's real strike and prices <em>through your own Worker</em> — the board header then says "via your bridge". <strong>Public prices only: no key, no account data, nothing can be traded through it</strong>, and no third-party proxy is ever used. If the bridge doesn't answer, the board falls back to reading directly, then to the Coinbase line, exactly as before — and the Coinbase line is never relabeled as Kalshi.</li>
       <li><strong>Copy order &amp; open Kalshi (v46)</strong> — when the call is PLACE and the real Kalshi price has loaded, a new button on the Trade Screen and on the Best Decision card copies your order exactly as the app sized it — market ticker, coin and side (like “BTC UP — buy YES”), limit price at the Kalshi ask minus 1¢, contract count and stake — and opens Kalshi in a new tab, so you place it yourself with no typing errors. <strong>The app never places an order.</strong> The button only appears for a live PLACE with a real Kalshi price behind it: it stays hidden on every capped call (vault halt, late-session stop or break, 2-loss cooldown, strike locking, settlement zone, spread cap) and it is never built from the Coinbase fallback line.</li>
@@ -1873,7 +1887,7 @@
   var tabScrollPositions = {}; // tab id -> window scroll position, remembered while the app is open (memory only)
   var currentTabId = 'core';
   var VALID_TABS = ['targets', 'winrate', 'kalshilab', 'desk', 'predict', 'config'];
-  var APP_BUILD = 48; // v48: the running build number — the self-update check compares the served hero stamp against this (the stamp above reads "v48 · …")
+  var APP_BUILD = 49; // v49: the running build number — the self-update check compares the served hero stamp against this (the stamp above reads "v49 · …")
 
   var DEFAULT_DB = {
     bankroll: 7.00,
@@ -11322,6 +11336,88 @@
   }
 
 
+
+  // ================= BEST CALLOUTS (v49) =================
+  // His standing rule (Nov 23, 2026): every coin hunt starts with the best
+  // callouts. Data: GeckoTerminal's live Solana trending pools (any site may
+  // read it), filtered to pump.fun coins only (dex pumpswap / pump-fun) —
+  // the same coins that light up pump.fun's callouts board. pump.fun's own
+  // API refuses other websites ("Not allowed by CORS", verified Nov 23), so
+  // the board itself is one tap away via bcOpenBoard(). Links out only:
+  // nothing is bought, sold or signed here (unchanged since v34).
+  var bcBusy = false, bcLoaded = false, bcTimer = null;
+  function bcOpenBoard() { window.open('https://pump.fun/callouts', '_blank'); }
+  function bcOpenCoin(mint) { if (mint) window.open('https://pump.fun/coin/' + mint, '_blank'); }
+  function bcPrice(p) {
+    p = Number(p);
+    if (!isFinite(p) || p <= 0) return '—';
+    if (p >= 0.01) return '$' + p.toFixed(4);
+    if (p >= 0.0001) return '$' + p.toFixed(6);
+    return '$' + p.toExponential(2);
+  }
+  function bcLoad(manual) {
+    var box = document.getElementById('bcRows');
+    if (!box || bcBusy) return;
+    bcBusy = true;
+    var sync = document.getElementById('bcSync');
+    if (sync) sync.innerText = 'pump.fun coins · loading…';
+    var urls = [
+      'https://api.geckoterminal.com/api/v2/networks/solana/trending_pools?page=1',
+      'https://api.geckoterminal.com/api/v2/networks/solana/trending_pools?page=2'
+    ];
+    Promise.all(urls.map(function (u) {
+      return fetchWithTimeout(u, {}, 12000).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    })).then(function (pages) {
+      var pools = [];
+      pages.forEach(function (j) { if (j && j.data) pools = pools.concat(j.data); });
+      var seen = {}, rows = [];
+      pools.forEach(function (pl) {
+        var dex = pl.relationships && pl.relationships.dex && pl.relationships.dex.data && pl.relationships.dex.data.id;
+        if (dex !== 'pumpswap' && dex !== 'pump-fun') return;
+        var bt = pl.relationships && pl.relationships.base_token && pl.relationships.base_token.data && pl.relationships.base_token.data.id;
+        var mint = bt ? String(bt).replace(/^solana_/, '') : '';
+        if (!mint || seen[mint]) return;
+        seen[mint] = 1;
+        rows.push({ mint: mint, a: pl.attributes || {} });
+      });
+      rows = rows.slice(0, 10);
+      bcBusy = false;
+      if (!rows.length) {
+        if (!bcLoaded) box.innerHTML = '<div class="empty-note">Best Callouts couldn\'t load — check your connection and tap Refresh.</div>';
+        else if (manual) showToast('Callouts refresh failed — showing the last list.');
+        if (sync) sync.innerText = 'pump.fun coins · couldn\'t load';
+        return;
+      }
+      bcLoaded = true;
+      box.innerHTML = rows.map(function (row, i) {
+        var a = row.a;
+        var sym = String(a.name || '?').split('/')[0].trim() || '?';
+        var chg = Number(a.price_change_percentage && a.price_change_percentage.h24);
+        var tx = (a.transactions && a.transactions.h24) || {};
+        var mc = a.market_cap_usd != null ? a.market_cap_usd : a.fdv_usd;
+        return '<div style="padding:7px 0;border-bottom:1px dashed #24314d;">' +
+          '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:3px;"><strong>#' + (i + 1) + ' $' + esc(sym) + '</strong>' +
+          '<span style="color:' + (isFinite(chg) && chg >= 0 ? 'var(--green)' : 'var(--red)') + ';font-weight:700;">' + (isFinite(chg) ? (chg >= 0 ? '+' : '') + chg.toFixed(1) + '% 24h' : '—') + '</span></div>' +
+          '<div style="font-size:0.72rem;color:var(--muted);margin-bottom:5px;">Price <strong style="color:var(--text);">' + bcPrice(a.base_token_price_usd) + '</strong> &bull; MC <strong style="color:var(--text);">' + fmtBigUsd(mc) + '</strong> &bull; 24h vol <strong style="color:var(--text);">' + fmtBigUsd(a.volume_usd && a.volume_usd.h24) + '</strong> &bull; Buys/sells <strong style="color:var(--text);">' + (tx.buys != null ? tx.buys : '—') + '/' + (tx.sells != null ? tx.sells : '—') + '</strong></div>' +
+          '<div class="row-btns"><button class="btn-toggle sm-btn" onclick="bcOpenCoin(\'' + esc(row.mint) + '\')">Pump.fun ↗</button></div>' +
+        '</div>';
+      }).join('') + '<div class="body-txt" style="margin-top:6px;">Ranked live when this list loaded · ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '. Discovery only — no buy button on these rows; the coin opens on pump.fun and any trade is your tap there.</div>';
+      if (sync) sync.innerText = 'pump.fun coins · live';
+    }).catch(function () {
+      bcBusy = false;
+      if (!bcLoaded) box.innerHTML = '<div class="empty-note">Best Callouts couldn\'t load — check your connection and tap Refresh.</div>';
+      else if (manual) showToast('Callouts refresh failed — showing the last list.');
+    });
+  }
+  (function bcInit() {
+    function start() {
+      try { bcLoad(false); } catch (e) {}
+      if (!bcTimer) bcTimer = setInterval(function () { if (!document.hidden) { try { bcLoad(false); } catch (e) {} } }, 120000);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(start, 1200); });
+    else setTimeout(start, 1200);
+  })();
+
   function smartRefresh() {
     // Smart refresh — no page reload: re-read the balance, re-render every tab,
     // and reconnect the live stream if it was running. Feed history, trades and settings stay put.
@@ -11358,6 +11454,7 @@
     if (pill37) { pill37.innerText = 'SYNCING…'; pill37.className = 'pill off'; }
     try { t15Start(); bdUpdateAll(); } catch (e) {}
     try { sigRender(); } catch (eSG37) {}
+    try { bcLoad(false); } catch (eBC49) {}
     try { renderObjSummary(); } catch (eOS37) {}
     try { krSyncBalance(); } catch (eKR27) {}
     showToast('Refreshing — re-syncing the board and the Targets reads…');
